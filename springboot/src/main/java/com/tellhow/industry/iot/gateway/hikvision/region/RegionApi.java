@@ -18,23 +18,23 @@ public class RegionApi extends BaseApi {
 
     public List<Region> getRegionList() {
         List<Region> regionList = new ArrayList<>();
-        int pageNo = 1, pageSize = 1000;
-        while (true) {
-            GetRegionListRequest getRegionListRequest = new GetRegionListRequest(pageNo, pageSize);
-            BaseResponse<GetRegionListResponse> response = post(RegionInterface.PATH_GET_REGION_LIST, JSON.toJSONString(getRegionListRequest));
-            if (response.data == null) {
-                throw new GatewayException(BaseResponse.ERR_NO_DATA);
-            }
-            GetRegionListResponse data = response.data;
-            int total = data.total;
-            if (data.list != null) {
-                regionList.addAll(data.list);
-            }
-            if (pageNo * pageSize >= total) {
-                break;
-            }
-            pageNo++;
-        }
+//        int pageNo = 1, pageSize = 1000;
+//        while (true) {
+//            GetRegionListRequest getRegionListRequest = new GetRegionListRequest(pageNo, pageSize);
+//            BaseResponse<GetRegionListResponse> response = post(RegionInterface.PATH_GET_REGION_LIST, JSON.toJSONString(getRegionListRequest));
+//            if (response.data == null) {
+//                throw new GatewayException(BaseResponse.ERR_NO_DATA);
+//            }
+//            GetRegionListResponse data = response.data;
+//            int total = data.total;
+//            if (data.list != null) {
+//                regionList.addAll(data.list);
+//            }
+//            if (pageNo * pageSize >= total) {
+//                break;
+//            }
+//            pageNo++;
+//        }
         return regionList;
     }
 }

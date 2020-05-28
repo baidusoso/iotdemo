@@ -58,7 +58,7 @@
         var _vue = this;
         this.listLoading=true;
         this.api({
-          url: "system/org/getRootOrg",
+          url: "/system/org/getRootOrg",
           method: "get"
         }).then(data => {
           var rootOrg = [];
