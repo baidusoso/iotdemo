@@ -1,4 +1,4 @@
-package com.tellhow.industry.iot.gateway.hikvision.org;
+package com.tellhow.industry.iot.gateway.hikvision.region;
 
 import com.alibaba.fastjson.JSON;
 import com.tellhow.industry.iot.gateway.hikvision.BaseApi;
@@ -7,38 +7,34 @@ import com.tellhow.industry.iot.gateway.hikvision.GatewayException;
 import com.tellhow.industry.iot.gateway.hikvision.org.model.GetOrgListRequest;
 import com.tellhow.industry.iot.gateway.hikvision.org.model.GetOrgListResponse;
 import com.tellhow.industry.iot.gateway.hikvision.org.model.OrgInfo;
+import com.tellhow.industry.iot.gateway.hikvision.region.model.GetRegionListRequest;
+import com.tellhow.industry.iot.gateway.hikvision.region.model.GetRegionListResponse;
+import com.tellhow.industry.iot.gateway.hikvision.region.model.Region;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrgApi extends BaseApi {
+public class RegionApi extends BaseApi {
 
-    public OrgInfo getRootOrg() {
-        BaseResponse<OrgInfo> getRootOrgResponse = post(OrgInterface.PATH_GET_ROOT, null);
-        if(getRootOrgResponse.data!=null){
-        }
-        return getRootOrgResponse.data;
-    }
-
-    public List<OrgInfo> getOrgList() {
-        List<OrgInfo> orgInfoList = new ArrayList<>();
+    public List<Region> getRegionList() {
+        List<Region> regionList = new ArrayList<>();
         int pageNo = 1, pageSize = 1000;
         while (true) {
-            GetOrgListRequest getOrgListRequest = new GetOrgListRequest(pageNo, pageSize);
-            BaseResponse<GetOrgListResponse> response = post(OrgInterface.PATH_GET_ORG_LIST, JSON.toJSONString(getOrgListRequest));
+            GetRegionListRequest getRegionListRequest = new GetRegionListRequest(pageNo, pageSize);
+            BaseResponse<GetRegionListResponse> response = post(RegionInterface.PATH_GET_REGION_LIST, JSON.toJSONString(getRegionListRequest));
             if (response.data == null) {
                 throw new GatewayException(BaseResponse.ERR_NO_DATA);
             }
-            GetOrgListResponse data = response.data;
+            GetRegionListResponse data = response.data;
             int total = data.total;
             if (data.list != null) {
-                orgInfoList.addAll(data.list);
+                regionList.addAll(data.list);
             }
             if (pageNo * pageSize >= total) {
                 break;
             }
             pageNo++;
         }
-        return orgInfoList;
+        return regionList;
     }
 }

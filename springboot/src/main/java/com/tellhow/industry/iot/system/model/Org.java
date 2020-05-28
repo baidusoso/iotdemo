@@ -1,12 +1,16 @@
 package com.tellhow.industry.iot.system.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Org implements Serializable {
     private String orgCode;
+    @JSONField(serialize = false)
     private transient Org parentOrg;
+    @JSONField(serialize = false)
     private String parentOrgCode;
     private String orgName;
 

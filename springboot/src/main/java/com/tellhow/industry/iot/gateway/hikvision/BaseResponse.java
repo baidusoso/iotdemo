@@ -1,6 +1,8 @@
 package com.tellhow.industry.iot.gateway.hikvision;
 
 public class BaseResponse<T> {
+
+    public static final String ERR_NO_DATA = "海康安防管理平台返回空数据";
     /**
      * 返回码
      */

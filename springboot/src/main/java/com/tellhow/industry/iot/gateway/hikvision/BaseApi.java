@@ -44,7 +44,7 @@ public class BaseApi {
         BaseResponse<T> response = JSON.parseObject(result, new TypeReference<BaseResponse<T>>() {
         });
         if (response == null) {
-            throw new GatewayException("无法访问海康安防管理平台");
+            throw new GatewayException(BaseResponse.ERR_NO_DATA);
         }
         if (!"0".equals(response.code)) {
             throw new GatewayException(response.code, response.msg);
@@ -56,5 +56,9 @@ public class BaseApi {
     protected interface OrgInterface {
         String PATH_GET_ROOT = "/api/resource/v1/org/rootOrg";
         String PATH_GET_ORG_LIST = "/api/resource/v1/org/orgList";
+    }
+
+    protected interface RegionInterface {
+        String PATH_GET_REGION_LIST = "/api/resource/v1/regions";
     }
 }
