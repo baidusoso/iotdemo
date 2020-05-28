@@ -1,17 +1,24 @@
 package com.tellhow.industry.iot.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tellhow.industry.iot.gateway.hikvision.GatewayException;
+import com.tellhow.industry.iot.gateway.hikvision.org.OrgApi;
+import com.tellhow.industry.iot.gateway.hikvision.org.model.OrgInfo;
 import com.tellhow.industry.iot.system.dao.OrgDao;
 import com.tellhow.industry.iot.system.model.Org;
 import com.tellhow.industry.iot.system.service.OrgService;
 import com.tellhow.industry.iot.util.CommonUtil;
+import com.tellhow.industry.iot.util.constants.Constants;
 import com.tellhow.industry.iot.util.constants.ErrorEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,24 +37,30 @@ public class OrgServiceImpl implements OrgService {
         List<JSONObject> OrgList = orgDao.listOrg();
         if (OrgList != null && OrgList.size() > 0) {
             Map<String, Org> orgMap = new HashMap<>();
+            List<Org> orgList = new ArrayList<>();
             for (JSONObject jsonObject : OrgList) {
                 String orgCode = jsonObject.getString("orgCode");
                 String orgName = jsonObject.getString("orgName");
+                String parentOrgCode = jsonObject.getString("parentOrgCode");
                 Org org = new Org();
                 org.setOrgCode(orgCode);
                 org.setOrgName(orgName);
+                org.setParentOrgCode(parentOrgCode);
+                orgList.add(org);
                 orgMap.put(orgCode, org);
-                if (rootOrg == null) {
-                    rootOrg = org;
-                    continue;
-                }
-                String parentOrgCode = jsonObject.getString("parentOrgCode");
+            }
+            for (Org org : orgList) {
+                String parentOrgCode = org.getParentOrgCode();
                 Org parentOrg = orgMap.get(parentOrgCode);
                 if (parentOrg != null) {
-                    logger.debug(parentOrg.getOrgCode() + " addChild:" + org.getOrgCode());
                     parentOrg.addChild(org);
-                } else {
-                    logger.debug("parentOrgCode:" + parentOrgCode);
+                    org.setParentOrg(parentOrg);
+                }
+            }
+            for (Org org : orgList) {
+                if (org.getParentOrg() == null) {
+                    rootOrg = org;
+                    break;
                 }
             }
 
@@ -55,6 +68,7 @@ public class OrgServiceImpl implements OrgService {
         return CommonUtil.successJson(JSONObject.toJSON(rootOrg));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public JSONObject addOrg(JSONObject jsonObject) {
         String parentOrgCode = jsonObject.getString("parentOrgCode");
@@ -73,6 +87,7 @@ public class OrgServiceImpl implements OrgService {
         return CommonUtil.successJson();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public JSONObject updateOrg(JSONObject jsonObject) {
         int exist = orgDao.queryExistOrgCode(jsonObject);
@@ -87,9 +102,25 @@ public class OrgServiceImpl implements OrgService {
         return CommonUtil.successJson();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public JSONObject deleteOrg(JSONObject jsonObject) {
         orgDao.deleteOrg(jsonObject);
+        return CommonUtil.successJson();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public JSONObject syncOrg() {
+        try {
+            List<OrgInfo> orgInfoList = new OrgApi().getOrgList();
+            orgDao.tempDeleteAllOrg();
+            if (orgInfoList != null && orgInfoList.size() > 0) {
+                orgDao.batchAddOrg(orgInfoList);
+            }
+        } catch (GatewayException gatewayException) {
+            return CommonUtil.errorJson(Constants.ERROR_GATEWAY, gatewayException.getMessage());
+        }
         return CommonUtil.successJson();
     }
 }

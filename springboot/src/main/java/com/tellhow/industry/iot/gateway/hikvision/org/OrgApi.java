@@ -3,7 +3,7 @@ package com.tellhow.industry.iot.gateway.hikvision.org;
 import com.alibaba.fastjson.JSON;
 import com.tellhow.industry.iot.gateway.hikvision.BaseApi;
 import com.tellhow.industry.iot.gateway.hikvision.BaseResponse;
-import com.tellhow.industry.iot.gateway.hikvision.GetwayException;
+import com.tellhow.industry.iot.gateway.hikvision.GatewayException;
 import com.tellhow.industry.iot.gateway.hikvision.org.model.GetOrgListRequest;
 import com.tellhow.industry.iot.gateway.hikvision.org.model.GetOrgListResponse;
 import com.tellhow.industry.iot.gateway.hikvision.org.model.OrgInfo;
@@ -27,7 +27,7 @@ public class OrgApi extends BaseApi {
             GetOrgListRequest getOrgListRequest = new GetOrgListRequest(pageNo, pageSize);
             BaseResponse<GetOrgListResponse> response = post(OrgInterface.PATH_GET_ORG_LIST, JSON.toJSONString(getOrgListRequest));
             if (response.data == null) {
-                throw new GetwayException("海康安防管理平台返回空数据");
+                throw new GatewayException("海康安防管理平台返回空数据");
             }
             GetOrgListResponse data = response.data;
             int total = data.total;

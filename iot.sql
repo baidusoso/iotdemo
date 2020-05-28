@@ -11,10 +11,10 @@
  Target Server Version : 50648
  File Encoding         : 65001
 
- Date: 28/05/2020 09:45:09
+ Date: 28/05/2020 11:33:53
 */
 
-SET NAMES utf8mb4;
+SET NAMES utf8;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
@@ -28,7 +28,7 @@ CREATE TABLE `sys_org` (
   `parent_org_code` varchar(64) DEFAULT NULL,
   `path` varchar(256) DEFAULT NULL,
   `status` tinyint(4) DEFAULT '1' COMMENT '1有效 0无效',
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` timestamp NULL ,
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
@@ -89,7 +89,7 @@ CREATE TABLE `sys_role` (
   `name` varchar(20) DEFAULT NULL COMMENT '角色名',
   `note` varchar(256) DEFAULT NULL COMMENT '描述',
   `enable` tinyint(4) DEFAULT '1' COMMENT '是否启用：1启用 0禁用',
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` timestamp NULL ,
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status` varchar(1) DEFAULT '1' COMMENT '是否有效  1有效  0无效',
   PRIMARY KEY (`id`)
@@ -113,7 +113,7 @@ CREATE TABLE `sys_role_permission` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `role_id` int(11) DEFAULT NULL COMMENT '角色id',
   `permission_id` int(11) DEFAULT NULL COMMENT '权限id',
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` timestamp NULL ,
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `delete_status` varchar(1) DEFAULT '1' COMMENT '是否有效 1有效     2无效',
   PRIMARY KEY (`id`)
@@ -130,7 +130,7 @@ CREATE TABLE `sys_user` (
   `nickname` varchar(255) DEFAULT NULL COMMENT '昵称',
   `org_code` varchar(64) DEFAULT NULL,
   `phone` varchar(32) DEFAULT NULL,
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_time` timestamp NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `status` varchar(1) DEFAULT '1' COMMENT '是否有效  1有效  0无效',
   PRIMARY KEY (`id`)

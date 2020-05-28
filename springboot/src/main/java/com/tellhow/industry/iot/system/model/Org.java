@@ -6,8 +6,32 @@ import java.util.List;
 
 public class Org implements Serializable {
     private String orgCode;
+    private transient Org parentOrg;
+    private String parentOrgCode;
     private String orgName;
+
     private List<Org> children = new ArrayList<>();
+
+    public Org getParentOrg() {
+        return parentOrg;
+    }
+
+    public void setParentOrg(Org parentOrg) {
+        this.parentOrg = parentOrg;
+    }
+
+    public String getParentOrgCode() {
+        return parentOrgCode;
+    }
+
+    public void setParentOrgCode(String parentOrgCode) {
+
+        this.parentOrgCode = parentOrgCode;
+    }
+
+    public void setOrgCode(String orgCode) {
+        this.orgCode = orgCode;
+    }
 
     public String getOrgCode() {
         return orgCode;
@@ -19,10 +43,6 @@ public class Org implements Serializable {
 
     public List<Org> getChildren() {
         return children;
-    }
-
-    public void setOrgCode(String orgCode) {
-        this.orgCode = orgCode;
     }
 
     public void setOrgName(String orgName) {

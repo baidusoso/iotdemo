@@ -3,7 +3,7 @@
     <div class="toolbar">
       <el-button type="primary" icon="edit" @click="showCreate()">新增</el-button>
       <el-button icon="edit" @click="showUpdate()">修改</el-button>
-      <el-button icon="edit" @click="batchImport()">批量导入</el-button>
+      <el-button icon="edit" @click="syncOrg()">同步</el-button>
       <el-button type="danger" icon="edit" @click="deleteOrg()">删除</el-button>
     </div>
     <div v-loading.body="listLoading" element-loading-text="拼命加载中" class="tree">
@@ -56,6 +56,7 @@
     methods: {
       getRootOrg() {
         var _vue = this;
+        this.listLoading=true;
         this.api({
           url: "system/org/getRootOrg",
           method: "get"
@@ -65,7 +66,10 @@
             rootOrg.push(data);
           }
           _vue.rootOrg = rootOrg;
+          this.listLoading=true;
           console.log(data);
+        }).catch(()=>{
+          this.listLoading=false;
         })
       },
       showCreate() {
@@ -84,6 +88,22 @@
         this.dialogStatus = "update";
         this.editOrgName = this.editOrgName;
         this.dialogFormVisible = true;
+      },
+      syncOrg(){
+        var _vue = this;
+        this.listLoading=true;
+        this.api({
+          url: "/system/org/syncOrg",
+          method: "get"
+        }).then(data => {
+          if(data.code==100){
+            _vue.getRootOrg();
+          }else{
+            this.$message.error(data.msg);
+          }
+        }).catch(()=>{
+          this.listLoading=false;
+        })
       },
       createOrg() {
         console.log("createOrg");

@@ -11,4 +11,6 @@ public interface OrgService {
     JSONObject updateOrg(JSONObject jsonObject);
 
     JSONObject deleteOrg(JSONObject jsonObject);
+
+    JSONObject syncOrg();
 }

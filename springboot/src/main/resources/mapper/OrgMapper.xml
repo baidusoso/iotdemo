@@ -10,7 +10,6 @@
         FROM
             sys_org
         WHERE status='1'
-        ORDER BY parent_org_code
     </select>
     <select id="queryExistOrgName" resultType="int">
         select count(0)
@@ -35,6 +34,13 @@
         (org_code,name, parent_org_code) VALUES
         (#{orgCode},#{orgName}, #{parentOrgCode})
     </insert>
+    <insert id="batchAddOrg">
+        insert into sys_org (org_code,name, parent_org_code)
+        values
+        <foreach collection="orgInfoList" item="orgInfo" index="index" separator=",">
+            (#{orgInfo.orgIndexCode}, #{orgInfo.orgName}, #{orgInfo.parentOrgIndexCode})
+        </foreach>
+    </insert>
     <update id="updateOrg">
         UPDATE sys_org
         SET
@@ -46,6 +52,11 @@
         SET
         status = '0'
         WHERE org_code = #{orgCode}
+    </update>
+    <update id="tempDeleteAllOrg">
+        UPDATE sys_org
+        SET
+        status = '0'
     </update>
 
 </mapper>

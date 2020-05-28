@@ -44,10 +44,10 @@ public class BaseApi {
         BaseResponse<T> response = JSON.parseObject(result, new TypeReference<BaseResponse<T>>() {
         });
         if (response == null) {
-            throw new GetwayException("无法访问海康安防管理平台");
+            throw new GatewayException("无法访问海康安防管理平台");
         }
         if (!"0".equals(response.code)) {
-            throw new GetwayException(response.code, response.msg);
+            throw new GatewayException(response.code, response.msg);
         }
         return response;
     }
