@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tellhow.industry.iot.system.dao.UserDao">
+
+    <select id="countUser" resultType="Integer">
+        SELECT count(0)
+        FROM sys_user u
+        WHERE u.status = '1'
+    </select>
+
+    <resultMap id="userMap" type="com.tellhow.industry.iot.util.model.One2Many">
+        <id column="userId" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="nickname" property="nickname"/>
+        <result column="phone" property="phone"/>
+        <result column="orgName" property="orgName"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="lastLoginTime" property="lastLoginTime"/>
+        <result column="status" property="status"/>
+        <!--<collection property="permissionList" ofType="String">-->
+            <!--<id column="permissionName" property="permissionName"/>-->
+        <!--</collection>-->
+    </resultMap>
+    <select id="listUser" resultMap="userMap">
+        SELECT
+            u.*,
+            d.name                            orgName
+        FROM (
+                 SELECT
+                     id                                      userId,
+                     username                                username,
+                     nickname                                nickname,
+                     org_code                                orgCode,
+                     phone                                   phone,
+                     status                                  status,
+                     DATE_FORMAT(create_time, '%Y.%m.%d %T') createTime,
+                     DATE_FORMAT(update_time, '%Y.%m.%d %T') updateTime
+                 FROM sys_user
+                 WHERE status = '1'
+                 ORDER BY id
+                 LIMIT #{offSet}, #{pageRow}
+             ) u
+            LEFT JOIN sys_org d on d.org_code=u.orgCode and d.status='1'
+
+        ORDER BY u.userId
+    </select>
+
+    <select id="getAllRolesByUser" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        sr.id                  roleId,
+        sr.name                roleName,
+        sur.user_id            userId
+        FROM sys_role sr
+        LEFT JOIN sys_user_role sur
+        ON sr.id=sur.role_id
+        AND sur.user_id=#{userId}
+        AND sr.`enable`=1
+        WHERE sr.status='1'
+        order by sur.user_id desc,sr.id
+    </select>
+    <select id="getRolesByUser" resultType="integer">
+        SELECT
+        sr.id                  roleId
+        FROM sys_role sr, sys_user_role sur
+        WHERE sr.id=sur.role_id
+        AND sur.user_id=#{userId}
+        AND sr.`enable`=1
+        AND sr.status='1'
+        order by sr.id
+    </select>
+
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO sys_user
+        (username, password, nickname, org_code,phone) VALUES
+            (#{username}, #{password}, #{nickname}, #{orgCode}, #{phone})
+    </insert>
+
+    <update id="updateUser">
+        UPDATE sys_user
+        SET
+        nickname = #{nickname}
+        , username = #{username}
+        <if test="password !='' and password !=null">
+            , password = #{password}
+        </if>
+        , phone =#{phone}
+        , org_code = #{orgCode}
+        , status = #{status}
+        WHERE id = #{userId}
+    </update>
+
+    <update id="deleteUser">
+        UPDATE sys_user
+        SET
+        status = #{deleteStatus}
+        WHERE id = #{userId}
+    </update>
+
+    <insert id="insertUserRole">
+        insert into sys_user_role (role_id, user_id)
+        values
+        <foreach collection="roles" item="item" index="index" separator=",">
+            (#{item}, #{userId})
+        </foreach>
+    </insert>
+
+    <update id="removeOldUserRole">
+        delete FROM sys_user_role
+        WHERE user_id = #{userId}
+        AND role_id in (
+        <foreach collection="roles" item="item" index="index" separator=",">
+            #{item}
+        </foreach>
+        )
+    </update>
+
+    <select id="queryExistUsername" resultType="int">
+        select count(0)
+         from sys_user
+         WHERE username=#{username}
+         AND status='1';
+    </select>
+</mapper>

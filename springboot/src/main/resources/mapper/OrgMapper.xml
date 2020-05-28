@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tellhow.industry.iot.system.dao.OrgDao">
+    <select id="listOrg" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            org_code        orgCode,
+            name            orgName,
+            parent_org_code   parentOrgCode
+        FROM
+            sys_org
+        WHERE status='1'
+        ORDER BY parent_org_code
+    </select>
+    <select id="queryExistOrgName" resultType="int">
+        select count(0)
+        from sys_org
+        WHERE name=#{orgName}
+        AND status='1';
+    </select>
+    <select id="queryExistParentOrgCode" resultType="int">
+        select count(0)
+        from sys_department
+        WHERE org_code=#{parentOrgId}
+        AND status='1';
+    </select>
+    <select id="queryExistOrgCode" resultType="int">
+        select count(0)
+        from sys_org
+        WHERE org_code=#{orgId}
+        AND status='1';
+    </select>
+    <insert id="addOrg" useGeneratedKeys="false" keyProperty="orgCode">
+        INSERT INTO sys_org
+        (org_code,name, parent_org_code) VALUES
+        (#{orgCode},#{orgName}, #{parentOrgCode})
+    </insert>
+    <update id="updateOrg">
+        UPDATE sys_org
+        SET
+        name = #{orgName}
+        WHERE org_code = #{orgCode}
+    </update>
+    <update id="deleteOrg">
+        UPDATE sys_org
+        SET
+        status = '0'
+        WHERE org_code = #{orgCode}
+    </update>
+
+</mapper>
