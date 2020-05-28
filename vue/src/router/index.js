@@ -97,46 +97,46 @@ export const asyncRouterMap = [
     ]
   },
   {
-    path: '/person',
+    path: '/recognization',
     component: Layout,
-    redirect: '/person/',
+    redirect: '/recognization/user',
     name: '人脸识别',
     meta: {title: '人脸识别', icon: 'table'},
     children: [
       {
-        path: 'role',
+        path: 'person',
         name: '人员管理',
-        component: _import('system/role'),
+        component: _import('recognization/person'),
         meta: {title: '人员管理', icon: 'password',showNavBar:true},
-        menu: 'role'
+        menu: 'recognization'
       },
       {
-        path: 'user',
+        path: 'acs',
         name: '门禁管理',
-        component: _import('system/user'),
+        component: _import('recognization/acs'),
         meta: {title: '门禁管理', icon: 'user',showNavBar:true},
-        menu: 'user'
+        menu: 'recognization'
       },
       {
-        path: 'org',
+        path: 'auth',
         name: '权限管理',
         component: _import('system/user'),
         meta: {title: '权限管理', icon: 'user',showNavBar:true},
-        menu: 'user'
+        menu: 'recognization'
       },
       {
-        path: 'region',
+        path: 'visitor',
         name: '来访人员管理',
         component: _import('system/user'),
         meta: {title: '来访人员管理', icon: 'user',showNavBar:true},
-        menu: 'user'
+        menu: 'recognization'
       },
       {
-        path: 'map',
+        path: 'vistorhistory',
         name: '访问记录',
         component: _import('system/user'),
         meta: {title: '访问记录', icon: 'user',showNavBar:true},
-        menu: 'user'
+        menu: 'recognization'
       },
     ]
   },

@@ -7,7 +7,7 @@
       <el-button type="danger" icon="edit" @click="deleteOrg()">删除</el-button>
     </div>
     <div v-loading.body="listLoading" element-loading-text="拼命加载中" class="tree">
-      <el-tree :data="rootOrg" ref="org" show-checkbox node-key="orgCode" default-expand-all
+      <el-tree :data="rootOrg" ref="org" show-checkbox node-key="orgCode" :default-expanded-keys="defaultExpandedKeys"
         :highlight-current="true" :default-checked-keys="[]" :props="defaultProps" :check-strictly="true"
         :check-on-click-node="true" @check-change="handleCheckChange" @node-click="handleNodeClick">
       </el-tree>
@@ -34,6 +34,7 @@
       return {
         listLoading: false, //数据加载等待动画
         rootOrg: [],
+        defaultExpandedKeys:[],
         defaultProps: {
           "children": "children",
           "label": "orgName"
@@ -62,10 +63,13 @@
           method: "get"
         }).then(data => {
           var rootOrg = [];
+          var defaultExpandedKeys=[];
           if (data != null) {
             rootOrg.push(data);
+            defaultExpandedKeys.push(data.orgCode);
           }
           _vue.rootOrg = rootOrg;
+          _vue.defaultExpandedKeys=defaultExpandedKeys;
           this.listLoading=false;
           console.log(data);
         }).catch(()=>{
