@@ -34,11 +34,11 @@ public class OrgServiceImpl implements OrgService {
     @Override
     public JSONObject getRootOrg() {
         Org rootOrg = null;
-        List<JSONObject> OrgList = orgDao.listOrg();
-        if (OrgList != null && OrgList.size() > 0) {
+        List<JSONObject> orgs = orgDao.listOrg();
+        if (orgs != null && orgs.size() > 0) {
             Map<String, Org> orgMap = new HashMap<>();
             List<Org> orgList = new ArrayList<>();
-            for (JSONObject jsonObject : OrgList) {
+            for (JSONObject jsonObject : orgs) {
                 String orgCode = jsonObject.getString("orgCode");
                 String orgName = jsonObject.getString("orgName");
                 String parentOrgCode = jsonObject.getString("parentOrgCode");
@@ -116,7 +116,9 @@ public class OrgServiceImpl implements OrgService {
             List<OrgInfo> orgInfoList = new OrgApi().getOrgList();
             orgDao.tempDeleteAllOrg();
             if (orgInfoList != null && orgInfoList.size() > 0) {
-                orgDao.batchAddOrg(orgInfoList);
+                for (OrgInfo orgInfo : orgInfoList) {
+                    orgDao.insertOrUpdateOrg(orgInfo);
+                }
             }
         } catch (GatewayException gatewayException) {
             return CommonUtil.errorJson(Constants.ERROR_GATEWAY, gatewayException.getMessage());

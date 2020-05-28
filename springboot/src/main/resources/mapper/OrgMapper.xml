@@ -34,12 +34,21 @@
         (org_code,name, parent_org_code) VALUES
         (#{orgCode},#{orgName}, #{parentOrgCode})
     </insert>
-    <insert id="batchAddOrg">
-        insert into sys_org (org_code,name, parent_org_code)
-        values
-        <foreach collection="orgInfoList" item="orgInfo" index="index" separator=",">
+    <insert id="insertOrUpdateOrg">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) as count from sys_org where org_code = #{orgInfo.orgIndexCode}
+        </selectKey>
+        <if test="count==0">
+            insert into sys_org (org_code,name, parent_org_code)
+            values
             (#{orgInfo.orgIndexCode}, #{orgInfo.orgName}, #{orgInfo.parentOrgIndexCode})
-        </foreach>
+        </if>
+        <if test="count>0">
+            UPDATE sys_org SET name =#{orgInfo.orgName},
+                                parent_org_code=#{orgInfo.parentOrgIndexCode},
+                                status=1
+            WHERE org_code=(#{orgInfo.orgIndexCode}
+        </if>
     </insert>
     <update id="updateOrg">
         UPDATE sys_org

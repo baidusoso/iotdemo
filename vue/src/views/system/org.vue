@@ -100,6 +100,7 @@
             _vue.getRootOrg();
           }else{
             this.$message.error(data.msg);
+            this.listLoading=false;
           }
         }).catch(()=>{
           this.listLoading=false;
@@ -202,7 +203,8 @@
   .tree {
     overflow-y: auto;
     overflow-x: scroll;
-    /*width:200px;*/
+    height: 500px;
+    width:600px;
     border: 0px solid blue;
   }
 

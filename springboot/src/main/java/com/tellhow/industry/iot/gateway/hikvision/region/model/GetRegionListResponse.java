@@ -7,5 +7,5 @@ public class GetRegionListResponse {
     public int pageNo;
     public int pageSize;
 
-    public List<Region> list;
+    public List<RegionInfo> list;
 }

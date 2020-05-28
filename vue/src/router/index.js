@@ -74,7 +74,7 @@ export const asyncRouterMap = [
         menu: 'system'
       },
       {
-        path: 'department',
+        path: 'org',
         name: '部门管理',
         component: _import('system/org'),
         meta: {title: '部门管理', icon: 'user',showNavBar:true},
@@ -83,7 +83,7 @@ export const asyncRouterMap = [
       {
         path: 'region',
         name: '区域管理',
-        component: _import('system/user'),
+        component: _import('system/region'),
         meta: {title: '区域管理', icon: 'user',showNavBar:true},
         menu: 'system'
       },

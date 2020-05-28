@@ -18,7 +18,7 @@ public interface OrgDao {
 
     int addOrg(JSONObject jsonObject);
 
-    int batchAddOrg(@Param("orgInfoList") List<OrgInfo> orgInfoList);
+    int insertOrUpdateOrg(@Param("orgInfo") OrgInfo orgInfo);
 
     int updateOrg(JSONObject jsonObject);
 
