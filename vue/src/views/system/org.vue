@@ -66,7 +66,7 @@
             rootOrg.push(data);
           }
           _vue.rootOrg = rootOrg;
-          this.listLoading=true;
+          this.listLoading=false;
           console.log(data);
         }).catch(()=>{
           this.listLoading=false;
