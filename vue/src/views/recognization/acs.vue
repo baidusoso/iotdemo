@@ -1,12 +1,13 @@
 <template>
+  <scroll-bar>
   <div class="app-container">
-    <div id="region" style="width:20%;float:left;">
+    <div id="region" style="width:20%;float:left;border-right: 1px solid #889AA4; ">
       <el-tree :data="rootOrg" ref="org" node-key="orgCode" :default-expanded-keys="defaultExpandedKeys"
         :highlight-current="true" :default-checked-keys="[]" :props="defaultProps" :check-strictly="true"
         :check-on-click-node="true" @check-change="handleCheckChange" @node-click="handleNodeClick">
       </el-tree>
     </div>
-    <div id="acs" style="width:79%;float:left;">
+    <div id="acs" style="width:79%;float:left;margin-left: 3px;">
     <div class="filter-container">
       <el-form>
         <el-form-item>
@@ -96,11 +97,13 @@
     </el-dialog>
     </div>
   </div>
+  </scroll-bar>
 </template>
 <script>
   import {
     mapGetters
   } from 'vuex'
+  import ScrollBar from '@/components/ScrollBar'
 
   export default {
     data() {

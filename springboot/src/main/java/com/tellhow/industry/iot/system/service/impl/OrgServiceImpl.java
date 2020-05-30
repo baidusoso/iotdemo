@@ -2,6 +2,7 @@ package com.tellhow.industry.iot.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.gateway.hikvision.GatewayException;
 import com.tellhow.industry.iot.gateway.hikvision.org.OrgApi;
 import com.tellhow.industry.iot.gateway.hikvision.org.model.OrgInfo;
@@ -113,7 +114,7 @@ public class OrgServiceImpl implements OrgService {
     @Override
     public JSONObject syncOrg() {
         try {
-            List<OrgInfo> orgInfoList = new OrgApi().getOrgList();
+            List<OrgInfo> orgInfoList = ElasticsearchApi.getOrgList();
             orgDao.tempDeleteAllOrg();
             if (orgInfoList != null && orgInfoList.size() > 0) {
                 for (OrgInfo orgInfo : orgInfoList) {

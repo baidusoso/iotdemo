@@ -102,6 +102,7 @@
         listLoading: false, //数据加载等待动画
         listQuery: {
           pageNum: 1, //页码
+          offset:0,
           pageRow: 10, //每页条数
         },
         dialogStatus: 'create',
@@ -178,16 +179,20 @@
       handleSizeChange(val) {
         //改变每页数量
         this.listQuery.pageRow = val
+        this.listQuery.pageNum = 1
+        this.listQuery.offset=(this.listQuery.pageNum-1)*this.listQuery.pageRow
         this.handleFilter();
       },
       handleCurrentChange(val) {
         //改变页码
         this.listQuery.pageNum = val
+        this.listQuery.offset=(this.listQuery.pageNum-1)*this.listQuery.pageRow
         this.getList();
       },
       handleFilter() {
         //查询事件
         this.listQuery.pageNum = 1
+        this.listQuery.offset=(this.listQuery.pageNum-1)*this.listQuery.pageRow
         this.getList()
       },
       getIndex($index) {

@@ -99,14 +99,14 @@ export const asyncRouterMap = [
   {
     path: '/recognization',
     component: Layout,
-    redirect: '/recognization/user',
+    redirect: '/system/account',
     name: '人脸识别',
     meta: {title: '人脸识别', icon: 'table'},
     children: [
       {
-        path: 'person',
+        path: 'account',
         name: '人员管理',
-        component: _import('recognization/person'),
+        component: _import('recognization/account'),
         meta: {title: '人员管理', icon: 'password',showNavBar:true},
         menu: 'recognization'
       },

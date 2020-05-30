@@ -8,7 +8,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-@MapperScan("com.tellhow.industry.iot.system.dao")
+@MapperScan("com.tellhow.industry.iot.*.dao")
 public class MyApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
