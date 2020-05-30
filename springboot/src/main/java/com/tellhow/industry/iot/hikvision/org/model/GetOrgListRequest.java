@@ -1,6 +1,8 @@
-package com.tellhow.industry.iot.gateway.hikvision.org.model;
+package com.tellhow.industry.iot.hikvision.org.model;
 
-public class GetOrgListRequest {
+import com.tellhow.industry.iot.hikvision.PageRequest;
+
+public class GetOrgListRequest extends PageRequest {
     /**
      * 当前页码
      * 当前页码需大于0（pageNo>0）
@@ -13,9 +15,7 @@ public class GetOrgListRequest {
     public int pageSize;
 
     public GetOrgListRequest(int pageNo, int pageSize) {
-        if (pageNo <= 0 || pageSize <= 0 || pageSize > 1000) throw new IllegalArgumentException();
-        this.pageNo = pageNo;
-        this.pageSize = pageSize;
+        super(pageNo, pageSize);
     }
 
 }

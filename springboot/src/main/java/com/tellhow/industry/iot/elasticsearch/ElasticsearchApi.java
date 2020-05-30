@@ -2,12 +2,8 @@ package com.tellhow.industry.iot.elasticsearch;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.tellhow.industry.iot.gateway.hikvision.BaseApi;
-import com.tellhow.industry.iot.gateway.hikvision.BaseResponse;
-import com.tellhow.industry.iot.gateway.hikvision.GatewayException;
-import com.tellhow.industry.iot.gateway.hikvision.org.model.GetOrgListRequest;
-import com.tellhow.industry.iot.gateway.hikvision.org.model.GetOrgListResponse;
-import com.tellhow.industry.iot.gateway.hikvision.org.model.OrgInfo;
+import com.tellhow.industry.iot.hikvision.GatewayException;
+import com.tellhow.industry.iot.hikvision.org.model.OrgInfo;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -48,8 +44,8 @@ public class ElasticsearchApi {
         if (client != null) {
             // 1、创建search请求
             //SearchRequest searchRequest = new SearchRequest();
-            SearchRequest searchRequest = new SearchRequest("orgnization");
-            searchRequest.types("orgnization");
+            SearchRequest searchRequest = new SearchRequest("organization");
+            searchRequest.types("organization");
 
             // 2、用SearchSourceBuilder来构造查询请求体 ,请仔细查看它的方法，构造各种查询的方法都在这。
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();

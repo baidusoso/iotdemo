@@ -1,4 +1,4 @@
-package com.tellhow.industry.iot.gateway.hikvision.org.model;
+package com.tellhow.industry.iot.hikvision.org.model;
 
 public class OrgInfo {
     /**

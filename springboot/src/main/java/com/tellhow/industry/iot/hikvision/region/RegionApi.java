@@ -1,13 +1,13 @@
-package com.tellhow.industry.iot.gateway.hikvision.region;
+package com.tellhow.industry.iot.hikvision.region;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.tellhow.industry.iot.gateway.hikvision.BaseApi;
-import com.tellhow.industry.iot.gateway.hikvision.BaseResponse;
-import com.tellhow.industry.iot.gateway.hikvision.GatewayException;
-import com.tellhow.industry.iot.gateway.hikvision.region.model.GetRegionListRequest;
-import com.tellhow.industry.iot.gateway.hikvision.region.model.GetRegionListResponse;
-import com.tellhow.industry.iot.gateway.hikvision.region.model.RegionInfo;
+import com.tellhow.industry.iot.hikvision.BaseApi;
+import com.tellhow.industry.iot.hikvision.BaseResponse;
+import com.tellhow.industry.iot.hikvision.GatewayException;
+import com.tellhow.industry.iot.hikvision.region.model.GetRegionListRequest;
+import com.tellhow.industry.iot.hikvision.region.model.GetRegionListResponse;
+import com.tellhow.industry.iot.hikvision.region.model.RegionInfo;
 
 import java.util.ArrayList;
 import java.util.List;

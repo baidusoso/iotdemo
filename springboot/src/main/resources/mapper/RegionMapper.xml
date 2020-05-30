@@ -22,10 +22,10 @@
             (#{regionInfo.indexCode}, #{regionInfo.name}, #{regionInfo.parentIndexCode})
         </if>
         <if test="count>0">
-            UPDATE sys_region SET region_name =#{regionInfo.orgName},
-                                parent_region_code=#{regionInfo.parentIndexCode},
-                                status=1
-            WHERE region_code=(#{regionInfo.indexCode}
+            UPDATE sys_region SET region_name =#{regionInfo.name},
+            parent_region_code=#{regionInfo.parentIndexCode},
+            status=1
+            WHERE region_code=#{regionInfo.indexCode}
         </if>
     </insert>
 

@@ -1,4 +1,4 @@
-package com.tellhow.industry.iot.gateway.hikvision;
+package com.tellhow.industry.iot.hikvision;
 
 public class BaseResponse<T> {
 

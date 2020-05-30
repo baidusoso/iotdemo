@@ -111,9 +111,9 @@ export const asyncRouterMap = [
         menu: 'recognization'
       },
       {
-        path: 'acs',
+        path: 'gateway',
         name: '门禁管理',
-        component: _import('recognization/acs'),
+        component: _import('recognization/gateway'),
         meta: {title: '门禁管理', icon: 'user',showNavBar:true},
         menu: 'recognization'
       },

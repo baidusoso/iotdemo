@@ -1,9 +1,9 @@
 package com.tellhow.industry.iot.system.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tellhow.industry.iot.gateway.hikvision.GatewayException;
-import com.tellhow.industry.iot.gateway.hikvision.region.RegionApi;
-import com.tellhow.industry.iot.gateway.hikvision.region.model.RegionInfo;
+import com.tellhow.industry.iot.hikvision.GatewayException;
+import com.tellhow.industry.iot.hikvision.region.RegionApi;
+import com.tellhow.industry.iot.hikvision.region.model.RegionInfo;
 import com.tellhow.industry.iot.system.dao.RegionDao;
 import com.tellhow.industry.iot.system.model.Region;
 import com.tellhow.industry.iot.system.service.RegionService;

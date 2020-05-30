@@ -16,7 +16,7 @@ public class RegionController {
     @Autowired
     private RegionService regionService;
 
-    @GetMapping("/syncRegion")
+    @GetMapping("/sync")
     public JSONObject syncRegion() {
         return regionService.syncRegion();
     }

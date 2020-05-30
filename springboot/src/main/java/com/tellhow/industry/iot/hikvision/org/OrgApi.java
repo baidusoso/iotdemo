@@ -1,13 +1,13 @@
-package com.tellhow.industry.iot.gateway.hikvision.org;
+package com.tellhow.industry.iot.hikvision.org;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.tellhow.industry.iot.gateway.hikvision.BaseApi;
-import com.tellhow.industry.iot.gateway.hikvision.BaseResponse;
-import com.tellhow.industry.iot.gateway.hikvision.GatewayException;
-import com.tellhow.industry.iot.gateway.hikvision.org.model.GetOrgListRequest;
-import com.tellhow.industry.iot.gateway.hikvision.org.model.GetOrgListResponse;
-import com.tellhow.industry.iot.gateway.hikvision.org.model.OrgInfo;
+import com.tellhow.industry.iot.hikvision.BaseApi;
+import com.tellhow.industry.iot.hikvision.BaseResponse;
+import com.tellhow.industry.iot.hikvision.GatewayException;
+import com.tellhow.industry.iot.hikvision.org.model.GetOrgListRequest;
+import com.tellhow.industry.iot.hikvision.org.model.GetOrgListResponse;
+import com.tellhow.industry.iot.hikvision.org.model.OrgInfo;
 import com.tellhow.industry.iot.system.service.impl.UserServiceImpl;
 import org.slf4j.LoggerFactory;
 

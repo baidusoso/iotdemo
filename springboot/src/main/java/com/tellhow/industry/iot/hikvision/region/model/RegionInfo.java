@@ -1,4 +1,4 @@
-package com.tellhow.industry.iot.gateway.hikvision.region.model;
+package com.tellhow.industry.iot.hikvision.region.model;
 
 public class RegionInfo {
     public String indexCode;

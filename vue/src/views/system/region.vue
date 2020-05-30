@@ -107,7 +107,7 @@
         var _vue = this;
         this.listLoading=true;
         this.api({
-          url: "/system/region/syncRegion",
+          url: "/system/region/sync",
           method: "get"
         }).then(data => {
           if(data.code==100){

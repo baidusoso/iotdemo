@@ -1,11 +1,9 @@
 package com.tellhow.industry.iot.system.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
-import com.tellhow.industry.iot.gateway.hikvision.GatewayException;
-import com.tellhow.industry.iot.gateway.hikvision.org.OrgApi;
-import com.tellhow.industry.iot.gateway.hikvision.org.model.OrgInfo;
+import com.tellhow.industry.iot.hikvision.GatewayException;
+import com.tellhow.industry.iot.hikvision.org.model.OrgInfo;
 import com.tellhow.industry.iot.system.dao.OrgDao;
 import com.tellhow.industry.iot.system.model.Org;
 import com.tellhow.industry.iot.system.service.OrgService;

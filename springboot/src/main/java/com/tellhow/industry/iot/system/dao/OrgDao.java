@@ -1,7 +1,7 @@
 package com.tellhow.industry.iot.system.dao;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tellhow.industry.iot.gateway.hikvision.org.model.OrgInfo;
+import com.tellhow.industry.iot.hikvision.org.model.OrgInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

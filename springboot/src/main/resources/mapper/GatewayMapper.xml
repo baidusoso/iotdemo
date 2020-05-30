@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tellhow.industry.iot.gateway.dao.GatewayDao">
+
+    <select id="getGatewayList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        index_code indexCode,
+        name name,
+        firm firm,
+        update_time updateTime
+        FROM
+        gateway
+        WHERE status=1
+        <if test="regionCode !='' and regionCode !=null">
+            AND region_code = #{regionCode}
+        </if>
+        <if test="name !='' and name !=null">
+            AND name LIKE '%${name}%'
+        </if>
+        LIMIT #{offset},#{pageRow}
+    </select>
+
+    <insert id="insertOrUpdateGateway">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) as count from gateway where index_code = #{gateway.acsDevIndexCode}
+        </selectKey>
+        <if test="count==0">
+            insert into gateway(index_code,name,region_code,treaty_type,firm,type_code,type_name,type_desc,ip,port,code,create_time,update_time)
+            values(
+                #{gateway.acsDevIndexCode},
+                #{gateway.acsDevName},
+                #{gateway.regionIndexCode},
+                #{gateway.treatyType},
+                #{gateway.firm},
+                #{gateway.acsDevTypeCode},
+                #{gateway.acsDevTypeName},
+                #{gateway.acsDevTypeDesc},
+                #{gateway.acsDevIp},
+                #{gateway.acsDevPort},
+                #{gateway.acsDevCode},
+                #{gateway.createTime},
+                #{gateway.updateTime}
+            )
+        </if>
+        <if test="count>0">
+            UPDATE gateway SET name =#{gateway.acsDevName},
+            region_code =#{gateway.regionIndexCode},
+            treaty_type =#{gateway.treatyType},
+            firm =#{gateway.firm},
+            type_code =#{gateway.acsDevTypeCode},
+            type_name =#{gateway.acsDevTypeName},
+            type_desc =#{gateway.acsDevTypeDesc},
+            ip =#{gateway.acsDevIp},
+            port =#{gateway.acsDevPort},
+            code =#{gateway.acsDevCode},
+            create_time =#{gateway.createTime},
+            update_time =#{gateway.updateTime},
+            status=1
+            WHERE index_code=#{account.acsDevIndexCode}
+        </if>
+    </insert>
+
+    <insert id="insertOrUpdateGatewayDoor">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) as count from gateway_door where index_code = #{door.doorIndexCode}
+        </selectKey>
+        <if test="count==0">
+            insert into gateway_door(index_code,name,
+            gateway_index_code,channel_no,channel_type,no,install_location,create_time,update_time)
+            values(
+                #{door.doorIndexCode},
+                #{door.doorName},
+                #{door.acsDevIndexCode},
+                #{door.channelNo},
+                #{door.channelType},
+                #{door.doorNo},
+                #{door.installLocation},
+                #{door.createTime},
+                #{door.updateTime}
+            )
+        </if>
+        <if test="count>0">
+            UPDATE gateway_door SET name =#{door.doorName},
+            gateway_index_code=#{door.doorIndexCode},
+            channel_no=#{door.channelNo},
+            channel_type=#{door.channelType},
+            no=#{door.doorNo},
+            install_location=#{door.installLocation},
+            create_time =#{gateway.createTime},
+            update_time =#{gateway.updateTime},
+            status=1
+            WHERE index_code=#{account.acsDevIndexCode}
+        </if>
+    </insert>
+
+    <update id="tempDeleteAllGateway">
+        UPDATE gateway
+        SET
+        status = '0'
+    </update>
+
+    <update id="tempDeleteAllGatewayDoor">
+        UPDATE gateway_door
+        SET
+        status = '0'
+    </update>
+</mapper>

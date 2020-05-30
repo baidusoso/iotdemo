@@ -1,7 +1,7 @@
 package com.tellhow.industry.iot.system.dao;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tellhow.industry.iot.gateway.hikvision.region.model.RegionInfo;
+import com.tellhow.industry.iot.hikvision.region.model.RegionInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
