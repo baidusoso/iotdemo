@@ -48,12 +48,12 @@ public class BaseApi {
         this.path.put("https://", ARTEMIS_PATH + pathSegment);
         String result = ArtemisHttpUtil.doPostStringArtemis(path, body, null, null, CONTENT_TYPE_JSON, null);
 
-        if (pathSegment.equals(GatewayInterface.PATH_GET_GATEWAY_LIST)) {
-            result = MOACK_GATEWAY;
-        }
-        if (pathSegment.equals(GatewayInterface.PATH_GET_DOOR_LIST)) {
-            result = MOACK_DOOR;
-        }
+//        if (pathSegment.equals(GatewayInterface.PATH_GET_GATEWAY_LIST)) {
+//            result = MOACK_GATEWAY;
+//        }
+//        if (pathSegment.equals(GatewayInterface.PATH_GET_DOOR_LIST)) {
+//            result = MOACK_DOOR;
+//        }
         logger.debug(result);
         //通过fastjson把【响应结果】转为对象
         BaseResponse<T> response = JSON.parseObject(result, typeReference);

@@ -11,7 +11,7 @@
  Target Server Version : 50648
  File Encoding         : 65001
 
- Date: 30/05/2020 08:40:43
+ Date: 30/05/2020 12:16:03
 */
 
 SET NAMES utf8mb4;
@@ -24,10 +24,10 @@ DROP TABLE IF EXISTS `account`;
 CREATE TABLE `account` (
   `id` varchar(64) NOT NULL DEFAULT '',
   `name` varchar(64) DEFAULT NULL,
-  `gender` tinyint(4) DEFAULT NULL,
+  `gender` char(2) DEFAULT NULL,
   `no` varchar(64) DEFAULT NULL COMMENT '工号',
   `certificate_num` varchar(32) DEFAULT NULL COMMENT '身份证号',
-  `mobile` varchar(16) DEFAULT NULL COMMENT '手机',
+  `mobile` varchar(32) DEFAULT NULL COMMENT '手机',
   `org_id` varchar(64) DEFAULT NULL,
   `username` varchar(32) DEFAULT NULL,
   `usergroup` varchar(32) DEFAULT NULL,
@@ -35,6 +35,7 @@ CREATE TABLE `account` (
   `face_pic` varchar(64) DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL COMMENT '1有效0无效',
   `update_date` varchar(32) DEFAULT NULL,
+  `sync_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -42,20 +43,84 @@ CREATE TABLE `account` (
 -- Records of account
 -- ----------------------------
 BEGIN;
-INSERT INTO `account` VALUES ('30d221c1e7bb72cac883a4ab3dc39a05', '郝毓文', 0, '12024582', '220284198511017011', '15124473470', '2060', 'haoyuwen', '厂内人员', 'b2f42465-4d4c-4a8a-9fe4-0efb8d3c91ca', '30d221c1e7bb72cac883a4ab3dc39a05.jpg', 1, '2019-11-06 09:56:51');
-INSERT INTO `account` VALUES ('41154b528e3345d4b95c3288e98d2a2a', '甄宝', 0, '', '140225200005081811', '12000000082', '2051', 'zhenb', '厂内人员', '5141248c-8e9a-404e-942a-aa593d93e344', '41154b528e3345d4b95c3288e98d2a2a.jpg', 1, '2019-07-29 09:37:26');
-INSERT INTO `account` VALUES ('43e7229489cc46aa8232dbf1ff6ed8b2', '张心然', 0, '12089778', '131102198804174415', '15103167788', '2060', 'zhangxinran', '厂内人员', 'b183688c-d8b2-49bb-bbc9-f24d5b794ae2', '43e7229489cc46aa8232dbf1ff6ed8b2.jpg', 1, '2019-10-16 19:43:11');
-INSERT INTO `account` VALUES ('49f5cc2dc56ff7e77c634dd282c1b6d5', '张秀斌', 0, '', '140104197307280013', '12000000671', '2040', 'zhangxb2', '厂内人员', 'd1802237-bf3b-4ebb-920c-aaa61d26ab02', '49f5cc2dc56ff7e77c634dd282c1b6d5.jpg', 1, '2019-11-19 11:05:14');
-INSERT INTO `account` VALUES ('4aa7bdedd2534e65bb2a5669eaea9c75', '赵有', 0, '', '132527197205188538', '12000000093', '2044', 'zhaoyou', '厂内人员', '0c600db9-6875-4e1d-95d5-266e1cc1558e', '4aa7bdedd2534e65bb2a5669eaea9c75.jpg', 1, '2019-07-09 08:44:14');
-INSERT INTO `account` VALUES ('4b3cc9e8a3d143ed93201f1ae4ffeb5e', '杨继龙', 0, '', '131002199311072014', '12000000660', '2039', 'yangjl2', '厂内人员', '14691533-6967-4976-8f40-2dc88c258c35', '4b3cc9e8a3d143ed93201f1ae4ffeb5e.jpg', 1, '2019-11-04 11:01:56');
-INSERT INTO `account` VALUES ('51bf32e3506b456b987fd3ce1cc88b70', '张禄华', 0, '12092306', '130183199301180030', '18503161568', '2031', 'zhangluhua', '厂内人员', 'a9ca35e3-ef94-4560-8061-97d9d6c3e632', '51bf32e3506b456b987fd3ce1cc88b70.jpg', 1, '2019-07-15 10:23:18');
-INSERT INTO `account` VALUES ('52ab19eb400349948c801110210c066d', '李科', 0, '12047879', '140104197606040036', '18503168338', '2025', 'like', '厂内人员', 'c0a83a82-e70b-4668-8d47-0960528357d9', '52ab19eb400349948c801110210c066d.jpg', 1, '2019-05-27 17:29:39');
-INSERT INTO `account` VALUES ('5c30709c1f8e2f0b05df4900c7569108', '许铠明', 0, '', '130322200102032610', '15631625170', '2077', 'xukm', '厂内人员', '6177d37a-a9d3-48b1-8b2a-c08b27116322', '5c30709c1f8e2f0b05df4900c7569108.jpg', 1, '2019-11-14 16:49:10');
-INSERT INTO `account` VALUES ('5db662706d5d4708843a4745d0a9c910', '王欣', 0, '90000607', '220104196809210045', '12000000603', '2070', 'wangxin', '厂内人员', '030f2872-a18c-48f5-9ab1-1df2acd5e7d9', '5db662706d5d4708843a4745d0a9c910.jpg', 1, '2019-11-04 09:14:57');
-INSERT INTO `account` VALUES ('64e5ae71b9f842f098f506036a650580', '孙晓宾', 0, '', '140225198911111832', '12000000131', '2049', 'sunxb', '厂内人员', '16a8dd7c-9273-4ae7-87b7-77ba4a5ab906', '64e5ae71b9f842f098f506036a650580.jpg', 1, '2019-05-27 17:32:16');
-INSERT INTO `account` VALUES ('684ffc3fac664b52491d26c8bb87616d', '陈建', 0, '', '132801198207282234', '15369666663', '2077', 'chenj', '厂内人员', 'f2fd0367-b4ed-41aa-9b00-58ad4c28a2ff', '684ffc3fac664b52491d26c8bb87616d.jpg', 1, '2019-11-14 16:58:34');
-INSERT INTO `account` VALUES ('6f32f527c5fc4b96bfd8214cdbe50857', '史巧凤', 0, '12069283', '110108197112156047', '13082139121', '2011', 'shiqiaofeng', '厂内人员', 'd9f8a6f9-13ac-4e21-8fc0-b21dd4d439b1', '6f32f527c5fc4b96bfd8214cdbe50857.jpg', 1, '2019-11-05 09:54:10');
-INSERT INTO `account` VALUES ('7d84c4fa94f14c078643bbf12a7c38b7', '陈海旺', 0, '12075881', '130229199204261813', '15531650025', '2021', 'chenhaiwang', '厂内人员', '056130f8-5f39-4949-ad5e-a313d2a127bc', '7d84c4fa94f14c078643bbf12a7c38b7.jpg', 1, '2019-05-27 17:23:46');
+INSERT INTO `account` VALUES ('30d221c1e7bb72cac883a4ab3dc39a05', '郝毓文', '0', '12024582', '220284198511017011', '15124473470', '2060', 'haoyuwen', '厂内人员', 'b2f42465-4d4c-4a8a-9fe4-0efb8d3c91ca', '30d221c1e7bb72cac883a4ab3dc39a05.jpg', 1, '2019-11-06 09:56:51', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('41154b528e3345d4b95c3288e98d2a2a', '甄宝', '0', '', '140225200005081811', '12000000082', '2051', 'zhenb', '厂内人员', '5141248c-8e9a-404e-942a-aa593d93e344', '41154b528e3345d4b95c3288e98d2a2a.jpg', 1, '2019-07-29 09:37:26', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('43e7229489cc46aa8232dbf1ff6ed8b2', '张心然', '0', '12089778', '131102198804174415', '15103167788', '2060', 'zhangxinran', '厂内人员', 'b183688c-d8b2-49bb-bbc9-f24d5b794ae2', '43e7229489cc46aa8232dbf1ff6ed8b2.jpg', 1, '2019-10-16 19:43:11', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('49f5cc2dc56ff7e77c634dd282c1b6d5', '张秀斌', '0', '', '140104197307280013', '12000000671', '2040', 'zhangxb2', '厂内人员', 'd1802237-bf3b-4ebb-920c-aaa61d26ab02', '49f5cc2dc56ff7e77c634dd282c1b6d5.jpg', 1, '2019-11-19 11:05:14', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('4aa7bdedd2534e65bb2a5669eaea9c75', '赵有', '0', '', '132527197205188538', '12000000093', '2044', 'zhaoyou', '厂内人员', '0c600db9-6875-4e1d-95d5-266e1cc1558e', '4aa7bdedd2534e65bb2a5669eaea9c75.jpg', 1, '2019-07-09 08:44:14', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('4b3cc9e8a3d143ed93201f1ae4ffeb5e', '杨继龙', '0', '', '131002199311072014', '12000000660', '2039', 'yangjl2', '厂内人员', '14691533-6967-4976-8f40-2dc88c258c35', '4b3cc9e8a3d143ed93201f1ae4ffeb5e.jpg', 1, '2019-11-04 11:01:56', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('51bf32e3506b456b987fd3ce1cc88b70', '张禄华', '0', '12092306', '130183199301180030', '18503161568', '2031', 'zhangluhua', '厂内人员', 'a9ca35e3-ef94-4560-8061-97d9d6c3e632', '51bf32e3506b456b987fd3ce1cc88b70.jpg', 1, '2019-07-15 10:23:18', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('52ab19eb400349948c801110210c066d', '李科', '0', '12047879', '140104197606040036', '18503168338', '2025', 'like', '厂内人员', 'c0a83a82-e70b-4668-8d47-0960528357d9', '52ab19eb400349948c801110210c066d.jpg', 1, '2019-05-27 17:29:39', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('5c30709c1f8e2f0b05df4900c7569108', '许铠明', '0', '', '130322200102032610', '15631625170', '2077', 'xukm', '厂内人员', '6177d37a-a9d3-48b1-8b2a-c08b27116322', '5c30709c1f8e2f0b05df4900c7569108.jpg', 1, '2019-11-14 16:49:10', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('5db662706d5d4708843a4745d0a9c910', '王欣', '0', '90000607', '220104196809210045', '12000000603', '2070', 'wangxin', '厂内人员', '030f2872-a18c-48f5-9ab1-1df2acd5e7d9', '5db662706d5d4708843a4745d0a9c910.jpg', 1, '2019-11-04 09:14:57', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('64e5ae71b9f842f098f506036a650580', '孙晓宾', '0', '', '140225198911111832', '12000000131', '2049', 'sunxb', '厂内人员', '16a8dd7c-9273-4ae7-87b7-77ba4a5ab906', '64e5ae71b9f842f098f506036a650580.jpg', 1, '2019-05-27 17:32:16', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('684ffc3fac664b52491d26c8bb87616d', '陈建', '0', '', '132801198207282234', '15369666663', '2077', 'chenj', '厂内人员', 'f2fd0367-b4ed-41aa-9b00-58ad4c28a2ff', '684ffc3fac664b52491d26c8bb87616d.jpg', 1, '2019-11-14 16:58:34', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('6f32f527c5fc4b96bfd8214cdbe50857', '史巧凤', '0', '12069283', '110108197112156047', '13082139121', '2011', 'shiqiaofeng', '厂内人员', 'd9f8a6f9-13ac-4e21-8fc0-b21dd4d439b1', '6f32f527c5fc4b96bfd8214cdbe50857.jpg', 1, '2019-11-05 09:54:10', '2020-05-30 02:34:10');
+INSERT INTO `account` VALUES ('7d84c4fa94f14c078643bbf12a7c38b7', '陈海旺', '0', '12075881', '130229199204261813', '15531650025', '2021', 'chenhaiwang', '厂内人员', '056130f8-5f39-4949-ad5e-a313d2a127bc', '7d84c4fa94f14c078643bbf12a7c38b7.jpg', 1, '2019-05-27 17:23:46', '2020-05-30 02:34:10');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for gateway
+-- ----------------------------
+DROP TABLE IF EXISTS `gateway`;
+CREATE TABLE `gateway` (
+  `index_code` varchar(64) NOT NULL COMMENT '设备唯一标识',
+  `name` varchar(64) DEFAULT NULL COMMENT '设备名称',
+  `region_code` varchar(64) DEFAULT NULL COMMENT '所属区域唯一标识',
+  `treaty_type` varchar(32) DEFAULT NULL COMMENT '接入协议',
+  `firm` varchar(32) DEFAULT NULL COMMENT '厂商',
+  `type_code` varchar(32) DEFAULT NULL COMMENT '设备类型编号',
+  `type_name` varchar(32) DEFAULT NULL COMMENT '设备类型名称',
+  `type_desc` varchar(32) DEFAULT NULL COMMENT '设备类型描述',
+  `ip` varchar(32) DEFAULT NULL COMMENT '设备IP',
+  `port` int(11) DEFAULT NULL COMMENT '设备port',
+  `code` varchar(32) DEFAULT NULL COMMENT '设备编号',
+  `status` tinyint(4) DEFAULT '1',
+  `create_time` varchar(32) DEFAULT NULL COMMENT '创建时间',
+  `update_time` varchar(32) DEFAULT NULL COMMENT '更新时间',
+  `sync_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`index_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of gateway
+-- ----------------------------
+BEGIN;
+INSERT INTO `gateway` VALUES ('122cc79e81c849998da75ad792a0f052', '1号炉等离子整流柜配电柜间北一', '379ed963-42fd-461c-b7fd-0190156101c3', 'hiksdk_net', NULL, '201933568', NULL, 'DS-K1T60HZ-DC', '192.168.13.20', 8000, NULL, 1, '2019-10-30T16:32:35.822+08:00', '2019-11-09T08:14:44.093+08:00', '2020-05-30 04:13:38');
+INSERT INTO `gateway` VALUES ('36dff7cf0ddf42fe897aa760416e2a55', '1号机一次风机变频间', '31deda20-635a-4557-8f90-74837672b64e', 'hiksdk_net', NULL, '201933568', NULL, 'DS-K1T60HZ-DC', '192.168.13.19', 8000, NULL, 1, '2019-10-30T16:29:10.630+08:00', '2019-11-05T17:12:30.509+08:00', '2020-05-30 04:13:37');
+INSERT INTO `gateway` VALUES ('6f0642c437cc4b89a932645ab4df8c4d', '1号炉等离子整流柜配电柜间中二', '1608faa6-831e-44d6-a876-fe11300f2adc', 'hiksdk_net', NULL, '201933568', NULL, 'DS-K1T60HZ-DC', '192.168.13.21', 8000, NULL, 1, '2019-10-30T16:34:04.828+08:00', '2019-11-10T15:44:11.292+08:00', '2020-05-30 04:13:38');
+INSERT INTO `gateway` VALUES ('a3a2daf4b5dc449096ba5844e29c865a', '1号炉等离子整流柜配电柜间南三', '7b708648-18eb-46dd-9ab0-fceec9f7fbf5', 'hiksdk_net', NULL, '201933568', NULL, 'DS-K1T60HZ-DC', '192.168.13.22', 8000, NULL, 1, '2019-10-30T16:36:39.575+08:00', '2019-11-05T18:22:31.913+08:00', '2020-05-30 04:13:38');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for gateway_door
+-- ----------------------------
+DROP TABLE IF EXISTS `gateway_door`;
+CREATE TABLE `gateway_door` (
+  `index_code` varchar(64) NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `gateway_index_code` varchar(64) NOT NULL,
+  `channel_no` tinyint(4) NOT NULL,
+  `channel_type` varchar(16) DEFAULT NULL,
+  `no` tinyint(4) DEFAULT NULL,
+  `install_location` varchar(256) DEFAULT NULL,
+  `create_time` varchar(32) DEFAULT NULL,
+  `status` tinyint(4) DEFAULT '1',
+  `update_time` varchar(32) DEFAULT NULL,
+  `sync_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`index_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of gateway_door
+-- ----------------------------
+BEGIN;
+INSERT INTO `gateway_door` VALUES ('0c3518c8f15b4b9da7242d32f7034dc7', '1号炉等离子整流柜配电柜间 南三_门1', 'a3a2daf4b5dc449096ba5844e29c865a', 1, 'door', 1, NULL, '2019-10-30T16:36:55.129+08:00', 1, '2019-10-30T16:36:55.196+08:00', '2020-05-30 04:13:39');
+INSERT INTO `gateway_door` VALUES ('0e0a7aa376454873a227e8f8f6f97d1e', '1号机一次风机变频间_门1', '36dff7cf0ddf42fe897aa760416e2a55', 1, 'door', 1, NULL, '2019-10-30T16:29:28.528+08:00', 1, '2019-10-30T16:29:28.562+08:00', '2020-05-30 04:13:39');
+INSERT INTO `gateway_door` VALUES ('5a629ae9579d427aac31b442fdd87022', '1号炉DCS电子间南三_门1', 'c392c1d82aa44fd58ebdebffccd04648', 1, 'door', 1, NULL, '2019-10-31T10:45:53.659+08:00', 1, '2019-10-31T10:45:53.700+08:00', '2020-05-30 04:13:39');
+INSERT INTO `gateway_door` VALUES ('5aa3e82b3991452aa126a9e05c2c12e8', '1号炉等离子整流柜配电柜间 中二_门1', '6f0642c437cc4b89a932645ab4df8c4d', 1, 'door', 1, NULL, '2019-10-30T16:34:24.272+08:00', 1, '2019-10-30T16:34:24.307+08:00', '2020-05-30 04:13:39');
+INSERT INTO `gateway_door` VALUES ('61a327b86ee94545a91b394e75a2953f', '1号炉等离子整流柜配电柜间 北一_门1', '122cc79e81c849998da75ad792a0f052', 1, 'door', 1, NULL, '2019-10-30T16:32:47.992+08:00', 1, '2019-10-30T16:32:48.050+08:00', '2020-05-30 04:13:39');
+INSERT INTO `gateway_door` VALUES ('8ed6148ec0aa442aa1d435478e9afb0d', '水汽取样分析仪表间_门1', '457958abeef34a5c8433c36b6f9560d9', 1, 'door', 1, NULL, '2019-10-30T17:39:01.154+08:00', 1, '2019-10-30T17:39:01.177+08:00', '2020-05-30 04:13:39');
 COMMIT;
 
 -- ----------------------------
@@ -197,7 +262,7 @@ INSERT INTO `sys_permission` VALUES (3, 'system', '系统管理', 'system:org', 
 INSERT INTO `sys_permission` VALUES (4, 'system', '系统管理', 'system:region', '区域管理', 2);
 INSERT INTO `sys_permission` VALUES (5, 'system', '系统管理', 'system:map', '地图管理', 2);
 INSERT INTO `sys_permission` VALUES (101, 'recognization', '人脸识别', 'recognization:person', '人员管理', 1);
-INSERT INTO `sys_permission` VALUES (102, 'recognization', '人脸识别', 'recognization:acs', '门禁管理', 2);
+INSERT INTO `sys_permission` VALUES (102, 'recognization', '人脸识别', 'recognization:gateway', '门禁管理', 2);
 INSERT INTO `sys_permission` VALUES (103, 'recognization', '人脸识别', 'recognization:auth', '权限管理', 2);
 INSERT INTO `sys_permission` VALUES (104, 'recognization', '人脸识别', 'recognization:visitor', '来访人员管理', 2);
 INSERT INTO `sys_permission` VALUES (105, 'recognization', '人脸识别', 'recognization:visitorhistory', '访问记录', 2);
