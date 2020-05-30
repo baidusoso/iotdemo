@@ -57,7 +57,7 @@
             create_time =#{gateway.createTime},
             update_time =#{gateway.updateTime},
             status=1
-            WHERE index_code=#{account.acsDevIndexCode}
+            WHERE index_code=#{gateway.acsDevIndexCode}
         </if>
     </insert>
 
@@ -87,10 +87,10 @@
             channel_type=#{door.channelType},
             no=#{door.doorNo},
             install_location=#{door.installLocation},
-            create_time =#{gateway.createTime},
-            update_time =#{gateway.updateTime},
+            create_time =#{door.createTime},
+            update_time =#{door.updateTime},
             status=1
-            WHERE index_code=#{account.acsDevIndexCode}
+            WHERE index_code=#{door.acsDevIndexCode}
         </if>
     </insert>
 
