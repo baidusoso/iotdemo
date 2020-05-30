@@ -34,7 +34,7 @@
           prop="facePic"
           label="照片">
            <template slot-scope="scope">
-               <img width="100px" :src="`${scope.row.facePic}?s=${Math.random()}` || require('@/assets/image/avatar.jpg')" alt="">
+               <img width="100px" :src="`${imgHost}${scope.row.facePic}?s=${Math.random()}` || require('@/assets/image/avatar.jpg')" alt="">
           </template>
       </el-table-column>
       <el-table-column align="center" label="姓名" prop="name" ></el-table-column>
@@ -111,6 +111,7 @@
         editOrgCode: "",
         editOrgName: "",
         rolelist:[],
+        imgHost:"http://10.69.212.11:3000/face/user/",
       }
     },
     created() {
