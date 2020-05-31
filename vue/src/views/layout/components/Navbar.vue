@@ -36,9 +36,13 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .navbar {
+  width: 100%;
   height: 50px;
   line-height: 50px;
   border-radius: 0px !important;
+  position: fixed;
+  top: 50px;
+  z-index: 100;
   .hamburger-container {
     line-height: 58px;
     height: 50px;

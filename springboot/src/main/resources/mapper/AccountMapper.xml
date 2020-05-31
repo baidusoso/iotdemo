@@ -2,7 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tellhow.industry.iot.account.dao.AccountDao">
-
+    <select id="getAccountCount" resultType="Integer">
+        SELECT count(0)
+        FROM
+        account a
+        LEFT JOIN sys_org b ON a.org_id=b.org_code AND b.status=1
+        WHERE a.status=1
+        <if test="orgId !='' and orgId !=null">
+            AND org_id = #{orgId}
+        </if>
+        <if test="name !='' and name !=null">
+            AND a.name LIKE '%${name}%'
+        </if>
+        <if test="no !='' and no !=null">
+            AND no LIKE '%${no}%'
+        </if>
+        <if test="certificateNum !='' and certificateNum !=null">
+            AND certificate_num LIKE '%${certificateNum}%'
+        </if>
+        <if test="mobile !='' and mobile !=null">
+            AND mobile LIKE '%${mobile}%'
+        </if>
+    </select>
     <select id="getAccountList" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
             a.id       id,
@@ -35,7 +56,7 @@
         <if test="mobile !='' and mobile !=null">
             AND mobile LIKE '%${mobile}%'
         </if>
-        LIMIT #{offset},#{pageRow}
+        LIMIT #{offSet},#{pageRow}
     </select>
 
     <insert id="insertOrUpdateAccount">

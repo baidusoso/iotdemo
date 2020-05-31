@@ -12,6 +12,7 @@ public class Region {
     @JSONField(serialize = false)
     private String parentRegionCode;
     private String regionName;
+    private String label;
 
     private List<Region> children = new ArrayList<>();
 
@@ -54,5 +55,13 @@ public class Region {
 
     public void addChild(Region child) {
         this.children.add(child);
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

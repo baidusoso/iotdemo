@@ -13,6 +13,7 @@ public class Org implements Serializable {
     @JSONField(serialize = false)
     private String parentOrgCode;
     private String orgName;
+    private String  label;
 
     private List<Org> children = new ArrayList<>();
 
@@ -55,5 +56,13 @@ public class Org implements Serializable {
 
     public void addChild(Org child) {
         this.children.add(child);
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

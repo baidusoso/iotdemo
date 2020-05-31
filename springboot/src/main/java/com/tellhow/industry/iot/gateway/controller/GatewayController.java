@@ -1,7 +1,6 @@
 package com.tellhow.industry.iot.gateway.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tellhow.industry.iot.account.service.AccountService;
 import com.tellhow.industry.iot.gateway.service.GatewayService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;

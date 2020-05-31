@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
-    <div id="org" style="width:20%;height100%;float:left;">
-      <el-tree :data="rootOrg" ref="org" node-key="orgCode" :default-expanded-keys="[]"
+    <div id="org" class="tree" ref="orgLayout">
+      <el-tree :data="rootOrg" ref="org" node-key="orgCode" :default-expanded-keys="defaultExpandedKeys"
         :highlight-current="true" :default-checked-keys="[]" :props="defaultProps" :check-strictly="true"
         :check-on-click-node="true" @check-change="handleCheckChange" @node-click="handleNodeClick">
       </el-tree>
     </div>
-    <div id="person" style="width:79%;float:left;">
+    <div class="main">
       <el-row type="flex" justify="space-between">
           <el-col :span="3">
               <el-input v-model="listQuery.name" placeholder="请输入姓名进行搜索"></el-input>
@@ -38,8 +38,8 @@
           </template>
       </el-table-column>
       <el-table-column align="center" label="姓名" prop="name" ></el-table-column>
-      <el-table-column align="center" label="性别" prop="gender" >
-        <template scope="scope">
+      <el-table-column align="center" label="性别" prop="gender" width="80">
+        <template slot-scope="scope">
            <span v-if="scope.row.gender=='1'">男</span>
            <span v-else-if="scope.row.gender=='2'">女</span>
            <span v-else></span>
@@ -53,7 +53,7 @@
           {{scope.row.updateTime| dateYMDHMSFormat}}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="300">
+      <el-table-column align="center" label="操作" width="200">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
           <el-button type="danger" icon="delete" @click="removeUser(scope.$index)">删除
@@ -68,18 +68,17 @@
   </div>
 </template>
 <script>
-  import {
-    mapGetters
-  } from 'vuex'
-
+  import {mapGetters} from 'vuex'
+  import ScrollBar from '@/components/ScrollBar'
   export default {
+    components: {ScrollBar},
     data() {
       return {
         totalCount: 0, //分页组件--数据总条数
         list: [], //表格的数据
         listLoading: false, //数据加载等待动画
         listQuery: {
-          offset: 0, //页码
+          pageNum: 1, //页码
           pageRow: 10, //每页条数
           orgId:"",
           name:"",
@@ -104,6 +103,7 @@
           phone:''
         },
         rootOrg: [],
+        defaultExpandedKeys:[],
         defaultProps: {
           "children": "children",
           "label": "orgName"
@@ -112,27 +112,34 @@
         editOrgName: "",
         rolelist:[],
         imgHost:"http://10.69.212.11:3000/face/user/",
+        orgHeight:'',
       }
     },
     created() {
       this.getList();
       this.getRootOrg();
     },
-    watch:{
-            rolelist(){
-              this.$nextTick( ()=> {
-                for (var i = 0; i < this.rolelist.length; i++) {
-                  this.$refs.roletable.toggleRowSelection(this.rolelist[i],this.rolelist[i].userId!=null)
-                }
-              })
-            },
+    mounted() {
+      this.orgHeight=`${document.documentElement.clientHeight}` - 100
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          var orgHeight = `${document.documentElement.clientHeight}` - 100
+          that.orgHeight = orgHeight
+        })()
+      }
     },
-    computed: {
-      ...mapGetters([
-        'userId'
-      ])
+    watch: {
+      // 如果 `clientHeight` 发生改变，这个函数就会运行
+      orgHeight(o, n) {
+        this.changeFixed(this.orgHeight)
+      }
     },
     methods: {
+      changeFixed(clientHeight) { //动态修改样式
+        console.log(clientHeight);
+        this.$refs.orgLayout.style.height = clientHeight + 'px';
+      },
       getList() {
         //查询列表
         this.listLoading = true;
@@ -155,9 +162,18 @@
           method: "get"
         }).then(data => {
           var rootOrg = [];
+          var defaultExpandedKeys=[];
           if (data != null) {
             rootOrg.push(data);
+            while(data.children!=null && data.children.length<3){
+              data=data.children[0];
+            }
+            if(data!=null){
+              console.log(data);
+              defaultExpandedKeys.push(data.orgCode);
+            }
           }
+          _vue.defaultExpandedKeys=defaultExpandedKeys;
           _vue.rootOrg = rootOrg;
         })
       },
@@ -173,19 +189,16 @@
       handleSizeChange(val) {
         //改变每页数量
         this.listQuery.pageRow = parseInt(val);
-        this.listQuery.offset=0;
         this.handleFilter();
       },
       handleCurrentChange(val) {
         //改变页码
-        this.listQuery.pageNum = parseInt(val)
-        this.listQuery.offset=this.listQuery.pageNum*this.listQuery.pageRow;
+        this.listQuery.pageNum = parseInt(val);
         this.getList();
       },
       handleFilter() {
         //查询事件
-        this.listQuery.pageNum = 1
-        this.listQuery.offset=(this.listQuery.pageNum-1)*this.listQuery.pageRow;
+        this.listQuery.pageNum = 1;
         this.getList()
       },
       getIndex($index) {
@@ -336,7 +349,6 @@
         this.editOrgName = item.orgName;
         this.$refs.org.setCheckedKeys([item.orgCode]);
         this.listQuery.pageNum=1;
-        this.listQuery.offset=0;
         this.listQuery.orgId=item.orgCode;
         this.listQuery.name="";
         this.listQuery.no="";
@@ -348,7 +360,22 @@
   }
 </script>
 <style>
-  .customWidth {
-    width: 500px;
+  .tree {
+    position: fixed;
+    width: 300px;
+    height: 100%;
+    overflow-y:auto;
+    overflow-x: scroll;
+    border-right: 1px solid #EEEEEE;
+    padding-top: 20px;
+  }
+  .el-tree {
+    min-width:100%;
+    font-size:14px;
+    display: inline-block;;
+  }
+  .main{
+    margin-left: 300px;
+    padding: 20px;
   }
 </style>

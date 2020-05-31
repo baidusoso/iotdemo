@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tellhow.industry.iot.gateway.dao.GatewayPolicyDao">
+    <select id="getGatewayPolicyCount" resultType="Integer">
+        SELECT
+        count(*)
+        FROM account ac, sys_org org,gateway gw,gateway_policy gwp
+        WHERE ac.status=1
+        AND org.status=1
+        AND gw.status=1
+        AND gwp.status=1
+        AND ac.org_id=org.org_code
+        AND ac.id=gwp.account_id
+        AND gw.index_code=gwp.gateway_id
+        <if test="startTime !='' and startTime !=null">
+            AND gwp.start_time &lt;= #{startTime}
+        </if>
+        <if test="endTime !='' and endTime !=null">
+            AND gwp.end_time &gt;= #{endTime}
+        </if>
+        <if test="gatewayName !='' and gatewayName !=null">
+            AND gw.name LIKE '%${gatewayName}%'
+        </if>
+        <if test="name !='' and name !=null">
+            AND ac.name LIKE '%${name}%'
+        </if>
+        <if test="no !='' and no !=null">
+            AND ac.no LIKE '%${no}%'
+        </if>
+        <if test="certificateNum !='' and certificateNum !=null">
+            AND ac.certificate_num LIKE '%${certificateNum}%'
+        </if>
+    </select>
+    <select id="getGatewayPolicyList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        gwp.id id,
+        ac.name name,
+        ac.gender gender,
+        org.name orgName,
+        ac.certificate_num certificateNum,
+        ac.no no,
+        gw.name gatewayName,
+        gwp.begin_time beginTime,
+        gwp.end_time endTime
+        FROM account ac, sys_org org,gateway gw,gateway_policy gwp
+        WHERE ac.status=1
+        AND org.status=1
+        AND gw.status=1
+        AND gwp.status=1
+        AND ac.org_id=org.org_code
+        AND ac.id=gwp.account_id
+        AND gw.index_code=gwp.gateway_id
+        <if test="startTime !='' and startTime !=null">
+            AND gwp.start_time &lt;= #{startTime}
+        </if>
+        <if test="endTime !='' and endTime !=null">
+            AND gwp.end_time &gt;= #{endTime}
+        </if>
+        <if test="gatewayName !='' and gatewayName !=null">
+            AND gw.name LIKE '%${gatewayName}%'
+        </if>
+        <if test="name !='' and name !=null">
+            AND ac.name LIKE '%${name}%'
+        </if>
+        <if test="no !='' and no !=null">
+            AND ac.no LIKE '%${no}%'
+        </if>
+        <if test="certificateNum !='' and certificateNum !=null">
+            AND ac.certificate_num LIKE '%${certificateNum}%'
+        </if>
+        LIMIT #{offset},#{pageRow}
+    </select>
+
+    <insert id="insertOrUpdateGatewayPolicy">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            SELECT count(*) as count
+            FROM gateway_policy
+            WHERE account_id = #{policy.userId}
+            AND gateway_id = #{policy.gatewayId}
+        </selectKey>
+        <if test="count==0">
+            insert into gateway_policy(account_id,gateway_id,begin_time,end_time)
+            values(
+            #{policy.userId},
+            #{policy.gatewayId},
+            #{policy.startAt},
+            #{policy.endAt}
+            )
+        </if>
+        <if test="count>0">
+            UPDATE gateway_policy SET begin_time =#{policy.startAt},
+            end_time=#{policy.endAt},
+            status=1
+            WHERE account_id = #{policy.userId}
+            AND gateway_id = #{policy.gatewayId}
+        </if>
+    </insert>
+
+    <update id="tempDeleteAllGatewayPolicy">
+        UPDATE gateway_policy
+        SET
+        status = '0'
+    </update>
+</mapper>

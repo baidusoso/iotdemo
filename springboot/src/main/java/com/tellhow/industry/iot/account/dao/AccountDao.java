@@ -8,6 +8,11 @@ import java.util.List;
 
 public interface AccountDao {
 
+    /**
+     * 查询用户数量
+     */
+    int getAccountCount(JSONObject jsonObject);
+
     List<JSONObject> getAccountList(JSONObject jsonObject);
 
     int tempDeleteAllAccount();

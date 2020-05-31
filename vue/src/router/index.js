@@ -118,11 +118,19 @@ export const asyncRouterMap = [
         menu: 'recognization'
       },
       {
-        path: 'auth',
+        path: 'policy',
         name: '权限管理',
-        component: _import('system/user'),
+        component: _import('recognization/policy'),
         meta: {title: '权限管理', icon: 'user',showNavBar:true},
         menu: 'recognization'
+      },
+      {
+        path: 'newpolicy',
+        name: '分配权限',
+        component: _import('recognization/NewPolicy'),
+        meta: {title: '分配权限', icon: 'user',showNavBar:true},
+        menu: 'recognization',
+        hidden:true
       },
       {
         path: 'visitor',

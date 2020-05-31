@@ -20,8 +20,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public JSONObject getAccountList(JSONObject jsonObject) {
-        List<JSONObject> roles = accountDao.getAccountList(jsonObject);
-        return CommonUtil.successPage(roles);
+        CommonUtil.fillPageParam(jsonObject);
+        int count = accountDao.getAccountCount(jsonObject);
+        List<JSONObject> accountList = accountDao.getAccountList(jsonObject);
+        return CommonUtil.successPage(jsonObject, accountList, count);
     }
 
     @Transactional(rollbackFor = Exception.class)

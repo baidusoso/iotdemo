@@ -42,6 +42,7 @@ public class RegionServiceImpl implements RegionService {
                 Region region = new Region();
                 region.setRegionCode(regionCode);
                 region.setRegionName(regionName);
+                region.setLabel(regionName);
                 region.setParentRegionCode(parentRegionCode);
                 regionList.add(region);
                 regionMap.put(regionCode, region);

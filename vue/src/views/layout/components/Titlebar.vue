@@ -36,12 +36,14 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .titlebar {
+	width: 100%;
   height: 50px;
   line-height: 50px;
   border-radius: 0px !important;
   background-color: #334154;
-  position: relative;
+  position: fixed;
   top: 0px;
+  z-index: 100;
   .title{
     color:white;
     margin-left: 20px;

@@ -21,8 +21,10 @@ public class GatewayServiceImpl implements GatewayService {
 
     @Override
     public JSONObject getGatewayList(JSONObject jsonObject) {
-        List<JSONObject> roles = gatewayDao.getGatewayList(jsonObject);
-        return CommonUtil.successPage(roles);
+        CommonUtil.fillPageParam(jsonObject);
+        int count = gatewayDao.getGatewayCount(jsonObject);
+        List<JSONObject> gatewayList = gatewayDao.getGatewayList(jsonObject);
+        return CommonUtil.successPage(jsonObject, gatewayList, count);
     }
 
     @Override

@@ -44,6 +44,7 @@ public class OrgServiceImpl implements OrgService {
                 Org org = new Org();
                 org.setOrgCode(orgCode);
                 org.setOrgName(orgName);
+                org.setLabel(orgName);
                 org.setParentOrgCode(parentOrgCode);
                 orgList.add(org);
                 orgMap.put(orgCode, org);
