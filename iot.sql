@@ -11,7 +11,7 @@
  Target Server Version : 50648
  File Encoding         : 65001
 
- Date: 30/05/2020 12:16:03
+ Date: 01/06/2020 01:59:58
 */
 
 SET NAMES utf8mb4;
@@ -121,6 +121,31 @@ INSERT INTO `gateway_door` VALUES ('5a629ae9579d427aac31b442fdd87022', '1号炉D
 INSERT INTO `gateway_door` VALUES ('5aa3e82b3991452aa126a9e05c2c12e8', '1号炉等离子整流柜配电柜间 中二_门1', '6f0642c437cc4b89a932645ab4df8c4d', 1, 'door', 1, NULL, '2019-10-30T16:34:24.272+08:00', 1, '2019-10-30T16:34:24.307+08:00', '2020-05-30 04:13:39');
 INSERT INTO `gateway_door` VALUES ('61a327b86ee94545a91b394e75a2953f', '1号炉等离子整流柜配电柜间 北一_门1', '122cc79e81c849998da75ad792a0f052', 1, 'door', 1, NULL, '2019-10-30T16:32:47.992+08:00', 1, '2019-10-30T16:32:48.050+08:00', '2020-05-30 04:13:39');
 INSERT INTO `gateway_door` VALUES ('8ed6148ec0aa442aa1d435478e9afb0d', '水汽取样分析仪表间_门1', '457958abeef34a5c8433c36b6f9560d9', 1, 'door', 1, NULL, '2019-10-30T17:39:01.154+08:00', 1, '2019-10-30T17:39:01.177+08:00', '2020-05-30 04:13:39');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for gateway_policy
+-- ----------------------------
+DROP TABLE IF EXISTS `gateway_policy`;
+CREATE TABLE `gateway_policy` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_id` varchar(64) DEFAULT NULL,
+  `gateway_id` varchar(64) DEFAULT NULL,
+  `begin_time` varchar(32) DEFAULT NULL,
+  `end_time` varchar(32) DEFAULT NULL,
+  `status` tinyint(4) DEFAULT NULL COMMENT '1有效0无效',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of gateway_policy
+-- ----------------------------
+BEGIN;
+INSERT INTO `gateway_policy` VALUES (1, '30d221c1e7bb72cac883a4ab3dc39a05', '122cc79e81c849998da75ad792a0f052', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 0, '2020-05-31 01:31:04');
+INSERT INTO `gateway_policy` VALUES (2, '30d221c1e7bb72cac883a4ab3dc39a05', '36dff7cf0ddf42fe897aa760416e2a55', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 0, '2020-05-31 01:31:04');
+INSERT INTO `gateway_policy` VALUES (3, '30d221c1e7bb72cac883a4ab3dc39a05', 'fa82a6d88fd84bf1a9b0d6610fa2275c', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 1, '2020-05-31 08:49:08');
+INSERT INTO `gateway_policy` VALUES (4, '30d221c1e7bb72cac883a4ab3dc39a05', '18ff52a65c2149df880822a409dca686', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 1, '2020-05-31 08:49:08');
 COMMIT;
 
 -- ----------------------------
@@ -263,7 +288,7 @@ INSERT INTO `sys_permission` VALUES (4, 'system', '系统管理', 'system:region
 INSERT INTO `sys_permission` VALUES (5, 'system', '系统管理', 'system:map', '地图管理', 2);
 INSERT INTO `sys_permission` VALUES (101, 'recognization', '人脸识别', 'recognization:person', '人员管理', 1);
 INSERT INTO `sys_permission` VALUES (102, 'recognization', '人脸识别', 'recognization:gateway', '门禁管理', 2);
-INSERT INTO `sys_permission` VALUES (103, 'recognization', '人脸识别', 'recognization:auth', '权限管理', 2);
+INSERT INTO `sys_permission` VALUES (103, 'recognization', '人脸识别', 'recognization:policy', '权限管理', 2);
 INSERT INTO `sys_permission` VALUES (104, 'recognization', '人脸识别', 'recognization:visitor', '来访人员管理', 2);
 INSERT INTO `sys_permission` VALUES (105, 'recognization', '人脸识别', 'recognization:visitorhistory', '访问记录', 2);
 INSERT INTO `sys_permission` VALUES (301, 'vehicle', '车辆识别', 'vehicle:whitelist', '车辆白名单管理', 1);
