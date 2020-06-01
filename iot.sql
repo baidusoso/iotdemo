@@ -11,7 +11,7 @@
  Target Server Version : 50648
  File Encoding         : 65001
 
- Date: 01/06/2020 01:59:58
+ Date: 01/06/2020 14:26:31
 */
 
 SET NAMES utf8mb4;
@@ -64,63 +64,41 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `gateway`;
 CREATE TABLE `gateway` (
-  `index_code` varchar(64) NOT NULL COMMENT '设备唯一标识',
-  `name` varchar(64) DEFAULT NULL COMMENT '设备名称',
-  `region_code` varchar(64) DEFAULT NULL COMMENT '所属区域唯一标识',
-  `treaty_type` varchar(32) DEFAULT NULL COMMENT '接入协议',
-  `firm` varchar(32) DEFAULT NULL COMMENT '厂商',
-  `type_code` varchar(32) DEFAULT NULL COMMENT '设备类型编号',
-  `type_name` varchar(32) DEFAULT NULL COMMENT '设备类型名称',
-  `type_desc` varchar(32) DEFAULT NULL COMMENT '设备类型描述',
-  `ip` varchar(32) DEFAULT NULL COMMENT '设备IP',
-  `port` int(11) DEFAULT NULL COMMENT '设备port',
-  `code` varchar(32) DEFAULT NULL COMMENT '设备编号',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `door_code` varchar(64) NOT NULL,
+  `door_name` varchar(64) NOT NULL,
+  `door_no` varchar(8) DEFAULT NULL,
+  `device_code` varchar(64) NOT NULL,
+  `region_code` varchar(64) NOT NULL,
+  `channel_no` tinyint(4) NOT NULL,
+  `channel_type` varchar(16) NOT NULL,
+  `firm` varchar(64) DEFAULT '海康威视',
+  `install_location` varchar(256) DEFAULT NULL,
+  `remark` varchar(256) DEFAULT NULL,
+  `create_time` varchar(32) DEFAULT NULL,
+  `update_time` varchar(32) DEFAULT NULL,
   `status` tinyint(4) DEFAULT '1',
-  `create_time` varchar(32) DEFAULT NULL COMMENT '创建时间',
-  `update_time` varchar(32) DEFAULT NULL COMMENT '更新时间',
   `sync_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`index_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of gateway
 -- ----------------------------
 BEGIN;
-INSERT INTO `gateway` VALUES ('122cc79e81c849998da75ad792a0f052', '1号炉等离子整流柜配电柜间北一', '379ed963-42fd-461c-b7fd-0190156101c3', 'hiksdk_net', NULL, '201933568', NULL, 'DS-K1T60HZ-DC', '192.168.13.20', 8000, NULL, 1, '2019-10-30T16:32:35.822+08:00', '2019-11-09T08:14:44.093+08:00', '2020-05-30 04:13:38');
-INSERT INTO `gateway` VALUES ('36dff7cf0ddf42fe897aa760416e2a55', '1号机一次风机变频间', '31deda20-635a-4557-8f90-74837672b64e', 'hiksdk_net', NULL, '201933568', NULL, 'DS-K1T60HZ-DC', '192.168.13.19', 8000, NULL, 1, '2019-10-30T16:29:10.630+08:00', '2019-11-05T17:12:30.509+08:00', '2020-05-30 04:13:37');
-INSERT INTO `gateway` VALUES ('6f0642c437cc4b89a932645ab4df8c4d', '1号炉等离子整流柜配电柜间中二', '1608faa6-831e-44d6-a876-fe11300f2adc', 'hiksdk_net', NULL, '201933568', NULL, 'DS-K1T60HZ-DC', '192.168.13.21', 8000, NULL, 1, '2019-10-30T16:34:04.828+08:00', '2019-11-10T15:44:11.292+08:00', '2020-05-30 04:13:38');
-INSERT INTO `gateway` VALUES ('a3a2daf4b5dc449096ba5844e29c865a', '1号炉等离子整流柜配电柜间南三', '7b708648-18eb-46dd-9ab0-fceec9f7fbf5', 'hiksdk_net', NULL, '201933568', NULL, 'DS-K1T60HZ-DC', '192.168.13.22', 8000, NULL, 1, '2019-10-30T16:36:39.575+08:00', '2019-11-05T18:22:31.913+08:00', '2020-05-30 04:13:38');
-COMMIT;
-
--- ----------------------------
--- Table structure for gateway_door
--- ----------------------------
-DROP TABLE IF EXISTS `gateway_door`;
-CREATE TABLE `gateway_door` (
-  `index_code` varchar(64) NOT NULL,
-  `name` varchar(64) NOT NULL,
-  `gateway_index_code` varchar(64) NOT NULL,
-  `channel_no` tinyint(4) NOT NULL,
-  `channel_type` varchar(16) DEFAULT NULL,
-  `no` tinyint(4) DEFAULT NULL,
-  `install_location` varchar(256) DEFAULT NULL,
-  `create_time` varchar(32) DEFAULT NULL,
-  `status` tinyint(4) DEFAULT '1',
-  `update_time` varchar(32) DEFAULT NULL,
-  `sync_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`index_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of gateway_door
--- ----------------------------
-BEGIN;
-INSERT INTO `gateway_door` VALUES ('0c3518c8f15b4b9da7242d32f7034dc7', '1号炉等离子整流柜配电柜间 南三_门1', 'a3a2daf4b5dc449096ba5844e29c865a', 1, 'door', 1, NULL, '2019-10-30T16:36:55.129+08:00', 1, '2019-10-30T16:36:55.196+08:00', '2020-05-30 04:13:39');
-INSERT INTO `gateway_door` VALUES ('0e0a7aa376454873a227e8f8f6f97d1e', '1号机一次风机变频间_门1', '36dff7cf0ddf42fe897aa760416e2a55', 1, 'door', 1, NULL, '2019-10-30T16:29:28.528+08:00', 1, '2019-10-30T16:29:28.562+08:00', '2020-05-30 04:13:39');
-INSERT INTO `gateway_door` VALUES ('5a629ae9579d427aac31b442fdd87022', '1号炉DCS电子间南三_门1', 'c392c1d82aa44fd58ebdebffccd04648', 1, 'door', 1, NULL, '2019-10-31T10:45:53.659+08:00', 1, '2019-10-31T10:45:53.700+08:00', '2020-05-30 04:13:39');
-INSERT INTO `gateway_door` VALUES ('5aa3e82b3991452aa126a9e05c2c12e8', '1号炉等离子整流柜配电柜间 中二_门1', '6f0642c437cc4b89a932645ab4df8c4d', 1, 'door', 1, NULL, '2019-10-30T16:34:24.272+08:00', 1, '2019-10-30T16:34:24.307+08:00', '2020-05-30 04:13:39');
-INSERT INTO `gateway_door` VALUES ('61a327b86ee94545a91b394e75a2953f', '1号炉等离子整流柜配电柜间 北一_门1', '122cc79e81c849998da75ad792a0f052', 1, 'door', 1, NULL, '2019-10-30T16:32:47.992+08:00', 1, '2019-10-30T16:32:48.050+08:00', '2020-05-30 04:13:39');
-INSERT INTO `gateway_door` VALUES ('8ed6148ec0aa442aa1d435478e9afb0d', '水汽取样分析仪表间_门1', '457958abeef34a5c8433c36b6f9560d9', 1, 'door', 1, NULL, '2019-10-30T17:39:01.154+08:00', 1, '2019-10-30T17:39:01.177+08:00', '2020-05-30 04:13:39');
+INSERT INTO `gateway` VALUES (1, '4308e41320944407ba6514791f938ba1', '东二门中间口人员通道_门1', '1', 'cf1311e43e554f70b7c7d061887e222d', 'a567669b-bfc5-4931-8049-ae6fb250c075', 1, 'door', '海康威视', NULL, NULL, '2019-11-08T17:47:43.867+08:00', '2019-11-08T17:47:43.928+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (2, '821afca54b3344c5a5c6ce38fab27397', '东二门中间口人员通道_门2', '2', 'cf1311e43e554f70b7c7d061887e222d', 'a567669b-bfc5-4931-8049-ae6fb250c075', 2, 'door', '海康威视', NULL, NULL, '2019-11-08T17:47:43.866+08:00', '2019-11-08T17:47:43.928+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (3, '7a0c3198732f42e599cd20ca031783b4', '东二门北口人员通道_门1', '1', 'cfd6ea7e230f42c685be0fe95ed225b8', 'a567669b-bfc5-4931-8049-ae6fb250c075', 1, 'door', '海康威视', NULL, NULL, '2019-11-08T17:47:43.865+08:00', '2019-11-08T17:47:43.928+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (4, '4bde5d37bb734096b8554f4cf5cac08b', '东二门北口人员通道_门2', '2', 'cfd6ea7e230f42c685be0fe95ed225b8', 'a567669b-bfc5-4931-8049-ae6fb250c075', 2, 'door', '海康威视', NULL, NULL, '2019-11-08T17:47:43.864+08:00', '2019-11-08T17:47:43.928+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (5, 'd10502b319b5435ca1a841e6085e16e6', '东二门南口人员通道_门1', '1', '1997b995991a4db6999bbad7549bda1e', 'a567669b-bfc5-4931-8049-ae6fb250c075', 1, 'door', '海康威视', NULL, NULL, '2019-11-08T17:47:43.869+08:00', '2019-11-08T17:47:43.928+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (6, 'b03d85b6b1474228ade6f924e1b93584', '东二门南口人员通道_门2', '2', '1997b995991a4db6999bbad7549bda1e', 'a567669b-bfc5-4931-8049-ae6fb250c075', 2, 'door', '海康威视', NULL, NULL, '2019-11-08T17:47:43.868+08:00', '2019-11-08T17:47:43.928+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (7, 'b31856333fe541f888d29a0b6dd2bf13', '东二门中人脸识别出_门1', '1', 'b99ae0616cc44816ad96145674384719', 'a567669b-bfc5-4931-8049-ae6fb250c075', 1, 'door', '海康威视', NULL, NULL, '2019-11-08T20:09:19.636+08:00', '2019-11-08T20:09:19.705+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (8, 'c0b04585c17a425c8b255ad347910514', '东二门人脸识别中间进_门1', '1', '7c9a3fa85bc644bf9fd2309c2cdcd001', 'a567669b-bfc5-4931-8049-ae6fb250c075', 1, 'door', '海康威视', NULL, NULL, '2019-11-08T20:09:19.635+08:00', '2019-11-08T20:09:19.705+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (9, '268c3733f5504004b24dc809405ad1be', '东二门人脸识别北出_门1', '1', 'f5169c2ff7034844b3563fadadba9a68', 'a567669b-bfc5-4931-8049-ae6fb250c075', 1, 'door', '海康威视', NULL, NULL, '2019-11-08T20:09:19.634+08:00', '2019-11-08T20:09:19.705+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (10, 'f50137af98fe47a488c0fb8440da9955', '东二门人脸识别南出_门1', '1', '5f745861b9044b6397a5d60436c78906', 'a567669b-bfc5-4931-8049-ae6fb250c075', 1, 'door', '海康威视', NULL, NULL, '2019-11-08T20:09:19.638+08:00', '2019-11-08T20:09:19.705+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (11, '47ee16931ed94723aa1b40ec0f7f9bfb', '东二门人脸识别南进_门1', '1', '5d3f43a6aa784d668020461e49182491', 'a567669b-bfc5-4931-8049-ae6fb250c075', 1, 'door', '海康威视', NULL, NULL, '2019-11-08T20:09:19.637+08:00', '2019-11-08T20:09:19.705+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (12, '26d6717c9cf5429d9e5b401c89c03eee', '东二门北人脸识别进_门1', '1', '4267fe097c0c457f9f5bef6cdf13c816', 'a567669b-bfc5-4931-8049-ae6fb250c075', 1, 'door', '海康威视', NULL, NULL, '2019-11-08T20:09:19.639+08:00', '2019-11-08T20:09:19.705+08:00', 1, '2020-06-01 04:35:30');
+INSERT INTO `gateway` VALUES (13, '96eb79fa69634461a543653d9b834eee', '2号汽机 公用电子间门禁_门1', '1', 'ee5c4297b27347de8d69d20d7af5ff08', 'e65e3834-9bcb-46d5-bc70-b7ef59e1e522', 1, 'door', '海康威视', NULL, NULL, '2019-11-09T09:02:16.889+08:00', '2019-11-09T09:02:16.942+08:00', 1, '2020-06-01 04:35:30');
 COMMIT;
 
 -- ----------------------------
@@ -142,10 +120,10 @@ CREATE TABLE `gateway_policy` (
 -- Records of gateway_policy
 -- ----------------------------
 BEGIN;
-INSERT INTO `gateway_policy` VALUES (1, '30d221c1e7bb72cac883a4ab3dc39a05', '122cc79e81c849998da75ad792a0f052', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 0, '2020-05-31 01:31:04');
-INSERT INTO `gateway_policy` VALUES (2, '30d221c1e7bb72cac883a4ab3dc39a05', '36dff7cf0ddf42fe897aa760416e2a55', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 0, '2020-05-31 01:31:04');
-INSERT INTO `gateway_policy` VALUES (3, '30d221c1e7bb72cac883a4ab3dc39a05', 'fa82a6d88fd84bf1a9b0d6610fa2275c', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 1, '2020-05-31 08:49:08');
-INSERT INTO `gateway_policy` VALUES (4, '30d221c1e7bb72cac883a4ab3dc39a05', '18ff52a65c2149df880822a409dca686', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 1, '2020-05-31 08:49:08');
+INSERT INTO `gateway_policy` VALUES (1, '30d221c1e7bb72cac883a4ab3dc39a05', '1', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 1, '2020-06-01 04:49:22');
+INSERT INTO `gateway_policy` VALUES (2, '30d221c1e7bb72cac883a4ab3dc39a05', '2', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 1, '2020-06-01 04:49:24');
+INSERT INTO `gateway_policy` VALUES (3, '30d221c1e7bb72cac883a4ab3dc39a05', '3', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 1, '2020-06-01 04:49:16');
+INSERT INTO `gateway_policy` VALUES (4, '30d221c1e7bb72cac883a4ab3dc39a05', '4', '2019-12-19 00:00:00', '2029-01-30 00:00:00', 1, '2020-06-01 04:49:20');
 COMMIT;
 
 -- ----------------------------
