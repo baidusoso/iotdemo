@@ -59,7 +59,8 @@
                   </el-form-item>
               </el-form>
           </div>
-        </el-col>  
+        </el-col>
+        <el-col :span="22" :offset="2">
         <el-transfer
                 class="m-t-20 m-b-30 tp"
                 style="display: inline-block; text-align: left;"
@@ -68,6 +69,19 @@
                 :format="{ noChecked: ' ', hasChecked: ' ' }"
                 :data="preview">
         </el-transfer>
+        </el-col>
+      </div>
+      <div v-else-if="currentStep === 4" class="text-center">
+        <el-col :span="22" :offset="2">
+          <div class="flex justify-content-center align-items-center">
+              <span class="flex justify-content-center align-items-center" style="background: #36C626; margin-top: 110px; width: 72px; height: 72px; padding: 16px; font-size: 40px; color: white; border-radius: 50%;">
+                  <i class="el-icon-check"></i>
+              </span>
+          </div>
+          <div class="text-center m-b-30 m-t-30">
+              <h4 class="text-dark text-lg m-b-30">新增门禁策略成功！</h4>
+          </div>
+        </el-col>
       </div>
     </el-row>
     <el-row class="m-t-20">
@@ -127,9 +141,9 @@
           // this.totalCount = data.totalCount;
           this._gateways = {};
           this.gatewayList = data.list.map(item => {
-            this._gateways[item.indexCode] = item;
+            this._gateways[item.id] = item;
             return {
-              key: item.indexCode,
+              key: item.id,
               label: item.name,
               disabled: false
             };
@@ -271,9 +285,9 @@
                 this.getPreview();
                 this.currentStep++;
             }
-        //     else if (this.currentStep === 3) {
-        //         this.submit();
-        //     }
+            else if (this.currentStep === 3) {
+                this.submit();
+            }
         }
         else {
             this.$message.error({
@@ -314,6 +328,29 @@
           });
           this.preview = selectedGateway.concat(selectedUser);
           this.selectedPreview = selectedUser.map(item => item.key);
+      },
+      submit() {
+          let users = this.selectedAccount.map(item => this._accounts[item]);
+          let gateways = this.selectedGateway.map(item => this._gateways[item]);
+          let datetime = this.datetime.map(item => item.format("yyyy-MM-dd hh:mm:ss"));
+          let policies = [];
+          users.forEach(user => {
+              gateways.forEach(gateway => {
+                  policies.push({
+                      userId: user.id,
+                      gatewayId: gateway.id,
+                      startAt: datetime[0],
+                      endAt: datetime[1]
+                  });
+              });
+          });
+          this.api({
+            url: "/gateway/policy/add",
+            method: "post",
+            data: policies
+          }).then(response => {
+            this.currentStep++;
+          });
       },
     },
   }

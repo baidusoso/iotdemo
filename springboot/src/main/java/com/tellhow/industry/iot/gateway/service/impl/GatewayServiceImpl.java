@@ -36,13 +36,6 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public JSONObject syncGateway() {
         try {
-            List<Gateway> gatewayList = new GatewayApi().getGatewayList();
-            gatewayDao.tempDeleteAllGateway();
-            if (gatewayList != null && gatewayList.size() > 0) {
-                for (Gateway gateway : gatewayList) {
-                    gatewayDao.insertOrUpdateGateway(gateway);
-                }
-            }
             List<Gateway.Door> doorList = new GatewayApi().getGatewayDoorList();
             gatewayDao.tempDeleteAllGatewayDoor();
             if (doorList != null && doorList.size() > 0) {

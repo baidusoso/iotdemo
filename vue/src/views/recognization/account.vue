@@ -21,7 +21,7 @@
               <el-input v-model="listQuery.certificateNum" placeholder="请输入身份证号进行搜索"></el-input>
           </el-col>
           <el-col style="display:flex;justify-content:flex-end" :span="8">
-              <el-button @click="getList" style="border:1px #1890FF solid;" icon="el-icon-search">搜索</el-button>
+              <el-button @click="handleFilter" style="border:1px #1890FF solid;" icon="el-icon-search">搜索</el-button>
               <el-button type="primary" icon="plus"  @click="sync">同步</el-button>
               <el-button type="primary" icon="el-icon-upload2" @click="urlPush(`/`)">批量导入</el-button>
               <el-button type="danger" icon="plus"  @click="showCreate">批量删除</el-button>

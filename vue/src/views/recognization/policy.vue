@@ -8,29 +8,29 @@
         </el-col>
     </el-row>
     <el-row type="flex" justify="space-between" style="margin-top: 5px;">
-        <el-col v-model="listQuery.beginTime" style="display:flex;justify-content:flex-start" :span="4">
-             <el-date-picker type="datetime" placeholder="通行开始时间" style="width: 100%;margin-right: 50px;"></el-date-picker>
+        <el-col style="display:flex;justify-content:flex-start" :span="4">
+             <el-date-picker v-model="listQuery.beginTime" type="datetime" placeholder="通行开始时间" style="width: 100%;margin-right: 30px;"></el-date-picker>
         </el-col>
-        <el-col v-model="listQuery.endTime" style="display:flex;justify-content:flex-start" :span="4">
-            <el-date-picker type="datetime" placeholder="通行结束时间" style="width: 100%;margin-right: 50px;"></el-date-picker>
+        <el-col style="display:flex;justify-content:flex-start" :span="4">
+            <el-date-picker v-model="listQuery.endTime" type="datetime" placeholder="通行结束时间" style="width: 100%;margin-right: 30px;"></el-date-picker>
         </el-col>
         <el-col style="display:flex;justify-content:flex-end" :span="16"></el-col>
     </el-row>
     <el-row type="flex" justify="space-between" style="margin-top: 5px;">
       <el-col style="display:flex;justify-content:flex-end" :span="4">
-          <el-input v-model="listQuery.userGroup" placeholder="人员分组" style="width: 100%;margin-right: 50px;"></el-input>
+          <el-input v-model="listQuery.userGroup" placeholder="人员分组" style="width: 100%;margin-right: 30px;"></el-input>
       </el-col>
         <el-col style="display:flex;justify-content:flex-end" :span="4">
-            <el-input v-model="listQuery.gatewayName" placeholder="设备名称" style="margin-right: 50px;"></el-input>
+            <el-input v-model="listQuery.gatewayName" placeholder="设备名称" style="margin-right: 30px;"></el-input>
         </el-col>
         <el-col style="display:flex;justify-content:flex-end" :span="4" >
-            <el-input v-model="listQuery.name" placeholder="姓名" style="margin-right: 50px;"></el-input>
+            <el-input v-model="listQuery.name" placeholder="姓名" style="margin-right: 30px;"></el-input>
         </el-col>
         <el-col style="display:flex;justify-content:flex-end" :span="4">
-            <el-input v-model="listQuery.no" placeholder="工号" style="margin-right: 50px;"></el-input>
+            <el-input v-model="listQuery.no" placeholder="工号" style="margin-right: 30px;"></el-input>
         </el-col>
         <el-col style="display:flex;justify-content:flex-end" :span="4">
-            <el-input v-model="listQuery.certificateNum" placeholder="身份证号" style="margin-right: 50px;"></el-input>
+            <el-input v-model="listQuery.certificateNum" placeholder="身份证号" style="margin-right: 30px;"></el-input>
         </el-col>
         <el-col style="display:flex;justify-content:flex-end" :span="4">
             <el-button @click="getList" style="border:1px #1890FF solid;" icon="el-icon-search">搜索</el-button>

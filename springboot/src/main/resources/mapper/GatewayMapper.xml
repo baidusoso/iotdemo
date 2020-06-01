@@ -12,13 +12,14 @@
             AND region_code = #{regionCode}
         </if>
         <if test="name !='' and name !=null">
-            AND name LIKE '%${name}%'
+            AND door_name LIKE '%${name}%'
         </if>
     </select>
     <select id="getGatewayList" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
-        index_code indexCode,
-        name name,
+        id  id,
+        door_code doorCode,
+        door_name name,
         firm firm,
         update_time updateTime
         FROM
@@ -28,92 +29,50 @@
             AND region_code = #{regionCode}
         </if>
         <if test="name !='' and name !=null">
-            AND name LIKE '%${name}%'
+            AND door_name LIKE '%${name}%'
         </if>
         LIMIT #{offSet},#{pageRow}
     </select>
 
-    <insert id="insertOrUpdateGateway">
-        <selectKey keyProperty="count" resultType="int" order="BEFORE">
-            select count(*) as count from gateway where index_code = #{gateway.acsDevIndexCode}
-        </selectKey>
-        <if test="count==0">
-            insert into gateway(index_code,name,region_code,treaty_type,firm,type_code,type_name,type_desc,ip,port,code,create_time,update_time)
-            values(
-                #{gateway.acsDevIndexCode},
-                #{gateway.acsDevName},
-                #{gateway.regionIndexCode},
-                #{gateway.treatyType},
-                #{gateway.firm},
-                #{gateway.acsDevTypeCode},
-                #{gateway.acsDevTypeName},
-                #{gateway.acsDevTypeDesc},
-                #{gateway.acsDevIp},
-                #{gateway.acsDevPort},
-                #{gateway.acsDevCode},
-                #{gateway.createTime},
-                #{gateway.updateTime}
-            )
-        </if>
-        <if test="count>0">
-            UPDATE gateway SET name =#{gateway.acsDevName},
-            region_code =#{gateway.regionIndexCode},
-            treaty_type =#{gateway.treatyType},
-            firm =#{gateway.firm},
-            type_code =#{gateway.acsDevTypeCode},
-            type_name =#{gateway.acsDevTypeName},
-            type_desc =#{gateway.acsDevTypeDesc},
-            ip =#{gateway.acsDevIp},
-            port =#{gateway.acsDevPort},
-            code =#{gateway.acsDevCode},
-            create_time =#{gateway.createTime},
-            update_time =#{gateway.updateTime},
-            status=1
-            WHERE index_code=#{gateway.acsDevIndexCode}
-        </if>
-    </insert>
-
     <insert id="insertOrUpdateGatewayDoor">
         <selectKey keyProperty="count" resultType="int" order="BEFORE">
-            select count(*) as count from gateway_door where index_code = #{door.doorIndexCode}
+            select count(*) as count from gateway where door_code = #{door.doorIndexCode}
         </selectKey>
         <if test="count==0">
-            insert into gateway_door(index_code,name,
-            gateway_index_code,channel_no,channel_type,no,install_location,create_time,update_time)
+            insert into gateway(door_code,door_name,door_no,
+            device_code,region_code,channel_no,channel_type,install_location,remark,create_time,update_time)
             values(
                 #{door.doorIndexCode},
                 #{door.doorName},
+                #{door.doorNo},
                 #{door.acsDevIndexCode},
+                #{door.regionIndexCode},
                 #{door.channelNo},
                 #{door.channelType},
-                #{door.doorNo},
                 #{door.installLocation},
+                #{door.remark},
                 #{door.createTime},
                 #{door.updateTime}
             )
         </if>
         <if test="count>0">
-            UPDATE gateway_door SET name =#{door.doorName},
-            gateway_index_code=#{door.doorIndexCode},
+            UPDATE gateway SET door_name =#{door.doorName},
+            door_no=#{door.doorNo},
+            device_code=#{door.acsDevIndexCode},
+            region_code=#{door.regionIndexCode},
             channel_no=#{door.channelNo},
             channel_type=#{door.channelType},
-            no=#{door.doorNo},
             install_location=#{door.installLocation},
+            remark=#{door.remark},
             create_time =#{door.createTime},
             update_time =#{door.updateTime},
             status=1
-            WHERE index_code=#{door.acsDevIndexCode}
+            WHERE door_code=#{door.doorIndexCode}
         </if>
     </insert>
 
-    <update id="tempDeleteAllGateway">
-        UPDATE gateway
-        SET
-        status = '0'
-    </update>
-
     <update id="tempDeleteAllGatewayDoor">
-        UPDATE gateway_door
+        UPDATE gateway
         SET
         status = '0'
     </update>

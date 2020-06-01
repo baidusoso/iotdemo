@@ -1,10 +1,13 @@
 package com.tellhow.industry.iot.gateway.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.gateway.service.GatewayPolicyService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiresPermissions("recognization:policy")
 @RestController
@@ -21,5 +24,10 @@ public class GatewayPolicyController {
     @GetMapping("/sync")
     public JSONObject syncGatewayPolicy() {
         return policyService.syncGatewayPolicy();
+    }
+
+    @PostMapping("/add")
+    public JSONObject addGatewayPolicy(@RequestBody List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList) {
+        return policyService.addGatewayPolicy(gatewayPolicyList);
     }
 }

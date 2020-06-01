@@ -12,7 +12,7 @@
         AND gwp.status=1
         AND ac.org_id=org.org_code
         AND ac.id=gwp.account_id
-        AND gw.index_code=gwp.gateway_id
+        AND gw.id=gwp.gateway_id
         <if test="startTime !='' and startTime !=null">
             AND gwp.start_time &lt;= #{startTime}
         </if>
@@ -20,7 +20,7 @@
             AND gwp.end_time &gt;= #{endTime}
         </if>
         <if test="gatewayName !='' and gatewayName !=null">
-            AND gw.name LIKE '%${gatewayName}%'
+            AND gw.door_name LIKE '%${gatewayName}%'
         </if>
         <if test="name !='' and name !=null">
             AND ac.name LIKE '%${name}%'
@@ -40,7 +40,7 @@
         org.name orgName,
         ac.certificate_num certificateNum,
         ac.no no,
-        gw.name gatewayName,
+        gw.door_name gatewayName,
         gwp.begin_time beginTime,
         gwp.end_time endTime
         FROM account ac, sys_org org,gateway gw,gateway_policy gwp
@@ -50,7 +50,7 @@
         AND gwp.status=1
         AND ac.org_id=org.org_code
         AND ac.id=gwp.account_id
-        AND gw.index_code=gwp.gateway_id
+        AND gw.id=gwp.gateway_id
         <if test="startTime !='' and startTime !=null">
             AND gwp.start_time &lt;= #{startTime}
         </if>
@@ -58,7 +58,7 @@
             AND gwp.end_time &gt;= #{endTime}
         </if>
         <if test="gatewayName !='' and gatewayName !=null">
-            AND gw.name LIKE '%${gatewayName}%'
+            AND gw.door_name LIKE '%${gatewayName}%'
         </if>
         <if test="name !='' and name !=null">
             AND ac.name LIKE '%${name}%'

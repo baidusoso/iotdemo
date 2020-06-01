@@ -41,4 +41,10 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
         }
         return CommonUtil.successJson();
     }
+
+    @Override
+    public JSONObject addGatewayPolicy(List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList) {
+        //TODO
+        return CommonUtil.successJson();
+    }
 }

@@ -19,12 +19,13 @@ public class Gateway {
     public static class Door {
         public String doorIndexCode;
         public String doorName;
-        public int doorNo;
+        public String doorNo;
         public String acsDevIndexCode;
         public String regionIndexCode;
         public String channelType;
-        public int channelNo;
+        public String channelNo;
         public String installLocation;
+        public String remark;
         public String createTime;
         public String updateTime;
     }
