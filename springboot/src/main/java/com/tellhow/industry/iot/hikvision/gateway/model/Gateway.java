@@ -1,5 +1,7 @@
 package com.tellhow.industry.iot.hikvision.gateway.model;
 
+import java.io.Serializable;
+
 public class Gateway {
     public String acsDevIndexCode;
     public String acsDevName;
@@ -16,7 +18,8 @@ public class Gateway {
 
     public String firm;
 
-    public static class Door {
+    public static class Door implements Serializable {
+        public int id;
         public String doorIndexCode;
         public String doorName;
         public String doorNo;

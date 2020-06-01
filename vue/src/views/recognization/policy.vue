@@ -48,7 +48,7 @@
       </el-table-column>
       <el-table-column align="center" label="部门" prop="orgName" ></el-table-column>
       <el-table-column align="center" label="身份证号" prop="certificateNum" ></el-table-column>
-      <el-table-column align="center" label="工号" prop="no" ></el-table-column>
+      <el-table-column align="center" label="工号" prop="no" width="100"></el-table-column>
       <el-table-column align="center" label="设备名称" prop="gatewayName" ></el-table-column>
       <el-table-column align="center" label="允许通行开始时间" prop="beginTime" ></el-table-column>
       <el-table-column align="center" label="允许通行结束时间" prop="endTime">
@@ -108,7 +108,7 @@
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/gateway/policy/list",
+          url: "/policy/list",
           method: "post",
           data: this.listQuery
         }).then(data => {
@@ -124,7 +124,7 @@
         var _vue = this;
         this.listLoading=true;
         this.api({
-          url: "/gateway/policy/sync",
+          url: "/policy/sync",
           method: "get"
         }).then(data => {
           _vue.getList();

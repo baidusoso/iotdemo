@@ -18,4 +18,6 @@ public interface AccountDao {
     int tempDeleteAllAccount();
 
     int insertOrUpdateAccount(@Param("account") ElasticsearchApi.Account account);
+
+    ElasticsearchApi.Account getAccountById(@Param("id") String id);
 }

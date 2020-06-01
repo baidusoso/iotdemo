@@ -22,12 +22,12 @@ service.interceptors.response.use(
     if (res.code == '1000') {
       return res;
     }
-    if (res.code == '100') {
+    if (res.code == '200') {
       return res.info;
     } else if (res.code == "20011") {
       Message({
         showClose: true,
-        message: res.msg,
+        message: res.message,
         type: 'error',
         duration: 500,
         onClose: () => {
@@ -39,7 +39,7 @@ service.interceptors.response.use(
       return Promise.reject("未登录")
     } else {
       Message({
-        message: res.msg,
+        message: res.message,
         type: 'error',
         duration: 3 * 1000
       })

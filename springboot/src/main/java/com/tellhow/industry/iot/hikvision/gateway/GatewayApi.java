@@ -6,15 +6,16 @@ import com.tellhow.industry.iot.hikvision.BaseApi;
 import com.tellhow.industry.iot.hikvision.BaseResponse;
 import com.tellhow.industry.iot.hikvision.GatewayException;
 import com.tellhow.industry.iot.hikvision.PageRequest;
-import com.tellhow.industry.iot.hikvision.gateway.model.Gateway;
-import com.tellhow.industry.iot.hikvision.gateway.model.GetGatewayDoorListResponse;
-import com.tellhow.industry.iot.hikvision.gateway.model.GetGatewayListResponse;
+import com.tellhow.industry.iot.hikvision.gateway.model.*;
 import com.tellhow.industry.iot.system.service.impl.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.tellhow.industry.iot.hikvision.gateway.model.AddAuthDownloadTaskRequest.TASK_TYPE_CARD;
+import static com.tellhow.industry.iot.hikvision.gateway.model.AddAuthDownloadTaskRequest.TASK_TYPE_FACE;
 
 public class GatewayApi extends BaseApi {
 
@@ -42,5 +43,36 @@ public class GatewayApi extends BaseApi {
             pageNo++;
         }
         return getwayDoorList;
+    }
+
+    public String createCardAuthDownloadTask() {
+        AddAuthDownloadTaskRequest addTaskRequest = new AddAuthDownloadTaskRequest(TASK_TYPE_CARD);
+        BaseResponse<String> response = post(new TypeReference<BaseResponse<String>>() {
+        }, GatewayInterface.PATH_CREATE_AUTH_DOWNLOAD_TASK, JSON.toJSONString(addTaskRequest));
+        return response.data;
+    }
+
+    public String createFaceAuthDownloadTask() {
+        AddAuthDownloadTaskRequest addTaskRequest = new AddAuthDownloadTaskRequest(TASK_TYPE_FACE);
+        BaseResponse<String> response = post(new TypeReference<BaseResponse<String>>() {
+        }, GatewayInterface.PATH_CREATE_AUTH_DOWNLOAD_TASK, JSON.toJSONString(addTaskRequest));
+        return response.data;
+    }
+
+    public void addAuthDownloadData(AuthDownloadData authDownloadData) {
+        post(new TypeReference<BaseResponse<Object>>() {
+        }, GatewayInterface.PATH_ADD_AUTH_DOWNLOAD_DATA, JSON.toJSONString(authDownloadData));
+    }
+
+    public void startAuthDownloadTask(AuthDownloadRequest authDownloadRequest) {
+        post(new TypeReference<BaseResponse<Object>>() {
+        }, GatewayInterface.PATH_START_AUTH_DOWNLOAD_TASK, JSON.toJSONString(authDownloadRequest));
+    }
+
+    public boolean queryAuthDownloadTaskProgress(AuthDownloadRequest authDownloadRequest) {
+        BaseResponse<QueryAuthDownloadTaskProgress> response = post(new TypeReference<BaseResponse<QueryAuthDownloadTaskProgress>>() {
+        }, GatewayInterface.PATH_QUERY_AUTH_DOWNLOAD_TASK_PROGRESS, JSON.toJSONString(authDownloadRequest));
+        logger.info(authDownloadRequest.taskId + " totalPercent:" + response.data.totalPercent + " isDownloadFinished:" + response.data.isDownloadFinished);
+        return response.data.isDownloadFinished;
     }
 }

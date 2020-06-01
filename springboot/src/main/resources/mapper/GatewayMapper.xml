@@ -17,7 +17,7 @@
     </select>
     <select id="getGatewayList" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
-        id  id,
+        id id,
         door_code doorCode,
         door_name name,
         firm firm,
@@ -42,17 +42,17 @@
             insert into gateway(door_code,door_name,door_no,
             device_code,region_code,channel_no,channel_type,install_location,remark,create_time,update_time)
             values(
-                #{door.doorIndexCode},
-                #{door.doorName},
-                #{door.doorNo},
-                #{door.acsDevIndexCode},
-                #{door.regionIndexCode},
-                #{door.channelNo},
-                #{door.channelType},
-                #{door.installLocation},
-                #{door.remark},
-                #{door.createTime},
-                #{door.updateTime}
+            #{door.doorIndexCode},
+            #{door.doorName},
+            #{door.doorNo},
+            #{door.acsDevIndexCode},
+            #{door.regionIndexCode},
+            #{door.channelNo},
+            #{door.channelType},
+            #{door.installLocation},
+            #{door.remark},
+            #{door.createTime},
+            #{door.updateTime}
             )
         </if>
         <if test="count>0">
@@ -76,4 +76,16 @@
         SET
         status = '0'
     </update>
+
+    <select id="getGatewayDoorById" resultType="com.tellhow.industry.iot.hikvision.gateway.model.Gateway$Door">
+        SELECT
+        id id,
+        door_code doorIndexCode,
+        door_name doorName,
+        channel_no channelNo
+        FROM
+        gateway
+        WHERE status=1
+        AND door_code=#{doorCode}
+    </select>
 </mapper>

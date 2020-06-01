@@ -110,12 +110,7 @@
           url: "/system/region/sync",
           method: "get"
         }).then(data => {
-          if(data.code==100){
-            _vue.getRootRegion();
-          }else{
-            this.$message.error(data.msg);
-            this.listLoading=false;
-          }
+          _vue.getRootRegion();
         }).catch(()=>{
           this.listLoading=false;
         })

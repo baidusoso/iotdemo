@@ -15,8 +15,8 @@
         <el-col :span="8" style="display:flex;justify-content:flex-end">
           <div ref="regionLayout" class="tree">
             <el-tree :data="rootRegion" ref="region" node-key="regionCode" :default-expanded-keys="defaultExpandedKeys"
-              :highlight-current="true" :default-checked-keys="[]" :check-strictly="true"
-              :check-on-click-node="true" @check-change="handleCheckChange" @node-click="handleNodeClick">
+              :highlight-current="true" :default-checked-keys="[]" :check-strictly="true" :check-on-click-node="true"
+              @check-change="handleCheckChange" @node-click="handleNodeClick">
             </el-tree>
           </div>
         </el-col>
@@ -31,55 +31,46 @@
         <el-col :span="8" style="display:flex;justify-content:flex-end">
           <div id="org" class="tree" ref="orgLayout">
             <el-tree :data="rootOrg" ref="org" node-key="orgCode" :default-expanded-keys="orgDefaultExpandedKeys"
-              :highlight-current="true" :default-checked-keys="[]" :check-strictly="true"
-              :check-on-click-node="true" @check-change="handleOrgCheckChange" @node-click="handleOrgNodeClick">
+              :highlight-current="true" :default-checked-keys="[]" :check-strictly="true" :check-on-click-node="true"
+              @check-change="handleOrgCheckChange" @node-click="handleOrgNodeClick">
             </el-tree>
           </div>
         </el-col>
         <el-col :span="16" style="display:flex;justify-content:flex-start">
           <el-transfer class="m-t-20 m-b-30 transfer-class" style="display: inline-block; text-align: left;" filterable
-            :titles="['选择被分配人员', '已选择人员']" :button-texts="['移除', '添加']" :filter-method="filterAccount" filter-placeholder="输入姓名搜索"
-            v-model="selectedAccount" :data="accountList">
+            :titles="['选择被分配人员', '已选择人员']" :button-texts="['移除', '添加']" :filter-method="filterAccount"
+            filter-placeholder="输入姓名搜索" v-model="selectedAccount" :data="accountList">
           </el-transfer>
         </el-col>
       </div>
       <div v-if="currentStep === 3" class="text-center m-t-50 m-b-20">
-         <el-col :span="22" :offset="2">
+        <el-col :span="22" :offset="2">
           <div class="flex justify-content-center">
-              <el-form>
-                  <el-form-item>
-                      <span class="text-bold text-sm text-dark m-r-10" style="vertical-align: middle;">选择允许通过的时间段：</span>
-                      <el-date-picker
-                              v-model="datetime"
-                              type="datetimerange"
-                              range-separator="至"
-                              start-placeholder="开始时间"
-                              end-placeholder="结束时间">
-                      </el-date-picker>
-                  </el-form-item>
-              </el-form>
+            <el-form>
+              <el-form-item>
+                <span class="text-bold text-sm text-dark m-r-10" style="vertical-align: middle;">选择允许通行的时间段：</span>
+                <el-date-picker v-model="datetime" type="datetimerange" range-separator="至" start-placeholder="开始时间"
+                  end-placeholder="结束时间">
+                </el-date-picker>
+              </el-form-item>
+            </el-form>
           </div>
         </el-col>
         <el-col :span="22" :offset="2">
-        <el-transfer
-                class="m-t-20 m-b-30 tp"
-                style="display: inline-block; text-align: left;"
-                :titles="['已选择设备', '已选择人员']"
-                v-model="selectedPreview"
-                :format="{ noChecked: ' ', hasChecked: ' ' }"
-                :data="preview">
-        </el-transfer>
+          <el-transfer class="m-t-20 m-b-30 tp" style="display: inline-block; text-align: left;" :titles="['已选择设备', '已选择人员']"
+            v-model="selectedPreview" :format="{ noChecked: ' ', hasChecked: ' ' }" :data="preview">
+          </el-transfer>
         </el-col>
       </div>
       <div v-else-if="currentStep === 4" class="text-center">
         <el-col :span="22" :offset="2">
           <div class="flex justify-content-center align-items-center">
-              <span class="flex justify-content-center align-items-center" style="background: #36C626; margin-top: 110px; width: 72px; height: 72px; padding: 16px; font-size: 40px; color: white; border-radius: 50%;">
-                  <i class="el-icon-check"></i>
-              </span>
+            <span class="flex justify-content-center align-items-center" style="background: #36C626; margin-top: 110px; width: 72px; height: 72px; padding: 16px; font-size: 40px; color: white; border-radius: 50%;">
+              <i class="el-icon-check"></i>
+            </span>
           </div>
           <div class="text-center m-b-30 m-t-30">
-              <h4 class="text-dark text-lg m-b-30">新增门禁策略成功！</h4>
+            <h4 class="text-dark text-lg m-b-30">新增门禁策略成功！</h4>
           </div>
         </el-col>
       </div>
@@ -107,20 +98,20 @@
         _gateways: {},
         listQuery: {
           pageNum: 1, //页码
-          pageRow: 10, //每页条数
+          pageRow: 10000, //每页条数
           regionCode: "",
           name: "",
         },
         selectedGateway: [],
 
-        rootOrg:[],
+        rootOrg: [],
         orgDefaultExpandedKeys: [],
         accountList: [],
         _accounts: {},
-        selectedAccount:[],
+        selectedAccount: [],
 
         datetime: [],
-        priview:[],
+        priview: [],
         selectedPreview: [],
       }
     },
@@ -141,9 +132,9 @@
           // this.totalCount = data.totalCount;
           this._gateways = {};
           this.gatewayList = data.list.map(item => {
-            this._gateways[item.id] = item;
+            this._gateways[item.doorCode] = item;
             return {
-              key: item.id,
+              key: item.doorCode,
               label: item.name,
               disabled: false
             };
@@ -176,7 +167,6 @@
       handleCheckChange(item, node, self) {
         console.log("handleCheckChange:" + node)
         if (node == true) {
-          console.log(item);
           this.editRegionCode = item.regionCode;
           this.editRegionName = item.regionName;
           this.$refs.region.setCheckedKeys([item.regionCode]);
@@ -203,18 +193,17 @@
           method: "get"
         }).then(data => {
           var rootOrg = [];
-          var orgDefaultExpandedKeys=[];
+          var orgDefaultExpandedKeys = [];
           if (data != null) {
             rootOrg.push(data);
-            while(data.children!=null && data.children.length<3){
-              data=data.children[0];
+            while (data.children != null && data.children.length < 3) {
+              data = data.children[0];
             }
-            if(data!=null){
-              console.log(data);
+            if (data != null) {
               orgDefaultExpandedKeys.push(data.orgCode);
             }
           }
-          _vue.orgDefaultExpandedKeys=orgDefaultExpandedKeys;
+          _vue.orgDefaultExpandedKeys = orgDefaultExpandedKeys;
           _vue.rootOrg = rootOrg;
         })
       },
@@ -228,26 +217,24 @@
         }).then(data => {
           this._accounts = {};
           this.accountList = data.list.map(item => {
-            console.log(item);
             this._accounts[item.id] = item;
             return {
               key: item.id,
-              label: item.name,
+              label: item.usergroup === "厂内人员" ? `${item.name} - ${item.username}` : `${item.name} - ${item.certificateNum}`,
               disabled: false
             };
           });
-        }).catch(()=>{
+        }).catch(() => {
           this.listLoading = false;
         })
       },
       handleOrgCheckChange(item, node, self) {
         console.log("handleOrgCheckChange:" + node)
         if (node == true) {
-          console.log(item);
           this.editorgCode = item.orgCode;
           this.editOrgName = item.orgName;
           this.$refs.org.setCheckedKeys([item.orgCode]);
-          this.tempUser.orgCode=this.editOrgCode;
+          this.tempUser.orgCode = this.editOrgCode;
         } else {
           if (this.editOrgCode == item.orgCode) {
             this.$refs.org.setCheckedKeys([item.orgCode]);
@@ -257,13 +244,13 @@
       handleOrgNodeClick(item, node, self) {
         console.log("handleNodeClick");
         this.$refs.org.setCheckedKeys([item.orgCode]);
-        this.listQuery.pageNum=1;
-        this.listQuery.orgId=item.orgCode;
-        this.listQuery.name="";
-        this.listQuery.no="";
-        this.listQuery.mobile="";
-        this.listQuery.certificateNum="";
-        this.getList();
+        this.listQuery.pageNum = 1;
+        this.listQuery.orgId = item.orgCode;
+        this.listQuery.name = "";
+        this.listQuery.no = "";
+        this.listQuery.mobile = "";
+        this.listQuery.certificateNum = "";
+        this.getAccountList();
       },
       filterGateway(query, gateway) {
         return `${gateway.key}`.indexOf(query) !== -1 || gateway.label.indexOf(query) !== -1;
@@ -272,30 +259,26 @@
         return `${account.key}`.indexOf(query) !== -1 || account.label.indexOf(query) !== -1;
       },
       nextStep() {
-        let validators = ['', this.validateFirstStep, this.validateSecondStep, () => true];
+        let validators = ['', this.validateFirstStep, this.validateSecondStep, this.validateThirdStep];
         let result = validators[this.currentStep]();
-
         if (result === true) {
-            if (this.currentStep === 1) {
-                this.getAccountList();
-                this.getRootOrg()
-                this.currentStep++;
-            }
-            else if (this.currentStep === 2) {
-                this.getPreview();
-                this.currentStep++;
-            }
-            else if (this.currentStep === 3) {
-                this.submit();
-            }
-        }
-        else {
-            this.$message.error({
-                message: result
-            });
+          if (this.currentStep === 1) {
+            this.getAccountList();
+            this.getRootOrg()
+            this.currentStep++;
+          } else if (this.currentStep === 2) {
+            this.getPreview();
+            this.currentStep++;
+          } else if (this.currentStep === 3) {
+            this.submit();
+          }
+        } else {
+          this.$message.error({
+            message: result
+          });
         }
       },
-      validateFirstStep(){
+      validateFirstStep() {
         if (this.selectedGateway.length === 0) {
           return "请至少选择一个门禁！";
         }
@@ -307,51 +290,72 @@
         }
         return true;
       },
+      validateThirdStep() {
+        if (!this.datetime || this.datetime.length < 2) {
+          return "请选择允许通行的时间段";
+        }
+        if (this.datetime[1] < new Date()) {
+          return "结束时间不能晚于当前时间"
+        }
+        return true;
+      },
       getPreview() {
         console.log("getPreview");
-          let selectedUser = this.selectedAccount;
-          selectedUser = selectedUser.map(item => {
-            console.log(item);
-              return {
-                  key: this._accounts[item].id,
-                  label: this._accounts[item].name,
-                  disabled: true
-              };
-          });
-          let selectedGateway = this.selectedGateway.map(item => {
-            console.log(item);
-              return {
-                  key: this._gateways[item].id,
-                  label: this._gateways[item].name,
-                  disabled: true
-              }
-          });
-          this.preview = selectedGateway.concat(selectedUser);
-          this.selectedPreview = selectedUser.map(item => item.key);
+        let selectedUser = this.selectedAccount;
+        selectedUser = selectedUser.map(item => {
+          return {
+            key: this._accounts[item].id,
+            label: this._accounts[item].name,
+            disabled: true
+          };
+        });
+        let selectedGateway = this.selectedGateway.map(item => {
+          return {
+            key: this._gateways[item].doorCode,
+            label: this._gateways[item].name,
+            disabled: true
+          }
+        });
+        this.preview = selectedGateway.concat(selectedUser);
+        this.selectedPreview = selectedUser.map(item => item.key);
       },
       submit() {
-          let users = this.selectedAccount.map(item => this._accounts[item]);
-          let gateways = this.selectedGateway.map(item => this._gateways[item]);
-          let datetime = this.datetime.map(item => item.format("yyyy-MM-dd hh:mm:ss"));
-          let policies = [];
-          users.forEach(user => {
-              gateways.forEach(gateway => {
-                  policies.push({
-                      userId: user.id,
-                      gatewayId: gateway.id,
-                      startAt: datetime[0],
-                      endAt: datetime[1]
-                  });
-              });
+        let users = this.selectedAccount.map(item => this._accounts[item]);
+        let gateways = this.selectedGateway.map(item => this._gateways[item]);
+        let datetime = this.datetime.map(item => this.formatDateTime(item));
+        let policies = [];
+        users.forEach(user => {
+          gateways.forEach(gateway => {
+            policies.push({
+              userId: user.id,
+              gatewayId: gateway.doorCode,
+              startAt: datetime[0],
+              endAt: datetime[1]
+            });
           });
-          this.api({
-            url: "/gateway/policy/add",
-            method: "post",
-            data: policies
-          }).then(response => {
-            this.currentStep++;
-          });
+        });
+        this.api({
+          url: "/policy/gateway",
+          method: "post",
+          data: policies
+        }).then(response => {
+          this.currentStep++;
+        });
       },
+      formatDateTime(date) {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = date.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        var minute = date.getMinutes();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        var second = date.getSeconds();
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
+      }
     },
   }
 </script>

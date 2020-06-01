@@ -2,8 +2,11 @@ package com.tellhow.industry.iot.elasticsearch;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.tellhow.industry.iot.hikvision.GatewayException;
+import com.tellhow.industry.iot.hikvision.gateway.model.Gateway;
 import com.tellhow.industry.iot.hikvision.org.model.OrgInfo;
+import com.tellhow.industry.iot.system.model.Org;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -15,7 +18,10 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ElasticsearchApi {
@@ -159,7 +165,7 @@ public class ElasticsearchApi {
         return response;
     }
 
-    public static class Account {
+    public static class Account implements Serializable {
         public String id;
         public String name;
         public String gender;
@@ -210,15 +216,14 @@ public class ElasticsearchApi {
                     List<GatewayPolicy> result = parseGatewayPolicyResult(sb.toString());
                     return result;
                 } else {
-//                    throw new GatewayException(ERR_RETURN_ERROR + " statuscode:" + status.getStatus());
+                    throw new GatewayException(ERR_RETURN_ERROR + " statuscode:" + status.getStatus());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-//                throw new GatewayException(ERR_FAIL_TO_ACCESS + ":" + e.getMessage());
+                throw new GatewayException(ERR_FAIL_TO_ACCESS + ":" + e.getMessage());
             }
         }
-//        throw new GatewayException(ERR_FAIL_TO_ACCESS);
-        return parseGatewayPolicyResult(mock);
+        throw new GatewayException(ERR_FAIL_TO_ACCESS);
     }
 
     static List<GatewayPolicy> parseGatewayPolicyResult(String data) {
@@ -236,7 +241,19 @@ public class ElasticsearchApi {
         public String startAt;
         public String endAt;
         public long timestamp;
+
+        @JSONField(serialize = false, deserialize = false)
+        public transient Account account;
+
+        @JSONField(serialize = false, deserialize = false)
+        public transient Gateway.Door doorGateway;
     }
 
-    static final String mock="[{\"id\":\"5de8a783-22fd-11ea-adb8-514e33e25fd0\",\"gatewayId\":\"fa82a6d88fd84bf1a9b0d6610fa2275c\",\"userId\":\"30d221c1e7bb72cac883a4ab3dc39a05\",\"userGroup\":\"厂内人员\",\"updateTime\":\"2019-12-20\",\"startAt\":\"2019-12-19 00:00:00\",\"endAt\":\"2029-01-30 00:00:00\",\"timestamp\":1576828256082},{\"id\":\"5f4cf26d-22fd-11ea-adb8-514e33e25fd0\",\"gatewayId\":\"18ff52a65c2149df880822a409dca686\",\"userId\":\"30d221c1e7bb72cac883a4ab3dc39a05\",\"userGroup\":\"厂内人员\",\"updateTime\":\"2019-12-20\",\"startAt\":\"2019-12-19 00:00:00\",\"endAt\":\"2029-01-30 00:00:00\",\"timestamp\":1576828279617}]";
+    public static void main(String[] args) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = sdf.parse("2019-10-24 22:12:00");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        String s = sdf2.format(date);
+        System.out.println(s);
+    }
 }

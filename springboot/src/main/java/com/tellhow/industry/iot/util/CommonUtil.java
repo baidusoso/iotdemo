@@ -29,7 +29,7 @@ public class CommonUtil {
     public static JSONObject successJson(Object info) {
         JSONObject resultJson = new JSONObject();
         resultJson.put("code", Constants.SUCCESS_CODE);
-        resultJson.put("msg", Constants.SUCCESS_MSG);
+        resultJson.put("message", Constants.SUCCESS_MSG);
         resultJson.put("info", info);
         return resultJson;
     }

@@ -11,7 +11,7 @@ import java.util.List;
 
 @RequiresPermissions("recognization:policy")
 @RestController
-@RequestMapping("/gateway/policy")
+@RequestMapping("/policy")
 public class GatewayPolicyController {
     @Autowired
     private GatewayPolicyService policyService;
@@ -26,7 +26,7 @@ public class GatewayPolicyController {
         return policyService.syncGatewayPolicy();
     }
 
-    @PostMapping("/add")
+    @PostMapping("/gateway")
     public JSONObject addGatewayPolicy(@RequestBody List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList) {
         return policyService.addGatewayPolicy(gatewayPolicyList);
     }

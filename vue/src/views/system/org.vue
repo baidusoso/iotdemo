@@ -100,12 +100,7 @@
           url: "/system/org/syncOrg",
           method: "get"
         }).then(data => {
-          if(data.code==100){
-            _vue.getRootOrg();
-          }else{
-            this.$message.error(data.msg);
-            this.listLoading=false;
-          }
+          _vue.getRootOrg();
         }).catch(()=>{
           this.listLoading=false;
         })

@@ -21,4 +21,6 @@ public interface GatewayDao {
     int tempDeleteAllGatewayDoor();
 
     int insertOrUpdateGatewayDoor(@Param("door") Gateway.Door door);
+
+    Gateway.Door getGatewayDoorById(@Param("doorCode") String doorCode);
 }
