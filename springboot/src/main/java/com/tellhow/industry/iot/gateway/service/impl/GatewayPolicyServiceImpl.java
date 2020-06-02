@@ -26,7 +26,9 @@ import org.springframework.util.StringUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GatewayPolicyServiceImpl implements GatewayPolicyService {
@@ -74,6 +76,8 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
             Date now = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+            Map<String, ElasticsearchApi.Account> accountIdMap = new HashMap<>();
+            Map<String, Gateway.Door> gatewayIdMap = new HashMap<>();
             for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
                 //1、日期校验与格式为海康要求的ISO8601
                 if (StringUtils.isEmpty(gatewayPolicy.startAt) || StringUtils.isEmpty(gatewayPolicy.endAt)) {
@@ -94,57 +98,81 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
                 }
                 //2、校验用户是否存在
-                ElasticsearchApi.Account account = accountDao.getAccountById(gatewayPolicy.userId);
+                ElasticsearchApi.Account account = accountIdMap.get(gatewayPolicy.userId);
                 if (account == null) {
-                    return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.userId + "用户不存在");
+                    account = accountDao.getAccountById(gatewayPolicy.userId);
+                    if (account == null) {
+                        return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.userId + "用户不存在");
+                    }
+                    if ((account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
+                        return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
+                    }
+                    if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
+                        return CommonUtil.errorJson(Constants.ERROR_400, account.name + "的人脸尚未上传");
+                    }
+                    accountIdMap.put(gatewayPolicy.userId, account);
                 }
-                if ((account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
-                    return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
-                }
-                if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
-                    return CommonUtil.errorJson(Constants.ERROR_400, account.name + "的人脸尚未上传");
-                }
-                gatewayPolicy.account = account;
                 //3、校验门禁是否存在
-                Gateway.Door doorGateway = gatewayDao.getGatewayDoorById(gatewayPolicy.gatewayId);
+                Gateway.Door doorGateway = gatewayIdMap.get(gatewayPolicy.gatewayId);
                 if (doorGateway == null) {
-                    return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.gatewayId + "门禁不存在");
+                    doorGateway = gatewayDao.getGatewayDoorById(gatewayPolicy.gatewayId);
+                    if (doorGateway == null) {
+                        return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.gatewayId + "门禁不存在");
+                    }
+                    gatewayIdMap.put(gatewayPolicy.gatewayId, doorGateway);
                 }
-                gatewayPolicy.doorGateway = doorGateway;
             }
             //创建card任务
-            commitTask(gatewayPolicyList);
+            commitTask(gatewayPolicyList, accountIdMap, gatewayIdMap);
 
         }
         return CommonUtil.successJson();
     }
 
-    void commitTask(final List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList) {
+    void commitTask(final List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap) {
         new Thread(() -> {
             try {
                 PersonApi personApi = new PersonApi();
                 OrgApi orgApi = new OrgApi();
                 OrgInfo rootOrg = null;
+                String defaultFaceGroup = null;
+                Map<String, Person> personMap = new HashMap<>();
                 for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
-                    if (gatewayPolicy.account.isGuest()) {
-                        Person person = personApi.getPersonById(gatewayPolicy.account.id);
+                    ElasticsearchApi.Account account = accountIdMap.get(gatewayPolicy.userId);
+                    if (account.isGuest()) {
+                        Person person = personMap.get(account.id);
                         if (person == null) {
-                            if (rootOrg == null) {
-                                rootOrg = orgApi.getRootOrg();
+                            person = personApi.getPersonById(account.id);
+                            if (person == null) {
+                                if (rootOrg == null) {
+                                    rootOrg = orgApi.getRootOrg();
+                                }
+                                if (rootOrg == null) {
+                                    logger.info("rootOrg is null");
+                                    return;
+                                }
+                                account.orgId = rootOrg.orgIndexCode;
+                                String personId = personApi.addPerson(account);
+                                logger.info("addPerson result:" + personId);
+                                account.faceId = null;
                             }
-                            if (rootOrg == null) {
-                                logger.info("rootOrg is null");
-                                return;
-                            }
-                            gatewayPolicy.account.orgId = rootOrg.orgIndexCode;
-                            String personId = personApi.addPerson(gatewayPolicy.account);
-                            logger.info("addPerson result:" + personId);
-                            gatewayPolicy.account.faceId = null;
+                            personMap.put(account.id, person);
                         }
-                        if (gatewayPolicy.account.faceId == null) {
-                            gatewayPolicy.account.faceId = personApi.addFace(gatewayPolicy.account);
-                            logger.info("addFace result:" + gatewayPolicy.account.faceId);
-                            accountDao.updateFaceId(gatewayPolicy.account.id, gatewayPolicy.account.faceId);
+                        if (account.faceId == null) {
+                            if (defaultFaceGroup == null) {
+                                defaultFaceGroup = personApi.queryDefaultFaceGroup();
+                                if (defaultFaceGroup == null) {
+                                    defaultFaceGroup = personApi.addDefaultFaceGroup();
+                                }
+                                if (defaultFaceGroup == null) {
+                                    logger.error("Fail to add default face group!");
+                                    return;
+                                }
+                            }
+
+                            account.faceId = personApi.addFace(defaultFaceGroup, account);
+                            logger.info("addFace result:" + account.faceId);
+                            accountDao.updateFaceId(account.id, account.faceId);
                         }
                     }
                 }
@@ -156,7 +184,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                 for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
                     logger.info(gatewayPolicy.gatewayId + "-" + gatewayPolicy.userId + "添加卡片信息");
                     //card
-                    AuthDownloadData authDownloadData = new AuthDownloadData(cardTaskId, gatewayPolicy);
+                    AuthDownloadData authDownloadData = new AuthDownloadData(cardTaskId, gatewayPolicy, accountIdMap.get(gatewayPolicy.userId), gatewayIdMap.get(gatewayPolicy.gatewayId));
                     gatewayApi.addAuthDownloadData(authDownloadData);
                     //face
                     logger.info(gatewayPolicy.gatewayId + "-" + gatewayPolicy.userId + "添加人脸信息");
@@ -173,17 +201,18 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     Thread.sleep(4000);
                     logger.info(cardTaskId + "查询下载任务进度");
                     isDownloadFinished = gatewayApi.queryAuthDownloadTaskProgress(authDownloadRequest);
+                    logger.info(cardTaskId + "查询下载任务进度 isDownloadFinished:" + isDownloadFinished);
                 } while (!isDownloadFinished || System.currentTimeMillis() - start > 3600 * 1000);
 
-                logger.info(cardTaskId + "开始下载任务");
+                logger.info(faceTaskId + "开始下载任务");
                 authDownloadRequest = new AuthDownloadRequest(faceTaskId);
                 gatewayApi.startAuthDownloadTask(authDownloadRequest);
-                isDownloadFinished = false;
                 start = System.currentTimeMillis();
                 do {
                     Thread.sleep(4000);
-                    logger.info(cardTaskId + "查询下载任务进度");
+                    logger.info(faceTaskId + "查询下载任务进度");
                     isDownloadFinished = gatewayApi.queryAuthDownloadTaskProgress(authDownloadRequest);
+                    logger.info(faceTaskId + "查询下载任务进度 isDownloadFinished:" + isDownloadFinished);
                 } while (!isDownloadFinished || System.currentTimeMillis() - start > 3600 * 1000);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();

@@ -253,11 +253,11 @@ public class ElasticsearchApi {
         public String endAt;
         public long timestamp;
 
-        @JSONField(serialize = false, deserialize = false)
-        public transient Account account;
-
-        @JSONField(serialize = false, deserialize = false)
-        public transient Gateway.Door doorGateway;
+//        @JSONField(serialize = false, deserialize = false)
+//        public transient Account account;
+//
+//        @JSONField(serialize = false, deserialize = false)
+//        public transient Gateway.Door doorGateway;
     }
 
     public static void main(String[] args) throws Exception {

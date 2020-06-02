@@ -75,7 +75,9 @@ public class BaseApi {
     protected interface PersonInterface {
         String PATH_GET_PERSONINFO_BY_PERSONID = "/api/resource/v1/person/personId/personInfo";
         String PATH_ADD_PERSON = "/api/resource/v1/person/single/add";
-        String PATH_ADD_FACE = "/api/resource/v1/face/single/add";
+        String PATH_ADD_FACE = "/api/frs/v1/face/single/addition";
+        String PATH_SEARCH_FACE_GROUP = "/api/frs/v1/face/group";
+        String PATH_ADD_FACE_GROUP = "/api/frs/v1/face/group/single/addition";
     }
 
     protected interface RegionInterface {

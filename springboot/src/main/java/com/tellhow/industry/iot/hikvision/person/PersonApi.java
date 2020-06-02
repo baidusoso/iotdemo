@@ -6,10 +6,7 @@ import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.hikvision.BaseApi;
 import com.tellhow.industry.iot.hikvision.BaseResponse;
 import com.tellhow.industry.iot.hikvision.GatewayException;
-import com.tellhow.industry.iot.hikvision.person.model.AddPersonRequest;
-import com.tellhow.industry.iot.hikvision.person.model.AddSinglePersonFaceRequest;
-import com.tellhow.industry.iot.hikvision.person.model.AddSinglePersonFaceResponse;
-import com.tellhow.industry.iot.hikvision.person.model.Person;
+import com.tellhow.industry.iot.hikvision.person.model.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
@@ -21,6 +18,7 @@ import org.springframework.util.Base64Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class PersonApi extends BaseApi {
 
@@ -50,10 +48,54 @@ public class PersonApi extends BaseApi {
         return getPersonResponse.data;
     }
 
-    public String addFace(ElasticsearchApi.Account account) {
-        AddSinglePersonFaceRequest addSinglePersonFaceRequest = new AddSinglePersonFaceRequest();
-        addSinglePersonFaceRequest.personId = account.id;
+    public String queryDefaultFaceGroup() {
+        SearchFaceGroupRequest searchFaceGroupRequest = new SearchFaceGroupRequest();
+        searchFaceGroupRequest.name = "default";
+        BaseResponse<SearchFaceGroupResponse> searchFaceGroupResponse = post(new TypeReference<BaseResponse<SearchFaceGroupResponse>>() {
+        }, PersonInterface.PATH_SEARCH_FACE_GROUP, JSON.toJSONString(searchFaceGroupRequest));
+        if (searchFaceGroupResponse.data != null && searchFaceGroupResponse.data.indexCodes != null && searchFaceGroupResponse.data.indexCodes.size() > 0) {
+            return searchFaceGroupResponse.data.indexCodes.get(0);
+        }
+        return null;
+    }
 
+    public String addDefaultFaceGroup() {
+        AddSingleFaceGroupRequest addSingleFaceGroupRequest = new AddSingleFaceGroupRequest();
+        addSingleFaceGroupRequest.name = "default";
+        addSingleFaceGroupRequest.description = "default";
+        BaseResponse<AddSingleFaceGroupResponse> addSingleFaceGroupResponse = post(new TypeReference<BaseResponse<AddSingleFaceGroupResponse>>() {
+        }, PersonInterface.PATH_ADD_FACE_GROUP, JSON.toJSONString(addSingleFaceGroupRequest));
+        if (addSingleFaceGroupResponse.data != null) {
+            return addSingleFaceGroupResponse.data.indexCode;
+        }
+        return null;
+    }
+
+    public String addFace(String faceGroup, ElasticsearchApi.Account account) {
+        FaceInfo faceInfo = new FaceInfo();
+        faceInfo.name = account.name;
+        //构造人脸
+        FacePic facePic = new FacePic();
+//        方式一：人脸图片url
+        facePic.faceUrl = account.getFacePicUrl();
+//        方式二：人脸图片的二进制数据经过Base64编码后的字符串
+//        facePic.faceBinaryData = getFaceBinaryData();
+
+        //单个添加人脸请求参数
+        AddSingleFaceRequest addSingleFaceRequest = new AddSingleFaceRequest();
+        addSingleFaceRequest.faceGroupIndexCode = faceGroup;
+        addSingleFaceRequest.faceInfo = faceInfo;
+        addSingleFaceRequest.facePic = facePic;
+
+        BaseResponse<AddSingleFaceResponse> addSingleFaceGroupResponse = post(new TypeReference<BaseResponse<AddSingleFaceResponse>>() {
+        }, PersonInterface.PATH_ADD_FACE, JSON.toJSONString(addSingleFaceRequest));
+        if (addSingleFaceGroupResponse.data != null) {
+            return addSingleFaceGroupResponse.data.indexCode;
+        }
+        return null;
+    }
+
+    String getFaceBinaryData(ElasticsearchApi.Account account) {
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet httpGet = new HttpGet(account.getFacePicUrl());
 
@@ -67,7 +109,7 @@ public class PersonApi extends BaseApi {
             if (response.getStatusLine().getStatusCode() == 200) {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 responseEntity.writeTo(byteArrayOutputStream);
-                addSinglePersonFaceRequest.faceData = Base64Utils.encodeToString(byteArrayOutputStream.toByteArray());
+                return Base64Utils.encodeToString(byteArrayOutputStream.toByteArray());
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -88,16 +130,57 @@ public class PersonApi extends BaseApi {
                 e.printStackTrace();
             }
         }
-
-        if (addSinglePersonFaceRequest.faceData == null) {
-            throw new GatewayException(account.id + "获取人脸数据失败：" + account.getFacePicUrl());
-        }
-
-        BaseResponse<AddSinglePersonFaceResponse> getPersonResponse = post(new TypeReference<BaseResponse<AddSinglePersonFaceResponse>>() {
-        }, PersonInterface.PATH_ADD_FACE, JSON.toJSONString(addSinglePersonFaceRequest));
-        if (getPersonResponse.data == null || getPersonResponse.data.faceId == null) {
-            throw new GatewayException(account.id + "添加人脸数据失败：" + account.getFacePicUrl());
-        }
-        return getPersonResponse.data.faceId;
+        return null;
     }
+
+//    public String addFaceResource(ElasticsearchApi.Account account) {
+//        AddSinglePersonFaceRequest addSinglePersonFaceRequest = new AddSinglePersonFaceRequest();
+//        addSinglePersonFaceRequest.personId = account.id;
+//
+//        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+//        HttpGet httpGet = new HttpGet(account.getFacePicUrl());
+//
+//        // 响应模型
+//        CloseableHttpResponse response = null;
+//        try {
+//            // 由客户端执行(发送)Get请求
+//            response = httpClient.execute(httpGet);
+//            // 从响应模型中获取响应实体
+//            HttpEntity responseEntity = response.getEntity();
+//            if (response.getStatusLine().getStatusCode() == 200) {
+//                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                responseEntity.writeTo(byteArrayOutputStream);
+//                addSinglePersonFaceRequest.faceData = Base64Utils.encodeToString(byteArrayOutputStream.toByteArray());
+//            }
+//        } catch (ClientProtocolException e) {
+//            e.printStackTrace();
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                // 释放资源
+//                if (httpClient != null) {
+//                    httpClient.close();
+//                }
+//                if (response != null) {
+//                    response.close();
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        if (addSinglePersonFaceRequest.faceData == null) {
+//            throw new GatewayException(account.id + "获取人脸数据失败：" + account.getFacePicUrl());
+//        }
+//
+//        BaseResponse<AddSinglePersonFaceResponse> getPersonResponse = post(new TypeReference<BaseResponse<AddSinglePersonFaceResponse>>() {
+//        }, PersonInterface.PATH_ADD_FACE, JSON.toJSONString(addSinglePersonFaceRequest));
+//        if (getPersonResponse.data == null || getPersonResponse.data.faceId == null) {
+//            throw new GatewayException(account.id + "添加人脸数据失败：" + account.getFacePicUrl());
+//        }
+//        return getPersonResponse.data.faceId;
+//    }
 }

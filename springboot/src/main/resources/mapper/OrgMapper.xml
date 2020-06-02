@@ -11,6 +11,16 @@
             sys_org
         WHERE status='1'
     </select>
+    <select id="findOrgById" resultType="com.tellhow.industry.iot.system.model.Org">
+        SELECT
+        org_code        orgCode,
+        name            orgName,
+        parent_org_code   parentOrgCode
+        FROM
+        sys_org
+        WHERE status='1'
+        AND org_code=#{orgId}
+    </select>
     <select id="queryExistOrgName" resultType="int">
         select count(0)
         from sys_org
@@ -45,8 +55,8 @@
         </if>
         <if test="count>0">
             UPDATE sys_org SET name =#{orgInfo.orgName},
-                                parent_org_code=#{orgInfo.parentOrgIndexCode},
-                                status=1
+            parent_org_code=#{orgInfo.parentOrgIndexCode},
+            status=1
             WHERE org_code=(#{orgInfo.orgIndexCode}
         </if>
     </insert>

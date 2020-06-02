@@ -14,16 +14,18 @@ public class AuthDownloadData {
     public List<ResourceInfo> resourceInfos = new ArrayList<>();
     public List<PersonInfo> personInfos = new ArrayList<>();
 
-    public AuthDownloadData(String taskId, ElasticsearchApi.GatewayPolicy gatewayPolicy) {
+    public AuthDownloadData(String taskId, ElasticsearchApi.GatewayPolicy gatewayPolicy, ElasticsearchApi.Account account, Gateway.Door doorGateway) {
         this.taskId = taskId;
-        ResourceInfo resourceInfo = new ResourceInfo(gatewayPolicy.doorGateway);
+        ResourceInfo resourceInfo = new ResourceInfo(doorGateway);
         resourceInfos.add(resourceInfo);
+        PersonInfo personInfo = new PersonInfo(gatewayPolicy, account);
+        personInfos.add(personInfo);
     }
 
     public static class ResourceInfo {
         public String resourceIndexCode;
         public String resourceType;
-        public List<Integer> channelNos = new ArrayList<Integer>();
+        public List<Integer> channelNos = new ArrayList<>();
 
         public ResourceInfo(String resourceIndexCode, String resourceType, int channelNo) {
             this.resourceIndexCode = resourceIndexCode;
@@ -50,24 +52,24 @@ public class AuthDownloadData {
         public List<Card> cards;
         public List<Face> face;
 
-        public PersonInfo(ElasticsearchApi.GatewayPolicy gatewayPolicy) {
-            this.personId = gatewayPolicy.account.id;
+        public PersonInfo(ElasticsearchApi.GatewayPolicy gatewayPolicy, ElasticsearchApi.Account account) {
+            this.personId = account.id;
             this.startTime = gatewayPolicy.startAt;
             this.operatorType = 0;
             this.endTime = gatewayPolicy.endAt;
-            if (gatewayPolicy.account.isGuest()) {
+            if (account.isGuest()) {
                 this.personType = 2;
-                this.name = gatewayPolicy.account.name;
+                this.name = account.name;
                 cards = new ArrayList<>();
-                String cardNo = gatewayPolicy.account.mobile;
+                String cardNo = account.mobile;
                 if (StringUtils.isEmpty(cardNo)) {
-                    cardNo = gatewayPolicy.account.certificateNum;
+                    cardNo = account.certificateNum;
                 }
                 Card card = new Card(cardNo);
                 cards.add(card);
 
                 face = new ArrayList<>();
-                Face faceData = new Face(cardNo, gatewayPolicy.account.faceId, gatewayPolicy.account.getFacePicUrl());
+                Face faceData = new Face(cardNo, account.faceId, account.getFacePicUrl());
                 face.add(faceData);
             }
         }
