@@ -179,6 +179,17 @@ public class ElasticsearchApi {
         public String faceId;
         public String facePic;
         public int delFlag;
+
+        public boolean isGuest() {
+            return "外来访客".equals(usergroup);
+        }
+
+        public String getFacePicUrl() {
+            if (isGuest()) {
+                return "http://10.69.212.11:3000/face/visitor/" + facePic;
+            }
+            return "http://10.69.212.11:3000/face/user/" + facePic;
+        }
     }
 
     public static List<GatewayPolicy> getGatewayPolicyList() {

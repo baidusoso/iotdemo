@@ -113,4 +113,11 @@
         WHERE a.status=1
         AND id = #{id}
     </select>
+
+    <update id="updateFaceId">
+        UPDATE account
+        SET
+        face_id = #{faceId}
+        WHERE id = #{id}
+    </update>
 </mapper>

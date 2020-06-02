@@ -55,7 +55,7 @@ public class AuthDownloadData {
             this.startTime = gatewayPolicy.startAt;
             this.operatorType = 0;
             this.endTime = gatewayPolicy.endAt;
-            if ("外来访客".equals(gatewayPolicy.account.usergroup)) {
+            if (gatewayPolicy.account.isGuest()) {
                 this.personType = 2;
                 this.name = gatewayPolicy.account.name;
                 cards = new ArrayList<>();
@@ -67,7 +67,7 @@ public class AuthDownloadData {
                 cards.add(card);
 
                 face = new ArrayList<>();
-                Face faceData = new Face(cardNo, gatewayPolicy.account.faceId, "http://10.69.212.11:3000/face/user/" + gatewayPolicy.account.facePic);
+                Face faceData = new Face(cardNo, gatewayPolicy.account.faceId, gatewayPolicy.account.getFacePicUrl());
                 face.add(faceData);
             }
         }

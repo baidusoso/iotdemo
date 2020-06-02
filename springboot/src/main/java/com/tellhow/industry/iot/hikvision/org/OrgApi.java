@@ -20,8 +20,6 @@ public class OrgApi extends BaseApi {
     public OrgInfo getRootOrg() {
         BaseResponse<OrgInfo> getRootOrgResponse = post(new TypeReference<BaseResponse<OrgInfo>>() {
         }, OrgInterface.PATH_GET_ROOT, null);
-        if (getRootOrgResponse.data != null) {
-        }
         return getRootOrgResponse.data;
     }
 

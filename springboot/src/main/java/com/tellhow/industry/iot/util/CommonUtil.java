@@ -40,7 +40,7 @@ public class CommonUtil {
     public static JSONObject errorJson(ErrorEnum errorEnum) {
         JSONObject resultJson = new JSONObject();
         resultJson.put("code", errorEnum.getErrorCode());
-        resultJson.put("msg", errorEnum.getErrorMsg());
+        resultJson.put("message", errorEnum.getErrorMsg());
         resultJson.put("info", new JSONObject());
         return resultJson;
     }
@@ -51,7 +51,7 @@ public class CommonUtil {
     public static JSONObject errorJson(String code, String msg) {
         JSONObject resultJson = new JSONObject();
         resultJson.put("code", code);
-        resultJson.put("msg", msg);
+        resultJson.put("message", msg);
         resultJson.put("info", new JSONObject());
         return resultJson;
     }
@@ -155,7 +155,7 @@ public class CommonUtil {
             if (!StringTools.isNullOrEmpty(missCol)) {
                 jsonObject.clear();
                 jsonObject.put("code", ErrorEnum.E_90003.getErrorCode());
-                jsonObject.put("msg", "缺少必填参数:" + missCol.trim());
+                jsonObject.put("message", "缺少必填参数:" + missCol.trim());
                 jsonObject.put("info", new JSONObject());
                 throw new CommonJsonException(jsonObject);
             }

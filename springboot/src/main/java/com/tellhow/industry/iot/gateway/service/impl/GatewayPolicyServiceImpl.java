@@ -9,8 +9,12 @@ import com.tellhow.industry.iot.gateway.service.GatewayPolicyService;
 import com.tellhow.industry.iot.hikvision.GatewayException;
 import com.tellhow.industry.iot.hikvision.gateway.GatewayApi;
 import com.tellhow.industry.iot.hikvision.gateway.model.AuthDownloadData;
-import com.tellhow.industry.iot.hikvision.gateway.model.Gateway;
 import com.tellhow.industry.iot.hikvision.gateway.model.AuthDownloadRequest;
+import com.tellhow.industry.iot.hikvision.gateway.model.Gateway;
+import com.tellhow.industry.iot.hikvision.org.OrgApi;
+import com.tellhow.industry.iot.hikvision.org.model.OrgInfo;
+import com.tellhow.industry.iot.hikvision.person.PersonApi;
+import com.tellhow.industry.iot.hikvision.person.model.Person;
 import com.tellhow.industry.iot.util.CommonUtil;
 import com.tellhow.industry.iot.util.constants.Constants;
 import org.slf4j.Logger;
@@ -21,7 +25,6 @@ import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -67,8 +70,6 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
     public JSONObject addGatewayPolicy(List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList) {
         //TODO
         if (gatewayPolicyList != null && gatewayPolicyList.size() > 0) {
-            List<ElasticsearchApi.GatewayPolicy> staffPolicyList = new ArrayList<>();
-            List<ElasticsearchApi.GatewayPolicy> guestPolicyList = new ArrayList<>();
 
             Date now = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -100,7 +101,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                 if ((account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
                     return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
                 }
-                if (StringUtils.isEmpty(account.faceId)) {
+                if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
                     return CommonUtil.errorJson(Constants.ERROR_400, account.name + "的人脸尚未上传");
                 }
                 gatewayPolicy.account = account;
@@ -110,12 +111,6 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.gatewayId + "门禁不存在");
                 }
                 gatewayPolicy.doorGateway = doorGateway;
-                //4、区分访客和厂内人员
-                if ("外来访客".equals(account.usergroup)) {
-                    guestPolicyList.add(gatewayPolicy);
-                } else {
-                    staffPolicyList.add(gatewayPolicy);
-                }
             }
             //创建card任务
             commitTask(gatewayPolicyList);
@@ -127,6 +122,32 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
     void commitTask(final List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList) {
         new Thread(() -> {
             try {
+                PersonApi personApi = new PersonApi();
+                OrgApi orgApi = new OrgApi();
+                OrgInfo rootOrg = null;
+                for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
+                    if (gatewayPolicy.account.isGuest()) {
+                        Person person = personApi.getPersonById(gatewayPolicy.account.id);
+                        if (person == null) {
+                            if (rootOrg == null) {
+                                rootOrg = orgApi.getRootOrg();
+                            }
+                            if (rootOrg == null) {
+                                logger.info("rootOrg is null");
+                                return;
+                            }
+                            gatewayPolicy.account.orgId = rootOrg.orgIndexCode;
+                            String personId = personApi.addPerson(gatewayPolicy.account);
+                            logger.info("addPerson result:" + personId);
+                            gatewayPolicy.account.faceId = null;
+                        }
+                        if (gatewayPolicy.account.faceId == null) {
+                            gatewayPolicy.account.faceId = personApi.addFace(gatewayPolicy.account);
+                            logger.info("addFace result:" + gatewayPolicy.account.faceId);
+                            accountDao.updateFaceId(gatewayPolicy.account.id, gatewayPolicy.account.faceId);
+                        }
+                    }
+                }
                 GatewayApi gatewayApi = new GatewayApi();
                 String cardTaskId = gatewayApi.createCardAuthDownloadTask();
                 logger.info("cardTaskId:" + cardTaskId);

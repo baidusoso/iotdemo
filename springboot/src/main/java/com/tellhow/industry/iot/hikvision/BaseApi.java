@@ -72,6 +72,12 @@ public class BaseApi {
         String PATH_GET_ORG_LIST = "/api/resource/v1/org/orgList";
     }
 
+    protected interface PersonInterface {
+        String PATH_GET_PERSONINFO_BY_PERSONID = "/api/resource/v1/person/personId/personInfo";
+        String PATH_ADD_PERSON = "/api/resource/v1/person/single/add";
+        String PATH_ADD_FACE = "/api/resource/v1/face/single/add";
+    }
+
     protected interface RegionInterface {
         String PATH_GET_REGION_LIST = "/api/resource/v1/regions";
     }

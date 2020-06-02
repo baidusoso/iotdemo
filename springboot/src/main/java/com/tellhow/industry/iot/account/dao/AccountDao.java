@@ -20,4 +20,6 @@ public interface AccountDao {
     int insertOrUpdateAccount(@Param("account") ElasticsearchApi.Account account);
 
     ElasticsearchApi.Account getAccountById(@Param("id") String id);
+
+    int updateFaceId(@Param("id") String id, @Param("faceId") String faceId);
 }
