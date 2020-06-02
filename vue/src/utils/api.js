@@ -38,6 +38,7 @@ service.interceptors.response.use(
       });
       return Promise.reject("未登录")
     } else {
+      console.error(res.code+":"+res.message)// for debug
       Message({
         message: res.message,
         type: 'error',

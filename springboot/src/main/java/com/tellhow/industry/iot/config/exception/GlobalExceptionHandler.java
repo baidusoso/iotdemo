@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
 		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("code", ErrorEnum.E_400.getErrorCode());
-		jsonObject.put("msg", ErrorEnum.E_400.getErrorMsg());
+		jsonObject.put("message", ErrorEnum.E_400.getErrorMsg());
 		JSONObject errorObject = new JSONObject();
 		errorObject.put("errorLocation", e.toString() + "    错误位置:" + errorPosition);
 		jsonObject.put("info", errorObject);

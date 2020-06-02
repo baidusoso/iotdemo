@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequiresPermissions("recognization:policy")
+//@RequiresPermissions("recognization:policy")
 @RestController
 @RequestMapping("/policy")
 public class GatewayPolicyController {

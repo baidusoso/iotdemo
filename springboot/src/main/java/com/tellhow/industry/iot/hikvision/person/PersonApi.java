@@ -2,7 +2,6 @@ package com.tellhow.industry.iot.hikvision.person;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.sun.tools.internal.ws.wsdl.document.http.HTTPConstants;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.hikvision.BaseApi;
 import com.tellhow.industry.iot.hikvision.BaseResponse;
@@ -14,17 +13,14 @@ import com.tellhow.industry.iot.hikvision.person.model.Person;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.springframework.util.Base64Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Base64;
 
 public class PersonApi extends BaseApi {
 
