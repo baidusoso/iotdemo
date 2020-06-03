@@ -5,6 +5,7 @@ import com.tellhow.industry.iot.account.dao.AccountDao;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.gateway.dao.GatewayDao;
 import com.tellhow.industry.iot.gateway.dao.GatewayPolicyDao;
+import com.tellhow.industry.iot.gateway.model.AddGatewayPolicyRequest;
 import com.tellhow.industry.iot.gateway.service.GatewayPolicyService;
 import com.tellhow.industry.iot.hikvision.GatewayException;
 import com.tellhow.industry.iot.hikvision.gateway.GatewayApi;
@@ -70,64 +71,66 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
     }
 
     @Override
-    public JSONObject addGatewayPolicy(List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList) {
-        //TODO
-        if (gatewayPolicyList != null && gatewayPolicyList.size() > 0) {
-            if (gatewayPolicyList.size() > 100) {
-                return CommonUtil.errorJson(Constants.ERROR_400, "单次数量超出100");
-            }
-            Date now = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-            Map<String, ElasticsearchApi.Account> accountIdMap = new HashMap<>();
-            Map<String, Gateway.Door> gatewayIdMap = new HashMap<>();
-            for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
-                //1、日期校验与格式为海康要求的ISO8601
-                if (StringUtils.isEmpty(gatewayPolicy.startAt) || StringUtils.isEmpty(gatewayPolicy.endAt)) {
-                    return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
+    public JSONObject addGatewayPolicy(AddGatewayPolicyRequest addGatewayPolicyRequest) {
+        if (addGatewayPolicyRequest != null && addGatewayPolicyRequest.policies != null) {
+            List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList = addGatewayPolicyRequest.policies;
+            logger.info("policies count:" + gatewayPolicyList.size());
+            if (gatewayPolicyList.size() > 0) {
+                if (gatewayPolicyList.size() > 100) {
+                    return CommonUtil.errorJson(Constants.ERROR_400, "单次数量超出100");
                 }
-                try {
-                    Date startTime = sdf.parse(gatewayPolicy.startAt);
-                    Date endTime = sdf.parse(gatewayPolicy.endAt);
-                    if (endTime.before(startTime)) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, "结束时间小于开始时间");
+                Date now = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+                Map<String, ElasticsearchApi.Account> accountIdMap = new HashMap<>();
+                Map<String, Gateway.Door> gatewayIdMap = new HashMap<>();
+                for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
+                    //1、日期校验与格式为海康要求的ISO8601
+                    if (StringUtils.isEmpty(gatewayPolicy.startAt) || StringUtils.isEmpty(gatewayPolicy.endAt)) {
+                        return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
                     }
-                    if (endTime.before(now)) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, "结束时间不能小于当前时间");
+                    try {
+                        Date startTime = sdf.parse(gatewayPolicy.startAt);
+                        Date endTime = sdf.parse(gatewayPolicy.endAt);
+                        if (endTime.before(startTime)) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, "结束时间小于开始时间");
+                        }
+                        if (endTime.before(now)) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, "结束时间不能小于当前时间");
+                        }
+                        gatewayPolicy.startAt = sdfISO8601.format(startTime);
+                        gatewayPolicy.endAt = sdfISO8601.format(endTime);
+                    } catch (ParseException e) {
+                        return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
                     }
-                    gatewayPolicy.startAt = sdfISO8601.format(startTime);
-                    gatewayPolicy.endAt = sdfISO8601.format(endTime);
-                } catch (ParseException e) {
-                    return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
-                }
-                //2、校验用户是否存在
-                ElasticsearchApi.Account account = accountIdMap.get(gatewayPolicy.userId);
-                if (account == null) {
-                    account = accountDao.getAccountById(gatewayPolicy.userId);
+                    //2、校验用户是否存在
+                    ElasticsearchApi.Account account = accountIdMap.get(gatewayPolicy.userId);
                     if (account == null) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.userId + "用户不存在");
+                        account = accountDao.getAccountById(gatewayPolicy.userId);
+                        if (account == null) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.userId + "用户不存在");
+                        }
+                        if ((account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
+                        }
+                        if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, account.name + "的人脸尚未上传");
+                        }
+                        accountIdMap.put(gatewayPolicy.userId, account);
                     }
-                    if ((account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
-                    }
-                    if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, account.name + "的人脸尚未上传");
-                    }
-                    accountIdMap.put(gatewayPolicy.userId, account);
-                }
-                //3、校验门禁是否存在
-                Gateway.Door doorGateway = gatewayIdMap.get(gatewayPolicy.gatewayId);
-                if (doorGateway == null) {
-                    doorGateway = gatewayDao.getGatewayDoorById(gatewayPolicy.gatewayId);
+                    //3、校验门禁是否存在
+                    Gateway.Door doorGateway = gatewayIdMap.get(gatewayPolicy.gatewayId);
                     if (doorGateway == null) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.gatewayId + "门禁不存在");
+                        doorGateway = gatewayDao.getGatewayDoorById(gatewayPolicy.gatewayId);
+                        if (doorGateway == null) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.gatewayId + "门禁不存在");
+                        }
+                        gatewayIdMap.put(gatewayPolicy.gatewayId, doorGateway);
                     }
-                    gatewayIdMap.put(gatewayPolicy.gatewayId, doorGateway);
                 }
+                //创建card任务
+                commitTask(gatewayPolicyList, accountIdMap, gatewayIdMap);
             }
-            //创建card任务
-            commitTask(gatewayPolicyList, accountIdMap, gatewayIdMap);
-
         }
         return CommonUtil.successJson();
     }

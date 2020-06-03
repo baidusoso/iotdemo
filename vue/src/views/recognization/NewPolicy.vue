@@ -337,7 +337,9 @@
         this.api({
           url: "/policy/gateway",
           method: "post",
-          data: policies
+          data: {
+            'policies':policies
+          }
         }).then(response => {
           this.currentStep++;
         });
