@@ -45,7 +45,7 @@ public class BaseApi {
             throw new IllegalArgumentException();
         }
         this.path.put("https://", ARTEMIS_PATH + pathSegment);
-        logger.debug("body:" + body);
+        logger.debug(pathSegment + " body:" + body);
         String result = ArtemisHttpUtil.doPostStringArtemis(path, body, null, null, CONTENT_TYPE_JSON, null);
 
 //        if (pathSegment.equals(GatewayInterface.PATH_GET_GATEWAY_LIST)) {
