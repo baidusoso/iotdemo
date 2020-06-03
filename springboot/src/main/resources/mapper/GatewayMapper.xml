@@ -82,7 +82,8 @@
         id id,
         door_code doorIndexCode,
         door_name doorName,
-        channel_no channelNo
+        channel_no channelNo,
+        channel_type channelType
         FROM
         gateway
         WHERE status=1
