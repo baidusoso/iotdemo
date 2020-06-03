@@ -50,7 +50,7 @@ public class AuthDownloadData {
         public String name;
 
         public List<Card> cards;
-        public List<Face> face;
+        public Face face;
 
         public PersonInfo(ElasticsearchApi.GatewayPolicy gatewayPolicy, ElasticsearchApi.Account account) {
             this.personId = account.id;
@@ -68,9 +68,7 @@ public class AuthDownloadData {
                 Card card = new Card(cardNo);
                 cards.add(card);
 
-                face = new ArrayList<>();
-                Face faceData = new Face(cardNo, account.faceId, account.getFacePicUrl());
-                face.add(faceData);
+                face = new Face(cardNo, account.faceId, account.getFacePicUrl());
             }
         }
     }
