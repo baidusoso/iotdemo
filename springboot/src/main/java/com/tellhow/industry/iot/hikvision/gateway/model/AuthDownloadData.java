@@ -75,17 +75,17 @@ public class AuthDownloadData {
 
     public static class Card {
         public String card;
-        public int status;
+        public String status;
         public int cardType;
 
         public Card(String card) {
             this.card = card;
-            this.status = 0;
+            this.status = "0";
             this.cardType = 1;
         }
 
         public Card(int status, int cardType) {
-            this.status = status;
+            this.status = "" + status;
             this.cardType = cardType;
         }
     }
