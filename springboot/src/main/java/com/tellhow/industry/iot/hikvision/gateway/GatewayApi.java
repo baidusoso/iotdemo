@@ -54,9 +54,9 @@ public class GatewayApi extends BaseApi {
 
     public String createFaceAuthDownloadTask() {
         AddAuthDownloadTaskRequest addTaskRequest = new AddAuthDownloadTaskRequest(TASK_TYPE_FACE);
-        BaseResponse<String> response = post(new TypeReference<BaseResponse<String>>() {
+        BaseResponse<AddAuthDownloadTaskResponse> response = post(new TypeReference<BaseResponse<AddAuthDownloadTaskResponse>>() {
         }, GatewayInterface.PATH_CREATE_AUTH_DOWNLOAD_TASK, JSON.toJSONString(addTaskRequest));
-        return response.data;
+        return response.data.taskId;
     }
 
     public void addAuthDownloadData(AuthDownloadData authDownloadData) {
