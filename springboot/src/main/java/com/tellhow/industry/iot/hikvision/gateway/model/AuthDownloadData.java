@@ -75,17 +75,17 @@ public class AuthDownloadData {
 
     public static class Card {
         public String card;
-        public String status;
+        public int status;
         public int cardType;
 
         public Card(String card) {
             this.card = card;
-            this.status = "0";
+            this.status = 0;
             this.cardType = 1;
         }
 
         public Card(int status, int cardType) {
-            this.status = "" + status;
+            this.status = status;
             this.cardType = cardType;
         }
     }
@@ -103,6 +103,7 @@ public class AuthDownloadData {
             this.card = card;
             this.faceId = faceId;
             this.faceUrl = faceUrl;
+            data.put(faceId, faceUrl);
         }
 
     }
