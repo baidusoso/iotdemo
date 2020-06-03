@@ -8,6 +8,7 @@ import com.tellhow.industry.iot.gateway.dao.GatewayPolicyDao;
 import com.tellhow.industry.iot.gateway.service.GatewayPolicyService;
 import com.tellhow.industry.iot.hikvision.GatewayException;
 import com.tellhow.industry.iot.hikvision.gateway.GatewayApi;
+import com.tellhow.industry.iot.hikvision.gateway.model.AddAuthDownloadTaskRequest;
 import com.tellhow.industry.iot.hikvision.gateway.model.AuthDownloadData;
 import com.tellhow.industry.iot.hikvision.gateway.model.AuthDownloadRequest;
 import com.tellhow.industry.iot.hikvision.gateway.model.Gateway;
@@ -72,7 +73,9 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
     public JSONObject addGatewayPolicy(List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList) {
         //TODO
         if (gatewayPolicyList != null && gatewayPolicyList.size() > 0) {
-
+            if (gatewayPolicyList.size() > 100) {
+                return CommonUtil.errorJson(Constants.ERROR_400, "单次数量超出100");
+            }
             Date now = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -177,17 +180,17 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     }
                 }
                 GatewayApi gatewayApi = new GatewayApi();
-                String cardTaskId = gatewayApi.createCardAuthDownloadTask();
+                String cardTaskId = gatewayApi.createAuthDownloadTask(AddAuthDownloadTaskRequest.TASK_TYPE_CARD);
                 logger.info("cardTaskId:" + cardTaskId);
-                String faceTaskId = gatewayApi.createFaceAuthDownloadTask();
+                String faceTaskId = gatewayApi.createAuthDownloadTask(AddAuthDownloadTaskRequest.TASK_TYPE_FACE);
                 logger.info("faceTaskId:" + faceTaskId);
                 for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
-                    logger.info(gatewayPolicy.gatewayId + "-" + gatewayPolicy.userId + "添加卡片信息");
+                    logger.info(gatewayPolicy.gatewayId + "-----" + gatewayPolicy.userId + "添加卡片信息");
                     //card
                     AuthDownloadData authDownloadData = new AuthDownloadData(cardTaskId, gatewayPolicy, accountIdMap.get(gatewayPolicy.userId), gatewayIdMap.get(gatewayPolicy.gatewayId));
                     gatewayApi.addAuthDownloadData(authDownloadData);
                     //face
-                    logger.info(gatewayPolicy.gatewayId + "-" + gatewayPolicy.userId + "添加人脸信息");
+                    logger.info(gatewayPolicy.gatewayId + "-----" + gatewayPolicy.userId + "添加人脸信息");
                     authDownloadData.taskId = faceTaskId;
                     gatewayApi.addAuthDownloadData(authDownloadData);
                 }
@@ -214,6 +217,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     isDownloadFinished = gatewayApi.queryAuthDownloadTaskProgress(authDownloadRequest);
                     logger.info(faceTaskId + "查询下载任务进度 isDownloadFinished:" + isDownloadFinished);
                 } while (!isDownloadFinished || System.currentTimeMillis() - start > 3600 * 1000);
+                logger.info("commitTask done!!!");
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }

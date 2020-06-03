@@ -45,15 +45,8 @@ public class GatewayApi extends BaseApi {
         return getwayDoorList;
     }
 
-    public String createCardAuthDownloadTask() {
-        AddAuthDownloadTaskRequest addTaskRequest = new AddAuthDownloadTaskRequest(TASK_TYPE_CARD);
-        BaseResponse<AddAuthDownloadTaskResponse> response = post(new TypeReference<BaseResponse<AddAuthDownloadTaskResponse>>() {
-        }, GatewayInterface.PATH_CREATE_AUTH_DOWNLOAD_TASK, JSON.toJSONString(addTaskRequest));
-        return response.data.taskId;
-    }
-
-    public String createFaceAuthDownloadTask() {
-        AddAuthDownloadTaskRequest addTaskRequest = new AddAuthDownloadTaskRequest(TASK_TYPE_FACE);
+    public String createAuthDownloadTask(int taskType) {
+        AddAuthDownloadTaskRequest addTaskRequest = new AddAuthDownloadTaskRequest(taskType);
         BaseResponse<AddAuthDownloadTaskResponse> response = post(new TypeReference<BaseResponse<AddAuthDownloadTaskResponse>>() {
         }, GatewayInterface.PATH_CREATE_AUTH_DOWNLOAD_TASK, JSON.toJSONString(addTaskRequest));
         return response.data.taskId;
