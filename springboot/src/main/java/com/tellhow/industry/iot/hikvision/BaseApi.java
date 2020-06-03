@@ -92,6 +92,7 @@ public class BaseApi {
         String PATH_ADD_AUTH_DOWNLOAD_DATA = "/api/acps/v1/authDownload/data/addition";
         String PATH_START_AUTH_DOWNLOAD_TASK = "/api/acps/v1/authDownload/task/start";
         String PATH_QUERY_AUTH_DOWNLOAD_TASK_PROGRESS = "/api/acps/v1/authDownload/task/progress";
+        String PATH_AUTH_CONFIG_SEARCH = "/api/acps/v1/auth_config/search";
     }
 
 }

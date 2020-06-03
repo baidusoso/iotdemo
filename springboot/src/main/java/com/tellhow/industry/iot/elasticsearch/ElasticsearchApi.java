@@ -247,11 +247,8 @@ public class ElasticsearchApi {
         public String id;
         public String gatewayId;
         public String userId;
-        public String userGroup;
-        public String updateTime;
         public String startAt;
         public String endAt;
-        public long timestamp;
 
 //        @JSONField(serialize = false, deserialize = false)
 //        public transient Account account;

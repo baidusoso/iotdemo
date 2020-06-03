@@ -14,4 +14,8 @@ public interface GatewayPolicyDao {
     int tempDeleteAllGatewayPolicy();
 
     int insertOrUpdateGatewayPolicy(@Param("policy") ElasticsearchApi.GatewayPolicy policy);
+
+    int deleteGatewayPolicy(@Param("policy") ElasticsearchApi.GatewayPolicy policy);
+
+    List<ElasticsearchApi.GatewayPolicy> getGatewayPolicyListByFromIds(@Param("ids") List<String> ids);
 }

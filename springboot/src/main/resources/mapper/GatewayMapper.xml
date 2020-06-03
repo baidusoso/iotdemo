@@ -34,6 +34,18 @@
         LIMIT #{offSet},#{pageRow}
     </select>
 
+    <select id="getAllGatewayDoors" resultType="com.tellhow.industry.iot.hikvision.gateway.model.Gateway$Door">
+        SELECT
+        id id,
+        door_code doorIndexCode,
+        door_name doorName,
+        channel_no channelNo,
+        channel_type channelType
+        FROM
+        gateway
+        WHERE status=1
+    </select>
+
     <insert id="insertOrUpdateGatewayDoor">
         <selectKey keyProperty="count" resultType="int" order="BEFORE">
             select count(*) as count from gateway where door_code = #{door.doorIndexCode}

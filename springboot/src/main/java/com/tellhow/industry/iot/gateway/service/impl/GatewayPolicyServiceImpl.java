@@ -6,13 +6,11 @@ import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.gateway.dao.GatewayDao;
 import com.tellhow.industry.iot.gateway.dao.GatewayPolicyDao;
 import com.tellhow.industry.iot.gateway.model.AddGatewayPolicyRequest;
+import com.tellhow.industry.iot.gateway.model.DeleteGatewayPolicyRequest;
 import com.tellhow.industry.iot.gateway.service.GatewayPolicyService;
 import com.tellhow.industry.iot.hikvision.GatewayException;
 import com.tellhow.industry.iot.hikvision.gateway.GatewayApi;
-import com.tellhow.industry.iot.hikvision.gateway.model.AddAuthDownloadTaskRequest;
-import com.tellhow.industry.iot.hikvision.gateway.model.AuthDownloadData;
-import com.tellhow.industry.iot.hikvision.gateway.model.AuthDownloadRequest;
-import com.tellhow.industry.iot.hikvision.gateway.model.Gateway;
+import com.tellhow.industry.iot.hikvision.gateway.model.*;
 import com.tellhow.industry.iot.hikvision.org.OrgApi;
 import com.tellhow.industry.iot.hikvision.org.model.OrgInfo;
 import com.tellhow.industry.iot.hikvision.person.PersonApi;
@@ -24,13 +22,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class GatewayPolicyServiceImpl implements GatewayPolicyService {
@@ -56,18 +52,46 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
 
     @Override
     public JSONObject syncGatewayPolicy() {
-        try {
-            List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList = ElasticsearchApi.getGatewayPolicyList();
-            policyDao.tempDeleteAllGatewayPolicy();
-            if (gatewayPolicyList != null && gatewayPolicyList.size() > 0) {
-                for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
-                    policyDao.insertOrUpdateGatewayPolicy(gatewayPolicy);
+        commitSyncGatewayPolicyTask();
+        return CommonUtil.successJson();
+    }
+
+    void commitSyncGatewayPolicyTask() {
+        new Thread(() -> {
+            List<Gateway.Door> doorList = gatewayDao.getAllGatewayDoors();
+            if (doorList != null && doorList.size() > 0) {
+                GatewayApi gatewayApi = new GatewayApi();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+                int pageSize = 1000;
+                int total = 0;
+                int pageNo = 1;
+                for (Gateway.Door doorGateway : doorList) {
+                    logger.info("commitSyncGatewayPolicyTask for doorIndexCode:" + doorGateway.doorIndexCode);
+                    do {
+                        AuthConfigSearchResponse authConfigSearchResponse = gatewayApi.searchAuthConfig(doorGateway, pageNo, pageSize);
+                        if (authConfigSearchResponse != null && authConfigSearchResponse.list != null && authConfigSearchResponse.list.size() > 0) {
+                            logger.info("commitSyncGatewayPolicyTask searchAuthConfig size:" + authConfigSearchResponse.list.size());
+                            total = authConfigSearchResponse.total;
+                            pageNo += 1;
+                            for (AuthConfigSearchResponse.AuthConfig authConfig : authConfigSearchResponse.list) {
+                                ElasticsearchApi.GatewayPolicy gatewayPolicy = new ElasticsearchApi.GatewayPolicy();
+                                gatewayPolicy.id = UUID.randomUUID().toString();
+                                gatewayPolicy.gatewayId = authConfig.resourceIndexCode;
+                                gatewayPolicy.userId = authConfig.personDataId;
+                                try {
+                                    gatewayPolicy.startAt = sdf.format(sdfISO8601.parse(authConfig.startTime));
+                                    gatewayPolicy.endAt = sdf.format(sdfISO8601.parse(authConfig.endTime));
+                                    policyDao.insertOrUpdateGatewayPolicy(gatewayPolicy);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    } while (total > pageNo * pageSize);
                 }
             }
-        } catch (GatewayException gatewayException) {
-            return CommonUtil.errorJson(Constants.ERROR_GATEWAY, gatewayException.getMessage());
-        }
-        return CommonUtil.successJson();
+        }).start();
     }
 
     @Override
@@ -110,7 +134,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                         if (account == null) {
                             return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.userId + "用户不存在");
                         }
-                        if ((account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
+                        if (account.isGuest() && (account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
                             return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
                         }
                         if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
@@ -129,13 +153,56 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     }
                 }
                 //创建card任务
-                commitTask(gatewayPolicyList, accountIdMap, gatewayIdMap);
+                commitTask(gatewayPolicyList, accountIdMap, gatewayIdMap, false);
             }
         }
         return CommonUtil.successJson();
     }
 
-    void commitTask(final List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap) {
+    @Override
+    public JSONObject deleteGatewayPolicy(DeleteGatewayPolicyRequest deleteGatewayPolicyRequest) {
+        if (deleteGatewayPolicyRequest != null && deleteGatewayPolicyRequest.ids != null && deleteGatewayPolicyRequest.ids.size() > 0) {
+            if (deleteGatewayPolicyRequest.ids.size() > 100) {
+                return CommonUtil.errorJson(Constants.ERROR_400, "单次数量超出100");
+            }
+            List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList = policyDao.getGatewayPolicyListByFromIds(deleteGatewayPolicyRequest.ids);
+            if (gatewayPolicyList != null && gatewayPolicyList.size() > 0) {
+                Map<String, ElasticsearchApi.Account> accountIdMap = new HashMap<>();
+                Map<String, Gateway.Door> gatewayIdMap = new HashMap<>();
+                for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
+                    //2、校验用户是否存在
+                    ElasticsearchApi.Account account = accountIdMap.get(gatewayPolicy.userId);
+                    if (account == null) {
+                        account = accountDao.getAccountById(gatewayPolicy.userId);
+                        if (account == null) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.userId + "用户不存在");
+                        }
+                        if (account.isGuest() && (account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
+                        }
+                        if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, account.name + "的人脸尚未上传");
+                        }
+                        accountIdMap.put(gatewayPolicy.userId, account);
+                    }
+                    //3、校验门禁是否存在
+                    Gateway.Door doorGateway = gatewayIdMap.get(gatewayPolicy.gatewayId);
+                    if (doorGateway == null) {
+                        doorGateway = gatewayDao.getGatewayDoorById(gatewayPolicy.gatewayId);
+                        if (doorGateway == null) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.gatewayId + "门禁不存在");
+                        }
+                        gatewayIdMap.put(gatewayPolicy.gatewayId, doorGateway);
+                    }
+                }
+                //创建card任务
+                commitTask(gatewayPolicyList, accountIdMap, gatewayIdMap, true);
+            }
+        }
+        return CommonUtil.successJson();
+    }
+
+    void commitTask(final List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap, boolean delete) {
         new Thread(() -> {
             try {
                 PersonApi personApi = new PersonApi();
@@ -191,39 +258,80 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     logger.info(gatewayPolicy.gatewayId + "-----" + gatewayPolicy.userId + "添加卡片信息");
                     //card
                     AuthDownloadData authDownloadData = new AuthDownloadData(cardTaskId, gatewayPolicy, accountIdMap.get(gatewayPolicy.userId), gatewayIdMap.get(gatewayPolicy.gatewayId));
+                    authDownloadData.setOperationType(delete);
                     gatewayApi.addAuthDownloadData(authDownloadData);
                     //face
                     logger.info(gatewayPolicy.gatewayId + "-----" + gatewayPolicy.userId + "添加人脸信息");
                     authDownloadData.taskId = faceTaskId;
+                    authDownloadData.setOperationType(delete);
                     gatewayApi.addAuthDownloadData(authDownloadData);
                 }
-
-                AuthDownloadRequest authDownloadRequest = new AuthDownloadRequest(cardTaskId);
-                logger.info(cardTaskId + "开始下载任务");
-                gatewayApi.startAuthDownloadTask(authDownloadRequest);
-                boolean isDownloadFinished = false;
-                long start = System.currentTimeMillis();
-                do {
-                    Thread.sleep(4000);
-                    logger.info(cardTaskId + "查询下载任务进度");
-                    isDownloadFinished = gatewayApi.queryAuthDownloadTaskProgress(authDownloadRequest);
-                    logger.info(cardTaskId + "查询下载任务进度 isDownloadFinished:" + isDownloadFinished);
-                } while (!isDownloadFinished || System.currentTimeMillis() - start > 3600 * 1000);
-
-                logger.info(faceTaskId + "开始下载任务");
-                authDownloadRequest = new AuthDownloadRequest(faceTaskId);
-                gatewayApi.startAuthDownloadTask(authDownloadRequest);
-                start = System.currentTimeMillis();
-                do {
-                    Thread.sleep(4000);
-                    logger.info(faceTaskId + "查询下载任务进度");
-                    isDownloadFinished = gatewayApi.queryAuthDownloadTaskProgress(authDownloadRequest);
-                    logger.info(faceTaskId + "查询下载任务进度 isDownloadFinished:" + isDownloadFinished);
-                } while (!isDownloadFinished || System.currentTimeMillis() - start > 3600 * 1000);
+                boolean isCardTaskDownloadFinished = queryAuthDownloadTaskProgress(gatewayApi, cardTaskId);
+                logger.info("isCardTaskDownloadFinished:" + isCardTaskDownloadFinished);
+                if (isCardTaskDownloadFinished) {
+                    boolean isFaceTaskDownloadFinished = queryAuthDownloadTaskProgress(gatewayApi, faceTaskId);
+                    logger.info("isFaceTaskDownloadFinished:" + isFaceTaskDownloadFinished);
+                    if (isFaceTaskDownloadFinished) {
+                        for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
+                            if (!delete) {
+                                syncAddAuthConfig(gatewayApi, gatewayPolicy, accountIdMap, gatewayIdMap);
+                            } else {
+                                syncDeleteAuthConfig(gatewayApi, gatewayPolicy, accountIdMap, gatewayIdMap);
+                            }
+                        }
+                    }
+                }
                 logger.info("commitTask done!!!");
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
         }).start();
+    }
+
+    boolean queryAuthDownloadTaskProgress(GatewayApi gatewayApi, String taskId) {
+        AuthDownloadRequest authDownloadRequest = new AuthDownloadRequest(taskId);
+        logger.info(taskId + "开始下载任务");
+        gatewayApi.startAuthDownloadTask(authDownloadRequest);
+        boolean isDownloadFinished = false;
+        long start = System.currentTimeMillis();
+        do {
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            logger.info(taskId + "查询下载任务进度");
+            isDownloadFinished = gatewayApi.queryAuthDownloadTaskProgress(authDownloadRequest);
+            logger.info(taskId + "查询下载任务进度 isDownloadFinished:" + isDownloadFinished);
+        } while (!isDownloadFinished || System.currentTimeMillis() - start > 3600 * 1000);
+        return isDownloadFinished;
+    }
+
+    void syncAddAuthConfig(GatewayApi gatewayApi, ElasticsearchApi.GatewayPolicy gatewayPolicy, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap) {
+        AuthConfigSearchResponse authConfigSearchResponse = gatewayApi.searchAuthConfig(accountIdMap.get(gatewayPolicy.userId), gatewayIdMap.get(gatewayPolicy.gatewayId));
+        if (authConfigSearchResponse != null && authConfigSearchResponse.list != null && authConfigSearchResponse.list.size() > 0) {
+            logger.info("syncAddAuthConfig list size:" + authConfigSearchResponse.list.size());
+            AuthConfigSearchResponse.AuthConfig authConfig = authConfigSearchResponse.list.get(0);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+            if (gatewayPolicy.id == null) {
+                gatewayPolicy.id = UUID.randomUUID().toString();
+            }
+            try {
+                gatewayPolicy.startAt = sdf.format(sdfISO8601.parse(authConfig.startTime));
+                gatewayPolicy.endAt = sdf.format(sdfISO8601.parse(authConfig.endTime));
+                policyDao.insertOrUpdateGatewayPolicy(gatewayPolicy);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    void syncDeleteAuthConfig(GatewayApi gatewayApi, ElasticsearchApi.GatewayPolicy gatewayPolicy, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap) {
+        AuthConfigSearchResponse authConfigSearchResponse = gatewayApi.searchAuthConfig(accountIdMap.get(gatewayPolicy.userId), gatewayIdMap.get(gatewayPolicy.gatewayId));
+        if (authConfigSearchResponse != null && (authConfigSearchResponse.list == null || authConfigSearchResponse.list.size() == 0)) {
+            logger.info("syncDeleteAuthConfig list size is empty!");
+            policyDao.deleteGatewayPolicy(gatewayPolicy);
+        }
     }
 }

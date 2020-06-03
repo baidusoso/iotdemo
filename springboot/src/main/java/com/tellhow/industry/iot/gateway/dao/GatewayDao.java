@@ -14,6 +14,8 @@ public interface GatewayDao {
 
     List<JSONObject> getGatewayDoorList(JSONObject jsonObject);
 
+    List<Gateway.Door> getAllGatewayDoors();
+
     int tempDeleteAllGateway();
 
     int insertOrUpdateGateway(@Param("gateway") Gateway gateway);

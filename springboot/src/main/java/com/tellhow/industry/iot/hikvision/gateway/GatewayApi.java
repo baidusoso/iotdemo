@@ -2,6 +2,7 @@ package com.tellhow.industry.iot.hikvision.gateway;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.hikvision.BaseApi;
 import com.tellhow.industry.iot.hikvision.BaseResponse;
 import com.tellhow.industry.iot.hikvision.GatewayException;
@@ -13,9 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.tellhow.industry.iot.hikvision.gateway.model.AddAuthDownloadTaskRequest.TASK_TYPE_CARD;
-import static com.tellhow.industry.iot.hikvision.gateway.model.AddAuthDownloadTaskRequest.TASK_TYPE_FACE;
 
 public class GatewayApi extends BaseApi {
 
@@ -67,5 +65,19 @@ public class GatewayApi extends BaseApi {
         }, GatewayInterface.PATH_QUERY_AUTH_DOWNLOAD_TASK_PROGRESS, JSON.toJSONString(authDownloadRequest));
         logger.info(authDownloadRequest.taskId + " totalPercent:" + response.data.totalPercent + " isDownloadFinished:" + response.data.isDownloadFinished);
         return response.data.isDownloadFinished;
+    }
+
+    public AuthConfigSearchResponse searchAuthConfig(ElasticsearchApi.Account account, Gateway.Door doorGateway) {
+        AuthConfigSearchRequest authConfigSearchRequest = new AuthConfigSearchRequest(account, doorGateway);
+        BaseResponse<AuthConfigSearchResponse> response = post(new TypeReference<BaseResponse<AuthConfigSearchResponse>>() {
+        }, GatewayInterface.PATH_AUTH_CONFIG_SEARCH, JSON.toJSONString(authConfigSearchRequest));
+        return response.data;
+    }
+
+    public AuthConfigSearchResponse searchAuthConfig(Gateway.Door doorGateway, int pageNo, int pageSize) {
+        AuthConfigSearchRequest authConfigSearchRequest = new AuthConfigSearchRequest(doorGateway, pageNo, pageSize);
+        BaseResponse<AuthConfigSearchResponse> response = post(new TypeReference<BaseResponse<AuthConfigSearchResponse>>() {
+        }, GatewayInterface.PATH_AUTH_CONFIG_SEARCH, JSON.toJSONString(authConfigSearchRequest));
+        return response.data;
     }
 }

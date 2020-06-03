@@ -22,21 +22,10 @@ public class AuthDownloadData {
         personInfos.add(personInfo);
     }
 
-    public static class ResourceInfo {
-        public String resourceIndexCode;
-        public String resourceType;
-        public List<Integer> channelNos = new ArrayList<>();
-
-        public ResourceInfo(String resourceIndexCode, String resourceType, int channelNo) {
-            this.resourceIndexCode = resourceIndexCode;
-            this.resourceType = resourceType;
-            this.channelNos.add(channelNo);
-        }
-
-        public ResourceInfo(Gateway.Door doorGateway) {
-            this.resourceIndexCode = doorGateway.doorIndexCode;
-            this.resourceType = doorGateway.channelType;
-            this.channelNos.add(Integer.parseInt(doorGateway.channelNo));
+    public void setOperationType(boolean delete) {
+        int operatorType = delete ? 2 : 0;
+        for (PersonInfo personInfo : personInfos) {
+            personInfo.operatorType = operatorType;
         }
     }
 

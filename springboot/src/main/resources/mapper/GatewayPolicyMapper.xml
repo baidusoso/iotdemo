@@ -12,7 +12,7 @@
         AND gwp.status=1
         AND ac.org_id=org.org_code
         AND ac.id=gwp.account_id
-        AND gw.id=gwp.gateway_id
+        AND gw.door_code=gwp.gateway_id
         <if test="startTime !='' and startTime !=null">
             AND gwp.start_time &lt;= #{startTime}
         </if>
@@ -50,7 +50,7 @@
         AND gwp.status=1
         AND ac.org_id=org.org_code
         AND ac.id=gwp.account_id
-        AND gw.id=gwp.gateway_id
+        AND gw.door_code=gwp.gateway_id
         <if test="startTime !='' and startTime !=null">
             AND gwp.start_time &lt;= #{startTime}
         </if>
@@ -80,16 +80,20 @@
             AND gateway_id = #{policy.gatewayId}
         </selectKey>
         <if test="count==0">
-            insert into gateway_policy(account_id,gateway_id,begin_time,end_time)
+            insert into gateway_policy(id,account_id,id,gateway_id,begin_time,end_time)
             values(
+            #{policy.id},
             #{policy.userId},
+            #{policy.id},
             #{policy.gatewayId},
             #{policy.startAt},
             #{policy.endAt}
             )
         </if>
         <if test="count>0">
-            UPDATE gateway_policy SET begin_time =#{policy.startAt},
+            UPDATE gateway_policy SET
+            id=#{policy.id},
+            begin_time =#{policy.startAt},
             end_time=#{policy.endAt},
             status=1
             WHERE account_id = #{policy.userId}
@@ -102,4 +106,29 @@
         SET
         status = '0'
     </update>
+
+    <update id="deleteGatewayPolicy">
+        UPDATE gateway_policy
+        SET
+        status = '0'
+        WHERE account_id = #{policy.userId}
+          AND gateway_id = #{policy.gatewayId}
+    </update>
+
+    <select id="getGatewayPolicyListByFromIds"
+            resultType="com.tellhow.industry.iot.elasticsearch.ElasticsearchApi$GatewayPolicy">
+        SELECT
+        id id,
+        account_id userId,
+        gateway_id gatewayId,
+        begin_time startAt,
+        end_time endAt
+        FROM gateway_policy
+        WHERE status=1
+        AND id in (
+        <foreach collection="ids" item="item" index="index" separator=",">
+            #{item}
+        </foreach>
+        )
+    </select>
 </mapper>
