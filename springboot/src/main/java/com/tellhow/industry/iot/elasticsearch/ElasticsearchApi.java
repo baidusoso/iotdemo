@@ -3,6 +3,7 @@ package com.tellhow.industry.iot.elasticsearch;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.tellhow.industry.iot.account.model.IAMAccount;
 import com.tellhow.industry.iot.hikvision.GatewayException;
 import com.tellhow.industry.iot.hikvision.gateway.model.Gateway;
 import com.tellhow.industry.iot.hikvision.org.model.OrgInfo;
@@ -179,6 +180,24 @@ public class ElasticsearchApi {
         public String faceId;
         public String facePic;
         public int delFlag;
+
+        public Account() {
+
+        }
+
+        public Account(IAMAccount account) {
+            this.id = account.id;
+            this.name = account.name;
+            this.gender = account.gender;
+            this.no = account.no;
+            this.certificateNum = account.idCard;
+            this.mobile = account.mobile;
+            this.username = account.loginName;
+            this.usergroup = "厂内人员";
+            if (account.delFlag != null) {
+                this.delFlag = Integer.parseInt(account.delFlag);
+            }
+        }
 
         public boolean isGuest() {
             return "外来访客".equals(usergroup);
