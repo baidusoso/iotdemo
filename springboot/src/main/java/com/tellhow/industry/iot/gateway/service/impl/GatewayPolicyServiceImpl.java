@@ -67,7 +67,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     for (ElasticsearchApi.Account account : accountList) {
                         logger.info("commitSyncGatewayPolicyTask for doorIndexCode:" + doorGateway.doorIndexCode + " account:" + account.id);
                         AuthItemSearchResponse.AuthItem authItem = gatewayApi.searchSingleAuthItem(account, doorGateway);
-                        if (authItem != null) {
+                        if (authItem != null && authItem.personId != null && authItem.resourceIndexCode != null && authItem.startTime != null && authItem.endTime != null) {
                             ElasticsearchApi.GatewayPolicy gatewayPolicy = new ElasticsearchApi.GatewayPolicy();
                             gatewayPolicy.id = UUID.randomUUID().toString();
                             gatewayPolicy.gatewayId = doorGateway.doorIndexCode;
