@@ -81,7 +81,7 @@
         </selectKey>
         <if test="count==0">
             insert into
-            gateway_policy(id,account_id,id,gateway_id,person_status,card_status,face_statis,config_time,begin_time,end_time)
+            gateway_policy(id,account_id,gateway_id,person_status,card_status,face_statis,config_time,begin_time,end_time)
             values(
             #{policy.id},
             #{policy.userId},
