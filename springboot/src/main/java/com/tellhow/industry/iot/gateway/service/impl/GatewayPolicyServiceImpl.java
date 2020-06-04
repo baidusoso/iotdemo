@@ -63,41 +63,34 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                 GatewayApi gatewayApi = new GatewayApi();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-                int pageSize = 1000;
-                int total = 0;
-                int pageNo = 1;
                 for (Gateway.Door doorGateway : doorList) {
                     for (ElasticsearchApi.Account account : accountList) {
                         logger.info("commitSyncGatewayPolicyTask for doorIndexCode:" + doorGateway.doorIndexCode + " account:" + account.id);
-                        do {
-                            AuthItemSearchResponse authItemSearchResponse = gatewayApi.searchAuthItem(account, doorGateway);
-                            if (authItemSearchResponse != null && authItemSearchResponse.list != null && authItemSearchResponse.list.size() > 0) {
-                                logger.info("commitSyncGatewayPolicyTask searchAuthConfig size:" + authItemSearchResponse.list.size());
-                                total = authItemSearchResponse.total;
-                                pageNo += 1;
-                                for (AuthItemSearchResponse.AuthItem authItem : authItemSearchResponse.list) {
-                                    ElasticsearchApi.GatewayPolicy gatewayPolicy = new ElasticsearchApi.GatewayPolicy();
-                                    gatewayPolicy.id = UUID.randomUUID().toString();
-                                    gatewayPolicy.gatewayId = doorGateway.doorIndexCode;
-                                    gatewayPolicy.userId = authItem.personId;
-                                    gatewayPolicy.personStatus = authItem.personStatus;
-                                    gatewayPolicy.cardStatus = authItem.cardStatus;
-                                    gatewayPolicy.faceStatus = authItem.faceStatus;
-                                    gatewayPolicy.configTime = authItem.configTime;
-                                    try {
-                                        gatewayPolicy.startAt = sdf.format(sdfISO8601.parse(authItem.startTime));
-                                        gatewayPolicy.endAt = sdf.format(sdfISO8601.parse(authItem.endTime));
-                                        policyDao.insertOrUpdateGatewayPolicy(gatewayPolicy);
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
+                        AuthItemSearchResponse.AuthItem authItem = gatewayApi.searchSingleAuthItem(account, doorGateway);
+                        if (authItem != null) {
+                            ElasticsearchApi.GatewayPolicy gatewayPolicy = new ElasticsearchApi.GatewayPolicy();
+                            gatewayPolicy.id = UUID.randomUUID().toString();
+                            gatewayPolicy.gatewayId = doorGateway.doorIndexCode;
+                            gatewayPolicy.userId = authItem.personId;
+                            gatewayPolicy.personStatus = authItem.personStatus;
+                            gatewayPolicy.cardStatus = authItem.cardStatus;
+                            gatewayPolicy.faceStatus = authItem.faceStatus;
+                            gatewayPolicy.configTime = authItem.configTime;
+                            try {
+                                gatewayPolicy.startAt = sdf.format(sdfISO8601.parse(authItem.startTime));
+                                gatewayPolicy.endAt = sdf.format(sdfISO8601.parse(authItem.endTime));
+                                policyDao.insertOrUpdateGatewayPolicy(gatewayPolicy);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
                             }
-                        } while (total > pageNo * pageSize);
+                        }
                     }
                 }
             }
-        }).start();
+        }).
+
+                start();
+
     }
 
     @Override
