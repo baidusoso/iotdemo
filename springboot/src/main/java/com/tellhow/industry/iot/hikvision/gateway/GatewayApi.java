@@ -89,9 +89,9 @@ public class GatewayApi extends BaseApi {
     }
 
     public AuthItemSearchResponse.AuthItem searchSingleAuthItem(ElasticsearchApi.Account account, Gateway.Door doorGateway) {
-        AuthItemSearchRequest authItemSearchRequest = new AuthItemSearchRequest(account, doorGateway);
+        AuthItemSingleSearchRequest authItemSingleSearchRequest = new AuthItemSingleSearchRequest(account, doorGateway);
         BaseResponse<AuthItemSearchResponse.AuthItem> response = post(new TypeReference<BaseResponse<AuthItemSearchResponse.AuthItem>>() {
-        }, GatewayInterface.PATH_AUTH_ITEM_SINGLE_SEARCH, JSON.toJSONString(authItemSearchRequest));
+        }, GatewayInterface.PATH_AUTH_ITEM_SINGLE_SEARCH, JSON.toJSONString(authItemSingleSearchRequest));
         return response.data;
     }
 }
