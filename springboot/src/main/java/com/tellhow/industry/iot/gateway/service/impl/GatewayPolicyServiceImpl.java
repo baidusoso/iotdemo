@@ -62,7 +62,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
 
                 GatewayApi gatewayApi = new GatewayApi();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+                SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
                 for (Gateway.Door doorGateway : doorList) {
                     for (ElasticsearchApi.Account account : accountList) {
                         logger.info("commitSyncGatewayPolicyTask for doorIndexCode:" + doorGateway.doorIndexCode + " account:" + account.id);
@@ -104,7 +104,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                 }
                 Date now = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+                SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
                 Map<String, ElasticsearchApi.Account> accountIdMap = new HashMap<>();
                 Map<String, Gateway.Door> gatewayIdMap = new HashMap<>();
                 for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {

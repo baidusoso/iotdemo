@@ -282,9 +282,9 @@ public class ElasticsearchApi {
     }
 
     public static void main(String[] args) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = sdf.parse("2019-10-24 22:12:00");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date date = sdf.parse("2037-12-31T08:00:00.000+08:00");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String s = sdf2.format(date);
         System.out.println(s);
     }
