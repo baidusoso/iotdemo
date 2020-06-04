@@ -8,7 +8,6 @@ import com.tellhow.industry.iot.gateway.dao.GatewayPolicyDao;
 import com.tellhow.industry.iot.gateway.model.AddGatewayPolicyRequest;
 import com.tellhow.industry.iot.gateway.model.DeleteGatewayPolicyRequest;
 import com.tellhow.industry.iot.gateway.service.GatewayPolicyService;
-import com.tellhow.industry.iot.hikvision.GatewayException;
 import com.tellhow.industry.iot.hikvision.gateway.GatewayApi;
 import com.tellhow.industry.iot.hikvision.gateway.model.*;
 import com.tellhow.industry.iot.hikvision.org.OrgApi;
@@ -22,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,7 +57,9 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
     void commitSyncGatewayPolicyTask() {
         new Thread(() -> {
             List<Gateway.Door> doorList = gatewayDao.getAllGatewayDoors();
-            if (doorList != null && doorList.size() > 0) {
+            List<ElasticsearchApi.Account> accountList = accountDao.getAllAccount();
+            if (doorList != null && doorList.size() > 0 && accountList != null && accountList.size() > 0) {
+
                 GatewayApi gatewayApi = new GatewayApi();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -67,28 +67,34 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                 int total = 0;
                 int pageNo = 1;
                 for (Gateway.Door doorGateway : doorList) {
-                    logger.info("commitSyncGatewayPolicyTask for doorIndexCode:" + doorGateway.doorIndexCode);
-                    do {
-                        AuthConfigSearchResponse authConfigSearchResponse = gatewayApi.searchAuthConfig(doorGateway, pageNo, pageSize);
-                        if (authConfigSearchResponse != null && authConfigSearchResponse.list != null && authConfigSearchResponse.list.size() > 0) {
-                            logger.info("commitSyncGatewayPolicyTask searchAuthConfig size:" + authConfigSearchResponse.list.size());
-                            total = authConfigSearchResponse.total;
-                            pageNo += 1;
-                            for (AuthConfigSearchResponse.AuthConfig authConfig : authConfigSearchResponse.list) {
-                                ElasticsearchApi.GatewayPolicy gatewayPolicy = new ElasticsearchApi.GatewayPolicy();
-                                gatewayPolicy.id = UUID.randomUUID().toString();
-                                gatewayPolicy.gatewayId = authConfig.resourceIndexCode;
-                                gatewayPolicy.userId = authConfig.personDataId;
-                                try {
-                                    gatewayPolicy.startAt = sdf.format(sdfISO8601.parse(authConfig.startTime));
-                                    gatewayPolicy.endAt = sdf.format(sdfISO8601.parse(authConfig.endTime));
-                                    policyDao.insertOrUpdateGatewayPolicy(gatewayPolicy);
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
+                    for (ElasticsearchApi.Account account : accountList) {
+                        logger.info("commitSyncGatewayPolicyTask for doorIndexCode:" + doorGateway.doorIndexCode + " account:" + account.id);
+                        do {
+                            AuthItemSearchResponse authItemSearchResponse = gatewayApi.searchAuthItem(account, doorGateway);
+                            if (authItemSearchResponse != null && authItemSearchResponse.list != null && authItemSearchResponse.list.size() > 0) {
+                                logger.info("commitSyncGatewayPolicyTask searchAuthConfig size:" + authItemSearchResponse.list.size());
+                                total = authItemSearchResponse.total;
+                                pageNo += 1;
+                                for (AuthItemSearchResponse.AuthItem authItem : authItemSearchResponse.list) {
+                                    ElasticsearchApi.GatewayPolicy gatewayPolicy = new ElasticsearchApi.GatewayPolicy();
+                                    gatewayPolicy.id = UUID.randomUUID().toString();
+                                    gatewayPolicy.gatewayId = doorGateway.doorIndexCode;
+                                    gatewayPolicy.userId = authItem.personId;
+                                    gatewayPolicy.personStatus = authItem.personStatus;
+                                    gatewayPolicy.cardStatus = authItem.cardStatus;
+                                    gatewayPolicy.faceStatus = authItem.faceStatus;
+                                    gatewayPolicy.configTime = authItem.configTime;
+                                    try {
+                                        gatewayPolicy.startAt = sdf.format(sdfISO8601.parse(authItem.startTime));
+                                        gatewayPolicy.endAt = sdf.format(sdfISO8601.parse(authItem.endTime));
+                                        policyDao.insertOrUpdateGatewayPolicy(gatewayPolicy);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
-                        }
-                    } while (total > pageNo * pageSize);
+                        } while (total > pageNo * pageSize);
+                    }
                 }
             }
         }).start();

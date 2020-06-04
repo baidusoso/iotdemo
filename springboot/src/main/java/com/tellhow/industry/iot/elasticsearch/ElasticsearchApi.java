@@ -269,6 +269,11 @@ public class ElasticsearchApi {
         public String startAt;
         public String endAt;
 
+        public int personStatus;
+        public int cardStatus;
+        public int faceStatus;
+        public String configTime;
+
 //        @JSONField(serialize = false, deserialize = false)
 //        public transient Account account;
 //

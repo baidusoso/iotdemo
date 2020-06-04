@@ -11,7 +11,7 @@
  Target Server Version : 50648
  File Encoding         : 65001
 
- Date: 04/06/2020 08:06:37
+ Date: 04/06/2020 10:24:51
 */
 
 SET NAMES utf8mb4;
@@ -1699,8 +1699,12 @@ CREATE TABLE `gateway_policy` (
   `id` varchar(64) NOT NULL,
   `account_id` varchar(64) DEFAULT NULL,
   `gateway_id` varchar(64) DEFAULT NULL,
+  `person_status` tinyint(4) DEFAULT NULL,
+  `card_status` tinyint(4) DEFAULT NULL,
+  `face_status` tinyint(4) DEFAULT NULL,
   `begin_time` varchar(32) DEFAULT NULL,
   `end_time` varchar(32) DEFAULT NULL,
+  `config_time` varchar(32) DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL COMMENT '1有效0无效',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

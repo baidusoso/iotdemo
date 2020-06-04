@@ -14,6 +14,7 @@ public interface AccountDao {
     int getAccountCount(JSONObject jsonObject);
 
     List<JSONObject> getAccountList(JSONObject jsonObject);
+    List<ElasticsearchApi.Account> getAllAccount();
 
     int tempDeleteAllAccount();
 

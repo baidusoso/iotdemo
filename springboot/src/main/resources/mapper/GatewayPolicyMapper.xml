@@ -80,20 +80,27 @@
             AND gateway_id = #{policy.gatewayId}
         </selectKey>
         <if test="count==0">
-            insert into gateway_policy(id,account_id,id,gateway_id,begin_time,end_time)
+            insert into
+            gateway_policy(id,account_id,id,gateway_id,person_status,card_status,face_statis,config_time,begin_time,end_time)
             values(
             #{policy.id},
             #{policy.userId},
-            #{policy.id},
             #{policy.gatewayId},
+            #{policy.personStatus},
+            #{policy.cardStatus},
+            #{policy.faceStatus},
+            #{policy.configTime},
             #{policy.startAt},
             #{policy.endAt}
             )
         </if>
         <if test="count>0">
             UPDATE gateway_policy SET
-            id=#{policy.id},
-            begin_time =#{policy.startAt},
+            person_status=#{policy.personStatus},
+            card_status=#{policy.cardStatus},
+            face_status=#{policy.faceStatus},
+            config_time=#{policy.configTime},
+            begin_time=#{policy.startAt},
             end_time=#{policy.endAt},
             status=1
             WHERE account_id = #{policy.userId}

@@ -128,6 +128,7 @@
           url: "/policy/sync",
           method: "get"
         }).then(data => {
+          _vue.$message.info("同步任务已提交")
           _vue.getList();
         }).catch(() => {
           this.listLoading = false;

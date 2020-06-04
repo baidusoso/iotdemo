@@ -59,6 +59,25 @@
         LIMIT #{offSet},#{pageRow}
     </select>
 
+    <select id="getAllAccount" resultType="com.tellhow.industry.iot.elasticsearch.ElasticsearchApi$Account">
+        SELECT
+        a.id id,
+        a.name name,
+        a.gender gender,
+        a.no no,
+        certificate_num certificateNum,
+        mobile mobile,
+        username username,
+        usergroup usergroup,
+        update_date updateDate,
+        face_id faceId,
+        face_pic facePic
+        FROM
+        account a
+        LEFT JOIN sys_org b ON a.org_id=b.org_code AND b.status=1
+        WHERE a.status=1
+    </select>
+
     <insert id="insertOrUpdateAccount">
         <selectKey keyProperty="count" resultType="int" order="BEFORE">
             select count(*) as count from account where id = #{account.id}
