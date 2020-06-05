@@ -139,4 +139,14 @@
         face_id = #{faceId}
         WHERE id = #{id}
     </update>
+
+    <update id="batchDeleteAccountByIds">
+        UPDATE account
+        SET status=0
+        WHERE id in (
+        <foreach collection="ids" item="item" index="index" separator=",">
+            #{item}
+        </foreach>
+        )
+    </update>
 </mapper>

@@ -21,9 +21,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ElasticsearchApi {
 
@@ -287,5 +285,9 @@ public class ElasticsearchApi {
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String s = sdf2.format(date);
         System.out.println(s);
+
+        Map<String,String> map=new HashMap<>();
+        map.put("personId","1");
+        System.out.println(JSON.toJSON(map));
     }
 }

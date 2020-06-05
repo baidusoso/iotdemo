@@ -11,6 +11,13 @@
             sys_org
         WHERE status='1'
     </select>
+    <select id="getOrgCodeList" resultType="String">
+        SELECT
+        org_code
+        FROM
+        sys_org
+        WHERE status='1'
+    </select>
     <select id="findOrgById" resultType="com.tellhow.industry.iot.system.model.Org">
         SELECT
         org_code        orgCode,

@@ -138,4 +138,21 @@
         </foreach>
         )
     </select>
+
+    <select id="getGatewayPolicyListByFromUserIds"
+            resultType="com.tellhow.industry.iot.elasticsearch.ElasticsearchApi$GatewayPolicy">
+        SELECT
+        id id,
+        account_id userId,
+        gateway_id gatewayId,
+        begin_time startAt,
+        end_time endAt
+        FROM gateway_policy
+        WHERE status=1
+        AND account_id in (
+        <foreach collection="ids" item="item" index="index" separator=",">
+            #{item}
+        </foreach>
+        )
+    </select>
 </mapper>

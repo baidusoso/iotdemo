@@ -11,4 +11,6 @@ public interface AccountService {
     JSONObject syncAccount();
 
     JSONObject saveOrUpdateUser(List<IAMAccount> iamAccountList);
+
+    JSONObject deleteUsers(List<String> deleteUserIds);
 }

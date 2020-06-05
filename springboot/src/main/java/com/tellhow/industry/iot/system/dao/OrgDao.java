@@ -28,4 +28,6 @@ public interface OrgDao {
     int tempDeleteAllOrg();
 
     Org findOrgById(@Param("orgId") String orgId);
+
+    List<String> getOrgCodeList();
 }

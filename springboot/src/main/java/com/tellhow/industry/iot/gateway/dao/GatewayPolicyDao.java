@@ -18,4 +18,6 @@ public interface GatewayPolicyDao {
     int deleteGatewayPolicy(@Param("policy") ElasticsearchApi.GatewayPolicy policy);
 
     List<ElasticsearchApi.GatewayPolicy> getGatewayPolicyListByFromIds(@Param("ids") List<String> ids);
+
+    List<ElasticsearchApi.GatewayPolicy> getGatewayPolicyListByFromUserIds(@Param("ids") List<String> ids);
 }

@@ -44,17 +44,37 @@ public class PersonApi extends BaseApi {
         addPersonRequest.certificateType = "111";
         addPersonRequest.certificateNo = account.certificateNum;
         BaseResponse<String> getPersonResponse = post(new TypeReference<BaseResponse<String>>() {
-        }, PersonInterface.PATH_ADD_PERSON, JSON.toJSONString(addPersonRequest));
+        }, PersonInterface.PATH_SINGLE_ADD_PERSON, JSON.toJSONString(addPersonRequest));
         return getPersonResponse.data;
+    }
+
+    public BatchAddPersonResponse batchAddPerson(List<Person> personList) {
+        BaseResponse<BatchAddPersonResponse> batchAddPersonResponse = post(new TypeReference<BaseResponse<BatchAddPersonResponse>>() {
+        }, PersonInterface.PATH_BATCH_ADD_PERSON, JSON.toJSONString(personList));
+        return batchAddPersonResponse.data;
+    }
+
+    public void batchBindingCard(List<Person> personList) {
+        BatchBindingCardRequest batchBindingCardRequest = new BatchBindingCardRequest(personList);
+        post(new TypeReference<BaseResponse<String>>() {
+        }, PersonInterface.PATH_CARD_BINDINGS, JSON.toJSONString(batchBindingCardRequest));
+    }
+
+    public void updatePerson(Person person) {
+        post(new TypeReference<BaseResponse<String>>() {
+        }, PersonInterface.PATH_UPDATE_PERSON, JSON.toJSONString(person));
     }
 
     public String queryDefaultFaceGroup() {
         SearchFaceGroupRequest searchFaceGroupRequest = new SearchFaceGroupRequest();
         searchFaceGroupRequest.name = "default";
-        BaseResponse<SearchFaceGroupResponse> searchFaceGroupResponse = post(new TypeReference<BaseResponse<SearchFaceGroupResponse>>() {
+        BaseResponse<List<FaceGroup>> searchFaceGroupResponse = post(new TypeReference<BaseResponse<List<FaceGroup>>>() {
         }, PersonInterface.PATH_SEARCH_FACE_GROUP, JSON.toJSONString(searchFaceGroupRequest));
-        if (searchFaceGroupResponse.data != null && searchFaceGroupResponse.data.indexCodes != null && searchFaceGroupResponse.data.indexCodes.size() > 0) {
-            return searchFaceGroupResponse.data.indexCodes.get(0);
+        if (searchFaceGroupResponse.data != null && searchFaceGroupResponse.data.size() > 0) {
+            FaceGroup faceGroup = searchFaceGroupResponse.data.get(0);
+            if (faceGroup != null) {
+                return faceGroup.indexCode;
+            }
         }
         return null;
     }

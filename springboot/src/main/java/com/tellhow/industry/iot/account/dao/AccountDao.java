@@ -14,11 +14,14 @@ public interface AccountDao {
     int getAccountCount(JSONObject jsonObject);
 
     List<JSONObject> getAccountList(JSONObject jsonObject);
+
     List<ElasticsearchApi.Account> getAllAccount();
 
     int tempDeleteAllAccount();
 
     int insertOrUpdateAccount(@Param("account") ElasticsearchApi.Account account);
+
+    int batchDeleteAccountByIds(@Param("ids") List<String> ids);
 
     ElasticsearchApi.Account getAccountById(@Param("id") String id);
 

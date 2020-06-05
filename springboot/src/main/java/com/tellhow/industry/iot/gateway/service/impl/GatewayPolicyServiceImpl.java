@@ -87,9 +87,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     }
                 }
             }
-        }).
-
-                start();
+        }).start();
 
     }
 

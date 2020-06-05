@@ -1,6 +1,7 @@
 package com.tellhow.industry.iot.account.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tellhow.industry.iot.account.model.BatchDeleteAccountRequest;
 import com.tellhow.industry.iot.account.model.IAMAccount;
 import com.tellhow.industry.iot.account.service.AccountService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -30,5 +31,10 @@ public class AccountController {
     @PostMapping("/saveOrUpdateUser")
     public JSONObject saveOrUpdateUser(@RequestBody List<IAMAccount> iamAccountList) {
         return accountService.saveOrUpdateUser(iamAccountList);
+    }
+
+    @PostMapping("/deleteUsers")
+    public JSONObject deleteUsers(@RequestBody BatchDeleteAccountRequest batchDeleteAccountRequest) {
+        return accountService.deleteUsers(batchDeleteAccountRequest.deleteUsers);
     }
 }
