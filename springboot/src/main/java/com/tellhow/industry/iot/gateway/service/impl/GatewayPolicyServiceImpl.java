@@ -251,20 +251,20 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                 logger.info("cardTaskId:" + cardTaskId);
                 String faceTaskId = gatewayApi.createAuthDownloadTask(AddAuthDownloadTaskRequest.TASK_TYPE_FACE);
                 logger.info("faceTaskId:" + faceTaskId);
-                //                for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
-//                    logger.info(gatewayPolicy.gatewayId + "-----" + gatewayPolicy.userId + "添加卡片信息");
-                //card
-                logger.info(cardTaskId + "批量添加卡片信息");
-                AuthDownloadData authDownloadData = new AuthDownloadData(cardTaskId, gatewayPolicyList, accountIdMap, gatewayIdMap);
-                authDownloadData.setOperationType(delete);
-                gatewayApi.addAuthDownloadData(authDownloadData);
-                //face
-//                logger.info(gatewayPolicy.gatewayId + "-----" + gatewayPolicy.userId + "添加人脸信息");
-                logger.info(faceTaskId + "批量添加卡片信息");
-                authDownloadData.taskId = faceTaskId;
-                authDownloadData.setOperationType(delete);
-                gatewayApi.addAuthDownloadData(authDownloadData);
-//                }
+                for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
+                    logger.info(gatewayPolicy.gatewayId + "-----" + gatewayPolicy.userId + "添加卡片信息");
+                    //card
+                    logger.info(cardTaskId + "批量添加卡片信息");
+                    AuthDownloadData authDownloadData = new AuthDownloadData(cardTaskId, gatewayPolicy, accountIdMap.get(gatewayPolicy.userId), gatewayIdMap.get(gatewayPolicy.gatewayId));
+                    authDownloadData.setOperationType(delete);
+                    gatewayApi.addAuthDownloadData(authDownloadData);
+                    //face
+                    logger.info(gatewayPolicy.gatewayId + "-----" + gatewayPolicy.userId + "添加人脸信息");
+                    logger.info(faceTaskId + "批量添加卡片信息");
+                    authDownloadData.taskId = faceTaskId;
+                    authDownloadData.setOperationType(delete);
+                    gatewayApi.addAuthDownloadData(authDownloadData);
+                }
                 boolean isCardTaskDownloadFinished = queryAuthDownloadTaskProgress(gatewayApi, cardTaskId);
                 logger.info("isCardTaskDownloadFinished:" + isCardTaskDownloadFinished);
                 if (isCardTaskDownloadFinished) {
