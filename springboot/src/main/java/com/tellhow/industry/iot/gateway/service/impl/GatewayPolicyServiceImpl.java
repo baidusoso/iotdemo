@@ -310,7 +310,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
             logger.info("syncAddAuthConfig list size:" + authConfigSearchResponse.list.size());
             AuthConfigSearchResponse.AuthConfig authConfig = authConfigSearchResponse.list.get(0);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+            SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
             if (gatewayPolicy.id == null) {
                 gatewayPolicy.id = UUID.randomUUID().toString();
             }
