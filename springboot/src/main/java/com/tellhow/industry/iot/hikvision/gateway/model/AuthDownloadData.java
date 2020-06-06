@@ -22,6 +22,16 @@ public class AuthDownloadData {
         personInfos.add(personInfo);
     }
 
+    public AuthDownloadData(String taskId, List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap) {
+        this.taskId = taskId;
+        for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
+            ResourceInfo resourceInfo = new ResourceInfo(gatewayIdMap.get(gatewayPolicy.gatewayId));
+            resourceInfos.add(resourceInfo);
+            PersonInfo personInfo = new PersonInfo(gatewayPolicy, accountIdMap.get(gatewayPolicy.userId));
+            personInfos.add(personInfo);
+        }
+    }
+
     public void setOperationType(boolean delete) {
         int operatorType = delete ? 2 : 0;
         for (PersonInfo personInfo : personInfos) {
