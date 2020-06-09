@@ -164,9 +164,30 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
             }
             List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList = policyDao.getGatewayPolicyListByFromIds(deleteGatewayPolicyRequest.ids);
             if (gatewayPolicyList != null && gatewayPolicyList.size() > 0) {
+                Date now = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
                 Map<String, ElasticsearchApi.Account> accountIdMap = new HashMap<>();
                 Map<String, Gateway.Door> gatewayIdMap = new HashMap<>();
                 for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
+                    //1、日期校验与格式为海康要求的ISO8601
+                    if (StringUtils.isEmpty(gatewayPolicy.startAt) || StringUtils.isEmpty(gatewayPolicy.endAt)) {
+                        return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
+                    }
+                    try {
+                        Date startTime = sdf.parse(gatewayPolicy.startAt);
+                        Date endTime = sdf.parse(gatewayPolicy.endAt);
+                        if (endTime.before(startTime)) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, "结束时间小于开始时间");
+                        }
+                        if (endTime.before(now)) {
+                            return CommonUtil.errorJson(Constants.ERROR_400, "结束时间不能小于当前时间");
+                        }
+                        gatewayPolicy.startAt = sdfISO8601.format(startTime);
+                        gatewayPolicy.endAt = sdfISO8601.format(endTime);
+                    } catch (ParseException e) {
+                        return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
+                    }
                     //2、校验用户是否存在
                     ElasticsearchApi.Account account = accountIdMap.get(gatewayPolicy.userId);
                     if (account == null) {
