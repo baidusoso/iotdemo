@@ -6,6 +6,7 @@ import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.hikvision.BaseApi;
 import com.tellhow.industry.iot.hikvision.BaseResponse;
 import com.tellhow.industry.iot.hikvision.GatewayException;
+import com.tellhow.industry.iot.hikvision.gateway.model.AuthDownloadData;
 import com.tellhow.industry.iot.hikvision.person.model.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
@@ -43,6 +44,9 @@ public class PersonApi extends BaseApi {
         addPersonRequest.phoneNo = account.mobile;
         addPersonRequest.certificateType = "111";
         addPersonRequest.certificateNo = account.certificateNum;
+        Faces faces = new Faces();
+        faces.faceData = getFaceBinaryData(account);
+        addPersonRequest.faces.add(faces);
         BaseResponse<String> getPersonResponse = post(new TypeReference<BaseResponse<String>>() {
         }, PersonInterface.PATH_SINGLE_ADD_PERSON, JSON.toJSONString(addPersonRequest));
         return getPersonResponse.data;
