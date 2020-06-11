@@ -124,7 +124,7 @@ public class AccountServiceImpl implements AccountService {
                 logger.debug(account.name + "用户手机号不符合要求:" + account.certificateNum);
                 return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户手机号不符合要求:" + account.certificateNum);
             }
-            if (!"外来访客".equals(account.orgId)) {
+            if (!"外来访客".equals(account.usergroup)) {
                 if (StringUtils.isEmpty(account.orgId)) {
                     logger.debug("用户归属部门不能为空");
                     return CommonUtil.errorJson(Constants.ERROR_400, "用户归属部门不能为空");
