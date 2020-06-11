@@ -211,6 +211,126 @@ public class ElasticsearchApi {
             }
             return "http://10.69.212.11:3000/face/user/" + facePic;
         }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getGender() {
+            return gender;
+        }
+
+        public void setGender(String gender) {
+            this.gender = gender;
+        }
+
+        public String getNo() {
+            return no;
+        }
+
+        public void setNo(String no) {
+            this.no = no;
+        }
+
+        public String getCertificateNum() {
+            return certificateNum;
+        }
+
+        public void setCertificateNum(String certificateNum) {
+            this.certificateNum = certificateNum;
+        }
+
+        public String getMobile() {
+            return mobile;
+        }
+
+        public void setMobile(String mobile) {
+            this.mobile = mobile;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getOrgId() {
+            return orgId;
+        }
+
+        public void setOrgId(String orgId) {
+            this.orgId = orgId;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getUsergroup() {
+            return usergroup;
+        }
+
+        public void setUsergroup(String usergroup) {
+            this.usergroup = usergroup;
+        }
+
+        public String getUpdateDate() {
+            return updateDate;
+        }
+
+        public void setUpdateDate(String updateDate) {
+            this.updateDate = updateDate;
+        }
+
+        public String getFaceId() {
+            return faceId;
+        }
+
+        public void setFaceId(String faceId) {
+            this.faceId = faceId;
+        }
+
+        public String getFacePic() {
+            return facePic;
+        }
+
+        public void setFacePic(String facePic) {
+            this.facePic = facePic;
+        }
+
+        public String getLoginName() {
+            return loginName;
+        }
+
+        public void setLoginName(String loginName) {
+            this.loginName = loginName;
+        }
+
+        public int getDelFlag() {
+            return delFlag;
+        }
+
+        public void setDelFlag(int delFlag) {
+            this.delFlag = delFlag;
+        }
     }
 
     public static List<GatewayPolicy> getGatewayPolicyList() {
