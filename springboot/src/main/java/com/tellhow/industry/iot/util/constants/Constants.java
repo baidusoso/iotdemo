@@ -11,6 +11,7 @@ public class Constants {
     public static final String SUCCESS_MSG = "请求成功";
 
     public static final String ERROR_400 = "400";
+    public static final String ERROR_500 = "500";
     public static final String ERROR_GATEWAY = "9999";
 
     /**

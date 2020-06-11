@@ -175,6 +175,29 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
         return CommonUtil.successJson();
     }
 
+    @Override
+    public JSONObject addGatewayPolicyForVisitor(ElasticsearchApi.Account account) {
+        List<Gateway.Door> gatewayList = gatewayDao.getGatewayDoorsMatchName("东二门");
+        if (gatewayList == null || gatewayList.size() == 0) {
+            return CommonUtil.errorJson(Constants.ERROR_400, "找不到东二门的门禁");
+        }
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String startAt = sdf.format(calendar.getTime()) + " 08:00:00";
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        String endAt = sdf.format(calendar.getTime()) + " 08:00:00";
+        List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList = new ArrayList<>();
+        for (Gateway.Door door : gatewayList) {
+            ElasticsearchApi.GatewayPolicy gatewayPolicy = new ElasticsearchApi.GatewayPolicy();
+            gatewayPolicy.gatewayId = door.doorIndexCode;
+            gatewayPolicy.userId = account.id;
+            gatewayPolicy.startAt = startAt;
+            gatewayPolicy.endAt = endAt;
+            gatewayPolicyList.add(gatewayPolicy);
+        }
+        return addOrDeleteGatewayPolicy(gatewayPolicyList, false);
+    }
+
     void commitTask(final List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap, boolean delete) {
         new Thread(() -> {
             try {

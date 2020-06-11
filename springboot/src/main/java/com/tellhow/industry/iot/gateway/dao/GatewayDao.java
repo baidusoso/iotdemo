@@ -16,6 +16,8 @@ public interface GatewayDao {
 
     List<Gateway.Door> getAllGatewayDoors();
 
+    List<Gateway.Door> getGatewayDoorsMatchName(@Param("name") String name);
+
     int tempDeleteAllGateway();
 
     int insertOrUpdateGateway(@Param("gateway") Gateway gateway);

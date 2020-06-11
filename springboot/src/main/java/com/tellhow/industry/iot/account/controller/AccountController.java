@@ -9,6 +9,7 @@ import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.gateway.service.GatewayPolicyService;
 import com.tellhow.industry.iot.util.CommonUtil;
 import com.tellhow.industry.iot.util.FileUtils;
+import com.tellhow.industry.iot.util.constants.Constants;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,18 +72,33 @@ public class AccountController {
 
     @PostMapping("/saveOrUpdateVisitor")
     public JSONObject saveOrUpdateVisitor(ElasticsearchApi.Account account, @RequestParam("faceImg") MultipartFile faceImg) {
-        if (StringUtils.isEmpty(account.id)) {
+        logger.debug("saveOrUpdateVisitor");
+        boolean isNew = StringUtils.isEmpty(account.id);
+        logger.debug("isNew:" + isNew);
+        if (isNew) {
             account.id = UUID.randomUUID().toString();
         }
+        logger.debug("account.id:" + account.id);
         if (faceImg != null) {
-            FileUtils.uploadFace(faceImg, faceDir, account.id);
+            String avatarDir = faceDir;
+            if (!avatarDir.endsWith("/") && !avatarDir.endsWith("\\")) {
+                avatarDir = avatarDir + "/";
+            }
+            avatarDir = avatarDir + "visitor";
+            if (!FileUtils.uploadFace(faceImg, avatarDir, account.id)) {
+                return CommonUtil.errorJson(Constants.ERROR_500, "头像上传失败");
+            }
             account.facePic = account.id;
+        } else {
+            logger.debug("头像未变更");
         }
         List<ElasticsearchApi.Account> accountList = new ArrayList<>();
         accountList.add(account);
-        accountService.saveOrUpdateUser(accountList);
-        //TODO 添加门禁权限
-        return CommonUtil.successJson();
+        JSONObject jsonObject = accountService.saveOrUpdateUser(accountList);
+        if (!Constants.SUCCESS_CODE.equals(jsonObject.getString("code"))) {
+            return jsonObject;
+        }
+        return gatewayPolicyService.addGatewayPolicyForVisitor(account);
     }
 
     @PostMapping("/saveOrUpdateUser")

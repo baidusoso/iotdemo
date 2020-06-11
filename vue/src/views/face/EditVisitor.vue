@@ -60,7 +60,6 @@
     data() {
       return {
         listLoading: false, //数据加载等待动画
-        imageUrl:'',
         visitor: {
           id:'',
           name: '',
@@ -114,10 +113,10 @@
       },
 
       handlePictureCardPreview(file) {
-          this.imageUrl = file.url;
+          this.avatarUrl = file.url;
       },
       handleAvatarSuccess(res, file) {
-          this.imageUrl = window.URL.createObjectURL(res.raw)
+          this.avatarUrl = window.URL.createObjectURL(res.raw)
       },
       beforeAvatarUpload(file) {
           const isJPG = file.type === 'image/jpeg';
@@ -151,7 +150,7 @@
           });
       },
       infoUpload(){
-          this.api.post('account/saveOrUpdateAccount',this.visitorInfoList).then((params) => {
+          this.api.post('account/saveOrUpdateVisitor',this.visitorInfoList).then((params) => {
               if(params.body.code === 200){
                   this.$notify.success({
                       title:this.$route.query.name?"修改外来人员成功":"新增外来人员成功",
