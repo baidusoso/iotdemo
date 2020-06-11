@@ -3,7 +3,7 @@
     <el-row type="flex" justify="space-between">
       <el-col style="display:flex;justify-content:flex-end" :span="24">
         <el-button type="primary" icon="plus" @click="syncPolicy">同步权限</el-button>
-        <el-button type="primary" icon="plus" @click="$router.push('newpolicy')">分配权限</el-button>
+        <el-button type="primary" icon="plus" @click="$router.push('new-policy')">分配权限</el-button>
         <el-button type="danger" icon="plus" @click="batchDeletePolicy">批量删除</el-button>
       </el-col>
     </el-row>
