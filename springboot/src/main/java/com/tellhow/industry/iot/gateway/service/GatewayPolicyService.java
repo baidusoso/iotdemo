@@ -16,4 +16,6 @@ public interface GatewayPolicyService {
     JSONObject addGatewayPolicy(AddGatewayPolicyRequest addGatewayPolicyRequest);
 
     JSONObject deleteGatewayPolicy(@RequestBody DeleteGatewayPolicyRequest deleteGatewayPolicyRequest);
+
+    JSONObject addOrDeleteGatewayPolicy(List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList, boolean delete);
 }

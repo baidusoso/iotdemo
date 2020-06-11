@@ -1,6 +1,7 @@
 package com.tellhow.industry.iot.hikvision.person.model;
 
 import com.tellhow.industry.iot.account.model.IAMAccount;
+import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 
 public class Person {
     public String personId;
@@ -22,25 +23,25 @@ public class Person {
         this.personId = personId;
     }
 
-    public Person(String orgIndexCode, IAMAccount iamAccount) {
+    public Person(String orgIndexCode, ElasticsearchApi.Account account) {
         this.orgIndexCode = orgIndexCode;
-        this.personId = iamAccount.id;
-        this.personName = iamAccount.name;
-        this.phoneNo = iamAccount.mobile;
-        this.email = iamAccount.email;
-        if (iamAccount.idCard != null) {
+        this.personId = account.id;
+        this.personName = account.name;
+        this.phoneNo = account.mobile;
+        this.email = account.email;
+        if (account.certificateNum != null) {
             this.certificateType = "111";
-            this.certificateNo = iamAccount.idCard;
+            this.certificateNo = account.certificateNum;
         }
     }
 
-    public void updateBy(IAMAccount iamAccount) {
-        this.personName = iamAccount.name;
-        this.phoneNo = iamAccount.mobile;
-        this.email = iamAccount.email;
-        if (iamAccount.idCard != null) {
+    public void updateBy(ElasticsearchApi.Account account) {
+        this.personName = account.name;
+        this.phoneNo = account.mobile;
+        this.email = account.email;
+        if (account.certificateNum != null) {
             this.certificateType = "111";
-            this.certificateNo = iamAccount.idCard;
+            this.certificateNo = account.certificateNum;
         }
     }
 }

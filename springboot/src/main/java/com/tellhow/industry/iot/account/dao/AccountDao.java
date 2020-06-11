@@ -1,6 +1,7 @@
 package com.tellhow.industry.iot.account.dao;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tellhow.industry.iot.account.model.IAMAccount;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import org.apache.ibatis.annotations.Param;
 

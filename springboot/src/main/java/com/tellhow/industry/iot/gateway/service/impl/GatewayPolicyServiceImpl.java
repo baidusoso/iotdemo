@@ -100,57 +100,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                 if (gatewayPolicyList.size() > 100) {
                     return CommonUtil.errorJson(Constants.ERROR_400, "单次数量超出100");
                 }
-                Date now = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-                Map<String, ElasticsearchApi.Account> accountIdMap = new HashMap<>();
-                Map<String, Gateway.Door> gatewayIdMap = new HashMap<>();
-                for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
-                    //1、日期校验与格式为海康要求的ISO8601
-                    if (StringUtils.isEmpty(gatewayPolicy.startAt) || StringUtils.isEmpty(gatewayPolicy.endAt)) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
-                    }
-                    try {
-                        Date startTime = sdf.parse(gatewayPolicy.startAt);
-                        Date endTime = sdf.parse(gatewayPolicy.endAt);
-                        if (endTime.before(startTime)) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, "结束时间小于开始时间");
-                        }
-                        if (endTime.before(now)) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, "结束时间不能小于当前时间");
-                        }
-                        gatewayPolicy.startAt = sdfISO8601.format(startTime);
-                        gatewayPolicy.endAt = sdfISO8601.format(endTime);
-                    } catch (ParseException e) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
-                    }
-                    //2、校验用户是否存在
-                    ElasticsearchApi.Account account = accountIdMap.get(gatewayPolicy.userId);
-                    if (account == null) {
-                        account = accountDao.getAccountById(gatewayPolicy.userId);
-                        if (account == null) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.userId + "用户不存在");
-                        }
-                        if (account.isGuest() && (account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
-                        }
-                        if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, account.name + "的人脸尚未上传");
-                        }
-                        accountIdMap.put(gatewayPolicy.userId, account);
-                    }
-                    //3、校验门禁是否存在
-                    Gateway.Door doorGateway = gatewayIdMap.get(gatewayPolicy.gatewayId);
-                    if (doorGateway == null) {
-                        doorGateway = gatewayDao.getGatewayDoorById(gatewayPolicy.gatewayId);
-                        if (doorGateway == null) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.gatewayId + "门禁不存在");
-                        }
-                        gatewayIdMap.put(gatewayPolicy.gatewayId, doorGateway);
-                    }
-                }
-                //创建card任务
-                commitTask(gatewayPolicyList, accountIdMap, gatewayIdMap, false);
+                return addOrDeleteGatewayPolicy(gatewayPolicyList, false);
             }
         }
         return CommonUtil.successJson();
@@ -164,59 +114,64 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
             }
             List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList = policyDao.getGatewayPolicyListByFromIds(deleteGatewayPolicyRequest.ids);
             if (gatewayPolicyList != null && gatewayPolicyList.size() > 0) {
-                Date now = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-                Map<String, ElasticsearchApi.Account> accountIdMap = new HashMap<>();
-                Map<String, Gateway.Door> gatewayIdMap = new HashMap<>();
-                for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
-                    //1、日期校验与格式为海康要求的ISO8601
-                    if (StringUtils.isEmpty(gatewayPolicy.startAt) || StringUtils.isEmpty(gatewayPolicy.endAt)) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
-                    }
-                    try {
-                        Date startTime = sdf.parse(gatewayPolicy.startAt);
-                        Date endTime = sdf.parse(gatewayPolicy.endAt);
-                        if (endTime.before(startTime)) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, "结束时间小于开始时间");
-                        }
-                        if (endTime.before(now)) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, "结束时间不能小于当前时间");
-                        }
-                        gatewayPolicy.startAt = sdfISO8601.format(startTime);
-                        gatewayPolicy.endAt = sdfISO8601.format(endTime);
-                    } catch (ParseException e) {
-                        return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
-                    }
-                    //2、校验用户是否存在
-                    ElasticsearchApi.Account account = accountIdMap.get(gatewayPolicy.userId);
-                    if (account == null) {
-                        account = accountDao.getAccountById(gatewayPolicy.userId);
-                        if (account == null) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.userId + "用户不存在");
-                        }
-                        if (account.isGuest() && (account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
-                        }
-                        if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, account.name + "的人脸尚未上传");
-                        }
-                        accountIdMap.put(gatewayPolicy.userId, account);
-                    }
-                    //3、校验门禁是否存在
-                    Gateway.Door doorGateway = gatewayIdMap.get(gatewayPolicy.gatewayId);
-                    if (doorGateway == null) {
-                        doorGateway = gatewayDao.getGatewayDoorById(gatewayPolicy.gatewayId);
-                        if (doorGateway == null) {
-                            return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.gatewayId + "门禁不存在");
-                        }
-                        gatewayIdMap.put(gatewayPolicy.gatewayId, doorGateway);
-                    }
-                }
-                //创建card任务
-                commitTask(gatewayPolicyList, accountIdMap, gatewayIdMap, true);
+                return addOrDeleteGatewayPolicy(gatewayPolicyList, true);
             }
         }
+        return CommonUtil.successJson();
+    }
+
+    public JSONObject addOrDeleteGatewayPolicy(List<ElasticsearchApi.GatewayPolicy> gatewayPolicyList, boolean delete) {
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Map<String, ElasticsearchApi.Account> accountIdMap = new HashMap<>();
+        Map<String, Gateway.Door> gatewayIdMap = new HashMap<>();
+        for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
+            //1、日期校验与格式为海康要求的ISO8601
+            if (StringUtils.isEmpty(gatewayPolicy.startAt) || StringUtils.isEmpty(gatewayPolicy.endAt)) {
+                return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
+            }
+            try {
+                Date startTime = sdf.parse(gatewayPolicy.startAt);
+                Date endTime = sdf.parse(gatewayPolicy.endAt);
+                if (endTime.before(startTime)) {
+                    return CommonUtil.errorJson(Constants.ERROR_400, "结束时间小于开始时间");
+                }
+                if (endTime.before(now)) {
+                    return CommonUtil.errorJson(Constants.ERROR_400, "结束时间不能小于当前时间");
+                }
+                gatewayPolicy.startAt = sdfISO8601.format(startTime);
+                gatewayPolicy.endAt = sdfISO8601.format(endTime);
+            } catch (ParseException e) {
+                return CommonUtil.errorJson(Constants.ERROR_400, "时间格式错误");
+            }
+            //2、校验用户是否存在
+            ElasticsearchApi.Account account = accountIdMap.get(gatewayPolicy.userId);
+            if (account == null) {
+                account = accountDao.getAccountById(gatewayPolicy.userId);
+                if (account == null) {
+                    return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.userId + "用户不存在");
+                }
+                if (account.isGuest() && (account.mobile == null || account.mobile.length() < 8) && (account.certificateNum == null || account.certificateNum.length() < 8)) {
+                    return CommonUtil.errorJson(Constants.ERROR_400, account.name + "用户的手机号或身份证号不满足创建卡号要求");
+                }
+                if (account.isGuest() && StringUtils.isEmpty(account.facePic)) {
+                    return CommonUtil.errorJson(Constants.ERROR_400, account.name + "的人脸尚未上传");
+                }
+                accountIdMap.put(gatewayPolicy.userId, account);
+            }
+            //3、校验门禁是否存在
+            Gateway.Door doorGateway = gatewayIdMap.get(gatewayPolicy.gatewayId);
+            if (doorGateway == null) {
+                doorGateway = gatewayDao.getGatewayDoorById(gatewayPolicy.gatewayId);
+                if (doorGateway == null) {
+                    return CommonUtil.errorJson(Constants.ERROR_400, gatewayPolicy.gatewayId + "门禁不存在");
+                }
+                gatewayIdMap.put(gatewayPolicy.gatewayId, doorGateway);
+            }
+        }
+        //创建card任务
+        commitTask(gatewayPolicyList, accountIdMap, gatewayIdMap, delete);
         return CommonUtil.successJson();
     }
 
@@ -281,7 +236,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     gatewayApi.addAuthDownloadData(authDownloadData);
                     //face
                     logger.info(gatewayPolicy.gatewayId + "-----" + gatewayPolicy.userId + "添加人脸信息");
-                    logger.info(faceTaskId + "批量添加卡片信息");
+                    logger.info(faceTaskId + "批量添加人脸信息");
                     authDownloadData.taskId = faceTaskId;
                     authDownloadData.setOperationType(delete);
                     gatewayApi.addAuthDownloadData(authDownloadData);
@@ -293,11 +248,7 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
                     logger.info("isFaceTaskDownloadFinished:" + isFaceTaskDownloadFinished);
                     if (isFaceTaskDownloadFinished) {
                         for (ElasticsearchApi.GatewayPolicy gatewayPolicy : gatewayPolicyList) {
-                            if (!delete) {
-                                syncAddAuthConfig(gatewayApi, gatewayPolicy, accountIdMap, gatewayIdMap);
-                            } else {
-                                syncDeleteAuthConfig(gatewayApi, gatewayPolicy, accountIdMap, gatewayIdMap);
-                            }
+                            searchDownloadRecordPersonDetail(gatewayApi, cardTaskId, gatewayPolicy, accountIdMap, gatewayIdMap, delete);
                         }
                     }
                 }
@@ -327,31 +278,28 @@ public class GatewayPolicyServiceImpl implements GatewayPolicyService {
         return isDownloadFinished;
     }
 
-    void syncAddAuthConfig(GatewayApi gatewayApi, ElasticsearchApi.GatewayPolicy gatewayPolicy, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap) {
-        AuthConfigSearchResponse authConfigSearchResponse = gatewayApi.searchAuthConfig(accountIdMap.get(gatewayPolicy.userId), gatewayIdMap.get(gatewayPolicy.gatewayId));
-        if (authConfigSearchResponse != null && authConfigSearchResponse.list != null && authConfigSearchResponse.list.size() > 0) {
-            logger.info("syncAddAuthConfig list size:" + authConfigSearchResponse.list.size());
-            AuthConfigSearchResponse.AuthConfig authConfig = authConfigSearchResponse.list.get(0);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-            if (gatewayPolicy.id == null) {
-                gatewayPolicy.id = UUID.randomUUID().toString();
+    void searchDownloadRecordPersonDetail(GatewayApi gatewayApi, String taskId, ElasticsearchApi.GatewayPolicy gatewayPolicy, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap, boolean delete) {
+        SearchDownloadRecordPersonDetailResponse searchDownloadRecordPersonDetailResponse = gatewayApi.searchDownloadRecordPersonDetail(taskId, gatewayIdMap.get(gatewayPolicy.gatewayId), accountIdMap.get(gatewayPolicy.userId));
+        if (searchDownloadRecordPersonDetailResponse != null && searchDownloadRecordPersonDetailResponse.total > 0 && searchDownloadRecordPersonDetailResponse.list != null) {
+            SearchDownloadRecordPersonDetailResponse.SearchDownloadRecordPersonDetail detail = searchDownloadRecordPersonDetailResponse.list.get(0);
+            if (detail != null && "0".equals(detail.persondownloadResult)) {
+                if (delete) {
+                    policyDao.deleteGatewayPolicy(gatewayPolicy);
+                } else {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    SimpleDateFormat sdfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                    if (gatewayPolicy.id == null) {
+                        gatewayPolicy.id = UUID.randomUUID().toString();
+                    }
+                    try {
+                        gatewayPolicy.startAt = sdf.format(sdfISO8601.parse(gatewayPolicy.startAt));
+                        gatewayPolicy.endAt = sdf.format(sdfISO8601.parse(gatewayPolicy.endAt));
+                        policyDao.insertOrUpdateGatewayPolicy(gatewayPolicy);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-            try {
-                gatewayPolicy.startAt = sdf.format(sdfISO8601.parse(authConfig.startTime));
-                gatewayPolicy.endAt = sdf.format(sdfISO8601.parse(authConfig.endTime));
-                policyDao.insertOrUpdateGatewayPolicy(gatewayPolicy);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    void syncDeleteAuthConfig(GatewayApi gatewayApi, ElasticsearchApi.GatewayPolicy gatewayPolicy, Map<String, ElasticsearchApi.Account> accountIdMap, Map<String, Gateway.Door> gatewayIdMap) {
-        AuthConfigSearchResponse authConfigSearchResponse = gatewayApi.searchAuthConfig(accountIdMap.get(gatewayPolicy.userId), gatewayIdMap.get(gatewayPolicy.gatewayId));
-        if (authConfigSearchResponse != null && (authConfigSearchResponse.list == null || authConfigSearchResponse.list.size() == 0)) {
-            logger.info("syncDeleteAuthConfig list size is empty!");
-            policyDao.deleteGatewayPolicy(gatewayPolicy);
         }
     }
 }

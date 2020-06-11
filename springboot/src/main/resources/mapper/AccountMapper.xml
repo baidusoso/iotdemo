@@ -23,6 +23,9 @@
         <if test="mobile !='' and mobile !=null">
             AND mobile LIKE '%${mobile}%'
         </if>
+        <if test="usergroup !='' and usergroup !=null">
+            AND usergroup= #{usergroup}
+        </if>
     </select>
     <select id="getAccountList" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
@@ -55,6 +58,9 @@
         </if>
         <if test="mobile !='' and mobile !=null">
             AND mobile LIKE '%${mobile}%'
+        </if>
+        <if test="usergroup !='' and usergroup !=null">
+            AND usergroup= #{usergroup}
         </if>
         LIMIT #{offSet},#{pageRow}
     </select>
@@ -120,6 +126,7 @@
         a.name name,
         a.gender gender,
         a.no no,
+        a.org_id orgId,
         certificate_num certificateNum,
         mobile mobile,
         username username,

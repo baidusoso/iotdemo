@@ -1,9 +1,9 @@
 <template>
-  <div class="app-container">
+  <div class="app-container p-20">
     <div class="toolbar">
       <el-button type="primary" icon="edit" @click="showCreate()">新增</el-button>
-      <el-button icon="edit" @click="showUpdate()">修改</el-button>
-      <el-button icon="edit" @click="syncOrg()">同步</el-button>
+      <el-button type="primary" icon="edit" @click="showUpdate()">修改</el-button>
+      <el-button type="primary" icon="edit" @click="syncOrg()">同步</el-button>
       <el-button type="danger" icon="edit" @click="deleteOrg()">删除</el-button>
     </div>
     <div v-loading.body="listLoading" element-loading-text="拼命加载中" class="tree">
@@ -208,12 +208,15 @@
   }
 
   .toolbar {
-    margin-top: 30px;
     width: 500px;
     text-align: center;
+    margin-bottom: 20px;
   }
 
   .customWidth {
     width: 500px;
+  }
+  .p-20 {
+    padding: 20px;
   }
 </style>

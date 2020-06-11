@@ -44,11 +44,11 @@ public class BaseApi {
         if (pathSegment == null || !pathSegment.startsWith("/")) {
             throw new IllegalArgumentException();
         }
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         this.path.put("https://", ARTEMIS_PATH + pathSegment);
         logger.debug(pathSegment + " body:" + body);
         String result = ArtemisHttpUtil.doPostStringArtemis(path, body, null, null, CONTENT_TYPE_JSON, null);
@@ -103,6 +103,8 @@ public class BaseApi {
         String PATH_AUTH_CONFIG_SEARCH = "/api/acps/v1/auth_config/search";
         String PATH_AUTH_ITEM_LIST_SEARCH = "/api/acps/v1/auth_item/list/search";
         String PATH_AUTH_ITEM_SINGLE_SEARCH = "/api/acps/v1/auth_item/single/search";
+
+        String PATH_SEARCH_DOWNLOAD_RECORD_PERSON_DETAIL="/api/acps/v1/download_record/person/detail/search";
     }
 
 }

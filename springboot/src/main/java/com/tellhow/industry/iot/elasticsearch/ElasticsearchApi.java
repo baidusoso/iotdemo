@@ -171,12 +171,14 @@ public class ElasticsearchApi {
         public String no;
         public String certificateNum;
         public String mobile;
+        public String email;
         public String orgId;
         public String username;
         public String usergroup;
         public String updateDate;
         public String faceId;
         public String facePic;
+        public String loginName;
         public int delFlag;
 
         public Account() {
@@ -190,8 +192,10 @@ public class ElasticsearchApi {
             this.no = account.no;
             this.certificateNum = account.idCard;
             this.mobile = account.mobile;
+            this.email = account.email;
             this.username = account.loginName;
             this.usergroup = "厂内人员";
+            this.loginName = account.loginName;
             if (account.delFlag != null) {
                 this.delFlag = Integer.parseInt(account.delFlag);
             }
@@ -286,8 +290,8 @@ public class ElasticsearchApi {
         String s = sdf2.format(date);
         System.out.println(s);
 
-        Map<String,String> map=new HashMap<>();
-        map.put("personId","1");
+        Map<String, String> map = new HashMap<>();
+        map.put("personId", "1");
         System.out.println(JSON.toJSON(map));
     }
 }

@@ -94,4 +94,12 @@ public class GatewayApi extends BaseApi {
         }, GatewayInterface.PATH_AUTH_ITEM_SINGLE_SEARCH, JSON.toJSONString(authItemSingleSearchRequest));
         return response.data;
     }
+
+    public SearchDownloadRecordPersonDetailResponse searchDownloadRecordPersonDetail(String taskId, Gateway.Door doorGateway, ElasticsearchApi.Account account) {
+        SearchDownloadRecordPersonDetailRequest searchDownloadRecordPersonDetailRequest = new SearchDownloadRecordPersonDetailRequest(taskId, doorGateway, account);
+        BaseResponse<SearchDownloadRecordPersonDetailResponse> response = post(new TypeReference<BaseResponse<SearchDownloadRecordPersonDetailResponse>>() {
+        }, GatewayInterface.PATH_SEARCH_DOWNLOAD_RECORD_PERSON_DETAIL, JSON.toJSONString(searchDownloadRecordPersonDetailRequest));
+        return response.data;
+    }
+
 }

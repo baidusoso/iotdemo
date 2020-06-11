@@ -6,7 +6,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@RequiresPermissions("recognization:gateway")
+@RequiresPermissions("face:gateway")
 @RestController
 @RequestMapping("/gateway")
 public class GatewayController {

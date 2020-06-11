@@ -97,54 +97,77 @@ export const asyncRouterMap = [
     ]
   },
   {
-    path: '/recognization',
+    path: '/face',
     component: Layout,
-    redirect: '/system/account',
+    redirect: '/face/staff-list',
     name: '人脸识别',
     meta: {title: '人脸识别', icon: 'table'},
     children: [
       {
-        path: 'account',
-        name: '人员管理',
-        component: _import('recognization/account'),
-        meta: {title: '人员管理', icon: 'password',showNavBar:true},
-        menu: 'recognization'
+        path: 'staff-list',
+        name: 'staff-list',
+        component: _import('face/StaffList'),
+        meta: {title: '人员管理', icon: 'user',showNavBar:true},
+        menu: 'face'
       },
       {
-        path: 'gateway',
-        name: '门禁管理',
-        component: _import('recognization/gateway'),
-        meta: {title: '门禁管理', icon: 'user',showNavBar:true},
-        menu: 'recognization'
-      },
-      {
-        path: 'policy',
-        name: '权限管理',
-        component: _import('recognization/policy'),
-        meta: {title: '权限管理', icon: 'user',showNavBar:true},
-        menu: 'recognization'
-      },
-      {
-        path: 'newpolicy',
-        name: '分配权限',
-        component: _import('recognization/NewPolicy'),
-        meta: {title: '分配权限', icon: 'user',showNavBar:true},
-        menu: 'recognization',
+        path: 'edit-staff',
+        name: 'edit-staff',
+        component: _import('face/EditStaff'),
+        meta: {title: '修改人员信息', icon: 'user',showNavBar:true},
+        menu: 'face',
         hidden:true
       },
       {
-        path: 'visitor',
-        name: '来访人员管理',
-        component: _import('system/user'),
-        meta: {title: '来访人员管理', icon: 'user',showNavBar:true},
-        menu: 'recognization'
+        path: 'visitor-list',
+        name: 'visitor-list',
+        component: _import('face/VisitorList'),
+        meta: {title: '外来访客管理', icon: 'user',showNavBar:true},
+        menu: 'face'
+      },
+      {
+        path: 'edit-visitor',
+        name: 'edit-visitor',
+        component: _import('face/EditVisitor'),
+        meta: {title: '修改外来访客信息', icon: 'user',showNavBar:true},
+        menu: 'face',
+        hidden:true
+      },
+      {
+        path: 'gateway-list',
+        name: '门禁管理',
+        component: _import('face/GatewayList'),
+        meta: {title: '门禁管理', icon: 'password',showNavBar:true},
+        menu: 'face'
+      },
+      {
+        path: 'policy-list',
+        name: 'policy-list',
+        component: _import('face/PolicyList'),
+        meta: {title: '权限管理', icon: 'password',showNavBar:true},
+        menu: 'face'
+      },
+      {
+        path: 'new-policy',
+        name: 'new-policy',
+        component: _import('face/NewPolicy'),
+        meta: {title: '分配权限', icon: 'password',showNavBar:true},
+        menu: 'face',
+        hidden:true
+      },
+      {
+        path: 'visitor-apply-list',
+        name: 'visitor-apply-list',
+        component: _import('face/VisitorApplyList'),
+        meta: {title: '访客申请记录', icon: 'user',showNavBar:true},
+        menu: 'face'
       },
       {
         path: 'vistorhistory',
         name: '访问记录',
         component: _import('system/user'),
-        meta: {title: '访问记录', icon: 'user',showNavBar:true},
-        menu: 'recognization'
+        meta: {title: '访问记录', icon: 'password',showNavBar:true},
+        menu: 'face'
       },
     ]
   },

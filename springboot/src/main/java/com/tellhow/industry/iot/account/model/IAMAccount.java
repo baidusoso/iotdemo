@@ -1,5 +1,8 @@
 package com.tellhow.industry.iot.account.model;
 
+import lombok.Data;
+
+@Data
 public class IAMAccount {
     public String id;
     public String orgId;
@@ -15,4 +18,5 @@ public class IAMAccount {
     public String no;
 
     public String userGroup = "厂内人员";
+
 }

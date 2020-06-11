@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container p-20">
     <h2>给角色“{{roleInfo.roleName}}”分配权限</h2>
     <div v-loading.body="listLoading" class="tree">
       <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange" style="padding-left: 24px;">全选</el-checkbox>
@@ -182,5 +182,8 @@
 
   .option-wrapper {
     padding: 0 !important;
+  }
+  .p-20 {
+    padding: 20px;
   }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container p-20">
     <div class="toolbar">
       <el-button type="primary" icon="edit" @click="showCreate()">新增</el-button>
       <el-button icon="edit" @click="showUpdate()">修改</el-button>
@@ -153,12 +153,16 @@
   }
 
   .toolbar {
-    margin-top: 30px;
+    margin-bottom: 20px;
     width: 500px;
     text-align: center;
   }
 
   .customWidth {
     width: 500px;
+  }
+
+  .p-20 {
+    padding: 20px;
   }
 </style>

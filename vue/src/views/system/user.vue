@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container p-20">
     <div class="filter-container">
       <el-form>
         <el-form-item>
@@ -348,5 +348,8 @@
 <style>
   .customWidth {
     width: 500px;
+  }
+  .p-20 {
+    padding: 20px;
   }
 </style>

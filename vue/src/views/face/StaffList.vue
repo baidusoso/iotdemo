@@ -23,8 +23,8 @@
           <el-col style="display:flex;justify-content:flex-end" :span="8">
               <el-button @click="handleFilter" style="border:1px #1890FF solid;" icon="el-icon-search">搜索</el-button>
               <el-button type="primary" icon="plus"  @click="sync">同步</el-button>
-              <el-button type="primary" icon="el-icon-upload2" @click="urlPush(`/`)">批量导入</el-button>
-              <el-button type="danger" icon="plus"  @click="showCreate">批量删除</el-button>
+              <!-- <el-button type="primary" icon="el-icon-upload2" @click="urlPush(`/`)">批量导入</el-button>
+              <el-button type="danger" icon="plus"  @click="showCreate">批量删除</el-button> -->
           </el-col>
       </el-row>
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="拼命加载中" border highlight-current-row style="margin-top: 30px;">
@@ -56,7 +56,7 @@
       <el-table-column align="center" label="操作" width="200">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
-          <el-button type="danger" icon="delete" @click="removeUser(scope.$index)">删除
+          <el-button type="danger" icon="delete" @click="removeStaff(scope.$index)">删除
           </el-button>
         </template>
       </el-table-column>
@@ -84,7 +84,8 @@
           name:"",
           no:"",
           mobile:"",
-          certificateNum:""
+          certificateNum:"",
+          usergroup:"厂内人员",
         },
         dialogStatus: 'create',
         dialogFormVisible: false,
@@ -205,128 +206,18 @@
         //表格序号
         return (this.listQuery.pageNum - 1) * this.listQuery.pageRow + $index + 1
       },
-      showCreate() {
-        //显示新增对话框
-        this.tempUser.username = "";
-        this.tempUser.password = "";
-        this.tempUser.nickname = "";
-        this.tempUser.roleId = "";
-        this.tempUser.userId = "";
-        this.dialogStatus = "create"
-        this.dialogFormVisible = true
-      },
-      showUserRole($index){
-        this.listLoading=true;
-        let user = this.list[$index];
-        this.tempUser.userId = user.userId;
-        this.api({
-          url: "/system/user/getAllRolesByUser",
-          method: "post",
-          data: {
-            userId:user.userId
-          },
-        }).then(data => {
-          this.listLoading = false;
-          this.rolelist = data.list;
-          this.dialogStatus = "role";
-          this.roleDialogVisible = true;
-          // this.$nextTick( ()=> {
-          //     for(let i=0; i < this.rolelist.length; i++) {
-          //       this.$refs.roletable.toggleRowSelection(this.rolelist[i],this.rolelist[i].userId!=null)
-          //     }
-          // })
-        }).catch(()=>{
-          this.listLoading = false;
-        })
-      },
       showUpdate($index) {
-        let user = this.list[$index];
-        console.log(user);
-        this.tempUser.username = user.username;
-        this.tempUser.nickname = user.nickname;
-        this.tempUser.orgCode = user.orgCode;
-        this.tempUser.userId = user.userId;
-        this.tempUser.status = '1';
-        this.tempUser.password = '';
-        this.tempUser.phone = user.phone;
-        this.editOrgName=user.orgName;
-        this.dialogStatus = "update";
-        this.dialogFormVisible = true;
+        let account = this.list[$index];
+        this.$router.push({name: 'edit-staff',query: { accountId: account.id }})
       },
-      updateUserRole($index){
-        var selection=this.$refs.roletable.store.states.selection;
-        if(selection.length==0){
-          this.$message.error("至少选择一个角色");
-          return false;
-        }
-        var roleIds=[];
-        for(var i=0;i<selection.length;i++){
-          roleIds.push(selection[i].roleId);
-        }
-        var _vue=this;
-        this.api({
-          url: "/system/user/updateUserRole",
-          method: "post",
-          data: {
-            userId:_vue.tempUser.userId,
-            roleIds:roleIds
-          }
-        }).then(() => {
-          _vue.roleDialogVisible = false
-        })
-      },
-      createUser() {
-        //添加新用户
-        this.api({
-          url: "/system/user/addUser",
-          method: "post",
-          data: this.tempUser
-        }).then(() => {
-          this.getList();
-          this.dialogFormVisible = false
-        })
-      },
-      updateUser() {
-        //修改用户信息
+      removeStaff($index) {
         let _vue = this;
-        this.api({
-          url: "/system/user/updateUser",
-          method: "post",
-          data: this.tempUser
-        }).then(() => {
-          let msg = "修改成功";
-          this.dialogFormVisible = false
-          if (this.userId === this.tempUser.userId) {
-            msg = '修改成功,部分信息重新登录后生效'
-          }
-          this.$message({
-            message: msg,
-            type: 'success',
-            duration: 1 * 1000,
-            onClose: () => {
-              _vue.getList();
-            }
-          })
-        })
-      },
-      removeUser($index) {
-        let _vue = this;
-        this.$confirm('确定删除此用户?', '提示', {
+        this.$confirm('确定删除此人员?', '提示', {
           confirmButtonText: '确定',
           showCancelButton: false,
           type: 'warning'
         }).then(() => {
-          let user = _vue.list[$index];
-          user.deleteStatus = '0';
-          _vue.api({
-            url: "/system/user/deleteUser",
-            method: "post",
-            data: user
-          }).then(() => {
-            _vue.getList()
-          }).catch(() => {
-            _vue.$message.error("删除失败")
-          })
+          //TODO
         })
       },
       handleCheckChange(item, node, self) {

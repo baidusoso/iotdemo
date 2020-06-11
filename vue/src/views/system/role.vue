@@ -1,9 +1,9 @@
 <template>
-  <div class="app-container">
+  <div class="app-container p-20">
     <div class="filter-container">
       <el-form>
         <el-form-item>
-          <el-button type="success" icon="plus" @click="showCreate">新增
+          <el-button type="primary" icon="plus" @click="showCreate">新增
           </el-button>
         </el-form-item>
       </el-form>
@@ -317,5 +317,8 @@
   }
   .customWidth {
     width: 500px;
+  }
+  .p-20 {
+    padding: 20px;
   }
 </style>
