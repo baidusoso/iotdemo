@@ -88,7 +88,7 @@ public class AccountController {
             if (!FileUtils.uploadFace(faceImg, avatarDir, account.id)) {
                 return CommonUtil.errorJson(Constants.ERROR_500, "头像上传失败");
             }
-            account.facePic = account.id;
+            account.facePic = account.id + ".jpg";
         } else {
             logger.debug("头像未变更");
         }
