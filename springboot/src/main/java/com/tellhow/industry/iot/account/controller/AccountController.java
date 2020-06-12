@@ -2,32 +2,25 @@ package com.tellhow.industry.iot.account.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tellhow.industry.iot.account.model.BatchDeleteAccountRequest;
+import com.tellhow.industry.iot.account.model.Guest;
 import com.tellhow.industry.iot.account.model.IAMAccount;
 import com.tellhow.industry.iot.account.service.AccountService;
 import com.tellhow.industry.iot.account.service.impl.AccountServiceImpl;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.gateway.service.GatewayPolicyService;
+import com.tellhow.industry.iot.oa.OAApi;
 import com.tellhow.industry.iot.util.CommonUtil;
 import com.tellhow.industry.iot.util.FileUtils;
 import com.tellhow.industry.iot.util.constants.Constants;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +31,7 @@ public class AccountController {
 
     private Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
+
     @Autowired
     private AccountService accountService;
 
@@ -46,6 +40,15 @@ public class AccountController {
 
     @Value("${web.faceDir}")
     private String faceDir;
+
+    @Value("${oa.appId}")
+    private String appId;
+
+    @Value("${oa.tenantId}")
+    private String tenantId;
+
+    @Value("${oa.secret}")
+    private String secret;
 
     @PostMapping("/list")
     public JSONObject getAccountList(@RequestBody JSONObject requestJson) {
@@ -60,6 +63,11 @@ public class AccountController {
     @GetMapping("/{accountId}")
     public JSONObject getAccountInfo(@PathVariable String accountId) {
         return accountService.getAccountInfo(accountId);
+    }
+
+    @GetMapping("/certificatenum/{certificateNum}")
+    public JSONObject getAccountInfoByCertificateNum(@PathVariable String certificateNum) {
+        return accountService.getAccountInfoByCertificateNum(certificateNum);
     }
 
     @PostMapping("/saveOrUpdateAccount")
@@ -79,19 +87,11 @@ public class AccountController {
             account.id = UUID.randomUUID().toString();
         }
         logger.debug("account.id:" + account.id);
-        if (faceImg != null) {
-            String avatarDir = faceDir;
-            if (!avatarDir.endsWith("/") && !avatarDir.endsWith("\\")) {
-                avatarDir = avatarDir + "/";
-            }
-            avatarDir = avatarDir + "visitor";
-            if (!FileUtils.uploadFace(faceImg, avatarDir, account.id)) {
-                return CommonUtil.errorJson(Constants.ERROR_500, "头像上传失败");
-            }
-            account.facePic = account.id + ".jpg";
-        } else {
-            logger.debug("头像未变更");
+        if (!uploadFaceImg(account.id, faceImg, true)) {
+            return CommonUtil.errorJson(Constants.ERROR_500, "头像上传失败");
         }
+        account.facePic = account.id + ".jpg";
+
         List<ElasticsearchApi.Account> accountList = new ArrayList<>();
         accountList.add(account);
         JSONObject jsonObject = accountService.saveOrUpdateUser(accountList);
@@ -116,5 +116,49 @@ public class AccountController {
     @PostMapping("/deleteUsers")
     public JSONObject deleteUsers(@RequestBody BatchDeleteAccountRequest batchDeleteAccountRequest) {
         return accountService.deleteUsers(batchDeleteAccountRequest.deleteUsers);
+    }
+
+    @PostMapping("/guest")
+    public JSONObject addGuest(Guest guest, @RequestParam("faceImg") MultipartFile faceImg) {
+        if (StringUtils.isEmpty(guest.id)) {
+            guest.id = UUID.randomUUID().toString();
+        }
+        if (StringUtils.isEmpty(guest.userId)) {
+            guest.userId = UUID.randomUUID().toString();
+        }
+        if (!uploadFaceImg(guest.userId, faceImg, true)) {
+            return CommonUtil.errorJson(Constants.ERROR_500, "头像上传失败");
+        }
+        JSONObject result = accountService.saveOrUpdateGuest(guest);
+        if (!Constants.SUCCESS_CODE.equals(result.getString("code"))) {
+            return result;
+        }
+        notifyStaff(guest);
+        return CommonUtil.successJson();
+    }
+
+    @PostMapping("/guest/list")
+    public JSONObject getGuestList(@RequestBody JSONObject requestJson) {
+        return accountService.getGuestList(requestJson);
+    }
+
+    boolean uploadFaceImg(String userId, MultipartFile faceImg, boolean visitor) {
+        if (faceImg != null) {
+            String avatarDir = faceDir;
+            if (!avatarDir.endsWith("/") && !avatarDir.endsWith("\\")) {
+                avatarDir = avatarDir + "/";
+            }
+            avatarDir = avatarDir + (visitor ? "visitor" : "staff");
+            if (!FileUtils.uploadFace(faceImg, avatarDir, userId)) {
+                return false;
+            }
+        } else {
+            logger.debug("头像未变更");
+        }
+        return true;
+    }
+
+    void notifyStaff(Guest guest) {
+        String token = OAApi.getToken(appId, tenantId, secret);
     }
 }

@@ -1,6 +1,5 @@
 package com.tellhow.industry.iot.hikvision.person.model;
 
-import com.tellhow.industry.iot.account.model.IAMAccount;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 
 public class Person {

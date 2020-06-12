@@ -2,6 +2,7 @@ package com.tellhow.industry.iot.account.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tellhow.industry.iot.account.dao.AccountDao;
+import com.tellhow.industry.iot.account.model.Guest;
 import com.tellhow.industry.iot.account.model.IAMAccount;
 import com.tellhow.industry.iot.account.service.AccountService;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
@@ -76,6 +77,12 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public JSONObject getAccountInfo(String accountId) {
         ElasticsearchApi.Account account = accountDao.getAccountById(accountId);
+        return CommonUtil.successJson(account);
+    }
+
+    @Override
+    public JSONObject getAccountInfoByCertificateNum(String certificateNum) {
+        ElasticsearchApi.Account account = accountDao.getAccountByCertificateNum(certificateNum);
         return CommonUtil.successJson(account);
     }
 
@@ -181,5 +188,38 @@ public class AccountServiceImpl implements AccountService {
         }
         accountDao.batchDeleteAccountByIds(deleteUserIds);
         return CommonUtil.successJson();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public JSONObject saveOrUpdateGuest(Guest guest) {
+        if (guest == null) {
+            return CommonUtil.errorJson(Constants.ERROR_400, "没有访客信息");
+        }
+        if (StringUtils.isEmpty(guest.certificateNum)) {
+            return CommonUtil.errorJson(Constants.ERROR_400, "访客身份证号为空");
+        }
+        if (StringUtils.isEmpty(guest.name)) {
+            return CommonUtil.errorJson(Constants.ERROR_400, "访客姓名为空");
+        }
+        if (StringUtils.isEmpty(guest.mobile)) {
+            return CommonUtil.errorJson(Constants.ERROR_400, "访客手机号为空");
+        }
+        if (StringUtils.isEmpty(guest.gender)) {
+            return CommonUtil.errorJson(Constants.ERROR_400, "访客性别为空");
+        }
+        if (StringUtils.isEmpty(guest.targetUserId)) {
+            return CommonUtil.errorJson(Constants.ERROR_400, "被访问人员为空");
+        }
+        accountDao.insertOrUpdateGuest(guest);
+        return CommonUtil.successJson();
+    }
+
+    @Override
+    public JSONObject getGuestList(JSONObject jsonObject) {
+        CommonUtil.fillPageParam(jsonObject);
+        int count = accountDao.getGuestCount(jsonObject);
+        List<JSONObject> guestList = accountDao.getGuestList(jsonObject);
+        return CommonUtil.successPage(jsonObject, guestList, count);
     }
 }

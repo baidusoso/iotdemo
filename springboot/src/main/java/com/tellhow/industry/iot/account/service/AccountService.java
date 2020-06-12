@@ -1,6 +1,7 @@
 package com.tellhow.industry.iot.account.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tellhow.industry.iot.account.model.Guest;
 import com.tellhow.industry.iot.account.model.IAMAccount;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 
@@ -13,7 +14,13 @@ public interface AccountService {
 
     JSONObject getAccountInfo(String userId);
 
+    JSONObject getAccountInfoByCertificateNum(String certificateNum);
+
     JSONObject saveOrUpdateUser(List<ElasticsearchApi.Account> iamAccountList);
 
     JSONObject deleteUsers(List<String> deleteUserIds);
+
+    JSONObject saveOrUpdateGuest(Guest guest);
+
+    JSONObject getGuestList(JSONObject jsonObject);
 }

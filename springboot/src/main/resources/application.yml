@@ -7,3 +7,7 @@ mybatis:
    mapperLocations: classpath:/mapper/*.xml
 web:
   faceDir: /Users/xieqingdi/Downloads/face
+oa:
+  appId: Potc5cAAaXVlQASwU233NraEEo5KXAat
+  tenantId: lfdc
+  secret: 79246cdd-dfa2-47ad-9252-289b78b8947e

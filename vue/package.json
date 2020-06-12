@@ -21,7 +21,8 @@
     "nprogress": "0.2.0",
     "vue": "2.5.10",
     "vue-router": "3.0.1",
-    "vuex": "3.0.1"
+    "vuex": "3.0.1",
+    "@riophae/vue-treeselect": "^0.4.0"
   },
   "devDependencies": {
     "autoprefixer": "7.2.3",

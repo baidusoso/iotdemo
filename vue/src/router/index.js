@@ -163,6 +163,14 @@ export const asyncRouterMap = [
         menu: 'face'
       },
       {
+        path: 'visitor-apply',
+        name: 'visitor-apply',
+        component: _import('face/VisitorApply'),
+        meta: {title: '访客信息录入', icon: 'user',showNavBar:true},
+        menu: 'face',
+        hidden:true
+      },
+      {
         path: 'vistorhistory',
         name: '访问记录',
         component: _import('system/user'),

@@ -140,6 +140,28 @@
         AND id = #{id}
     </select>
 
+    <select id="getAccountByCertificateNum"
+            resultType="com.tellhow.industry.iot.elasticsearch.ElasticsearchApi$Account">
+    SELECT
+    a.id id,
+    a.name name,
+    a.gender gender,
+    a.no no,
+    a.org_id orgId,
+    certificate_num certificateNum,
+    mobile mobile,
+    username username,
+    usergroup usergroup,
+    update_date updateDate,
+    face_id faceId,
+    face_pic facePic
+    FROM
+    account a
+    WHERE a.status=1
+    AND certificate_num= #{certificateNum}
+    </select>
+
+
     <update id="updateFaceId">
         UPDATE account
         SET
@@ -156,4 +178,49 @@
         </foreach>
         )
     </update>
+
+    <insert id="insertOrUpdateGuest">
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) as count from guest_history where id = #{guest.id}
+        </selectKey>
+        <if test="count==0">
+            insert into guest_history (id,user_id,name,gender,certificate_num,mobile,target_user_id,target_user_name)
+            values
+            (#{guest.id},#{guest.userId},  #{guest.name}, #{guest.gender},#{guest.certificateNum},
+            #{guest.mobile},#{guest.targetUserId},#{guest.targetUserName})
+        </if>
+        <if test="count>0">
+            UPDATE guest_history SET
+            user_id =#{guest.userId},
+            name=#{guest.name},
+            gender=#{guest.gender},
+            certificate_num=#{guest.certificateNum},
+            mobile=#{guest.mobile},
+            target_user_id=#{guest.targetUserId},
+            target_user_name=#{guest.targetUserName}
+            WHERE id=#{guest.id}
+        </if>
+    </insert>
+    <select id="getGuestCount" resultType="Integer">
+        SELECT count(0)
+        FROM
+        guest_history
+
+    </select>
+    <select id="getGuestList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        id id,
+        user_id userId,
+        name name,
+        gender gender,
+        certificate_num certificateNum,
+        mobile mobile,
+        create_time createTime,
+        target_user_id targetUserId,
+        target_user_name targetUserName
+        FROM
+        guest_history
+        ORDER by create_time DESC
+        LIMIT #{offSet},#{pageRow}
+    </select>
 </mapper>

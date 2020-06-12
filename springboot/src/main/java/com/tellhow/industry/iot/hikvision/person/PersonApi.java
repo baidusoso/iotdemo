@@ -6,7 +6,6 @@ import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.hikvision.BaseApi;
 import com.tellhow.industry.iot.hikvision.BaseResponse;
 import com.tellhow.industry.iot.hikvision.GatewayException;
-import com.tellhow.industry.iot.hikvision.gateway.model.AuthDownloadData;
 import com.tellhow.industry.iot.hikvision.person.model.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;

@@ -1,6 +1,7 @@
 package com.tellhow.industry.iot.account.dao;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tellhow.industry.iot.account.model.Guest;
 import com.tellhow.industry.iot.account.model.IAMAccount;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import org.apache.ibatis.annotations.Param;
@@ -26,5 +27,13 @@ public interface AccountDao {
 
     ElasticsearchApi.Account getAccountById(@Param("id") String id);
 
+    ElasticsearchApi.Account getAccountByCertificateNum(@Param("certificateNum") String certificateNum);
+
     int updateFaceId(@Param("id") String id, @Param("faceId") String faceId);
+
+    int insertOrUpdateGuest(@Param("guest") Guest guest);
+
+    int getGuestCount(JSONObject jsonObject);
+
+    List<JSONObject> getGuestList(JSONObject jsonObject);
 }
