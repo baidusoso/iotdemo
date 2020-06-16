@@ -1,6 +1,6 @@
 spring:
   datasource:
-      url: jdbc:mysql://localhost:3306/iot?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=UTC
+      url: jdbc:mysql://localhost:3306/iot?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
       username: root
       password: 123456
 mybatis:
@@ -8,6 +8,13 @@ mybatis:
 web:
   faceDir: /Users/xieqingdi/Downloads/face
 oa:
+  baseUrl: http://10.69.206.23
   appId: Potc5cAAaXVlQASwU233NraEEo5KXAat
   tenantId: lfdc
   secret: 79246cdd-dfa2-47ad-9252-289b78b8947e
+server:
+  host: 127.0.0.1
+  port: 8080
+app:
+  host: 127.0.0.1
+  port: 9527

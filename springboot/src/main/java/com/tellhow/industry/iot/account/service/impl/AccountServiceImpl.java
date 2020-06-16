@@ -25,7 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -221,5 +223,32 @@ public class AccountServiceImpl implements AccountService {
         int count = accountDao.getGuestCount(jsonObject);
         List<JSONObject> guestList = accountDao.getGuestList(jsonObject);
         return CommonUtil.successPage(jsonObject, guestList, count);
+    }
+
+    @Override
+    public Guest getGuest(String id) {
+        return accountDao.getGuest(id);
+    }
+
+    @Override
+    public JSONObject getGuestVisitHistory(String userId) {
+        List<JSONObject> jsonObject = accountDao.getGuestVisitHistory(userId);
+        return CommonUtil.successJson(jsonObject);
+    }
+
+    @Override
+    public JSONObject reviewGuest(String id, boolean approve) {
+        if (approve) {
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String startAt = sdf.format(calendar.getTime()) + " 08:00:00";
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            String endAt = sdf.format(calendar.getTime()) + " 08:00:00";
+            accountDao.approveGuest(id, startAt, endAt);
+        } else {
+            accountDao.rejectGuest(id);
+        }
+
+        return CommonUtil.successJson();
     }
 }

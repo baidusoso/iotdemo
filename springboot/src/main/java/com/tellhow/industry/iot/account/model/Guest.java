@@ -9,10 +9,11 @@ public class Guest {
     public String gender;
     public String targetUserId;
     public String targetUserName;
-    public String passtimeStartAt;
-    public String passtimeEndAt;
+    public String startTime;
+    public String endTime;
     public String facePic;
     public String createTime;
+    public String status;
 
     public String getId() {
         return id;
@@ -70,20 +71,36 @@ public class Guest {
         this.targetUserId = targetUserId;
     }
 
-    public String getPasstimeStartAt() {
-        return passtimeStartAt;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setPasstimeStartAt(String passtimeStartAt) {
-        this.passtimeStartAt = passtimeStartAt;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
-    public String getPasstimeEndAt() {
-        return passtimeEndAt;
+    public String getEndTime() {
+        return endTime;
     }
 
-    public void setPasstimeEndAt(String passtimeEndAt) {
-        this.passtimeEndAt = passtimeEndAt;
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getTargetUserName() {

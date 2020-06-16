@@ -2,29 +2,52 @@ package com.tellhow.industry.iot.oa;
 
 import com.alibaba.fastjson.JSON;
 import com.tellhow.industry.iot.account.model.Guest;
-import com.tellhow.industry.iot.oa.model.OATokenReponse;
+import com.tellhow.industry.iot.oa.model.NewGuestMessage;
+import com.tellhow.industry.iot.oa.model.OATokenResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+@Component
 public class OAApi {
-    final static String BASE_URL = "http://10.69.206.23";
+    @Value("oa.baseUrl")
+    String oaBaseUrl;
 
-    public static String getToken(String appId, String tenantId, String secret) {
-        HttpGet httpGet = new HttpGet(BASE_URL + "/co/oapi/gettoken?appid=" + appId + "&tenantId=" + tenantId + "&secret=" + secret);
+    @Value("oa.appId")
+    String oaAppId;
+
+    @Value("oa.tenantId")
+    String oaTenantId;
+
+    @Value("oa.secret")
+    String oaSecret;
+
+    @Value("app.host")
+    String appHost;
+
+    @Value("app.port")
+    String appPort;
+
+    String getToken() {
+        HttpGet httpGet = new HttpGet(oaBaseUrl + "/co/oapi/gettoken?appid=" + oaAppId + "&tenantId=" + oaTenantId + "&secret=" + oaSecret);
         String responseBody = execute(httpGet);
         if (responseBody != null) {
-            OATokenReponse oaTokenReponse = JSON.parseObject(responseBody, OATokenReponse.class);
-            if (oaTokenReponse != null && "0".equals(oaTokenReponse.access_token)) {
-                String accessToken = oaTokenReponse.access_token;
+            OATokenResponse oaTokenResponse = JSON.parseObject(responseBody, OATokenResponse.class);
+            if (oaTokenResponse != null && "0".equals(oaTokenResponse.access_token)) {
+                String accessToken = oaTokenResponse.access_token;
                 if (!StringUtils.isEmpty(accessToken)) {
                     return accessToken;
                 }
@@ -33,8 +56,29 @@ public class OAApi {
         throw new OAException("获取Token失败");
     }
 
-    public static void sendNewGuestMessage(String token, Guest guest) {
-
+    public void sendNewGuestMessage(Guest guest) {
+        String token = getToken();
+        NewGuestMessage newGuestMessage = NewGuestMessage.forGuest(oaAppId, token, appHost, appPort, guest);
+        HttpPost httpPost = new HttpPost(oaBaseUrl + "/snap-app-im/oapi/message/sendworkmsg?tenantId=" + oaTenantId);
+        StringEntity stringEntity = null;
+        try {
+            // 设置报文和通讯格式
+            stringEntity = new StringEntity(JSON.toJSONString(newGuestMessage), "UTF-8");
+            stringEntity.setContentEncoding("UTF-8");
+            stringEntity.setContentType("application/json");
+            httpPost.setEntity(stringEntity);
+            execute(httpPost);
+        } catch (Exception e) {
+            if (e instanceof OAException) {
+                throw e;
+            }
+            throw new OAException(e);
+        } finally {
+            try {
+                EntityUtils.consume(stringEntity);
+            } catch (IOException e) {
+            }
+        }
     }
 
     static String execute(HttpRequestBase requestBase) throws OAException {

@@ -30,7 +30,7 @@
           <i slot="suffix" class="el-input__icon el-icon-search" />
         </el-input>
       </div>
-      <el-row class="m-t-10" style="height: 400px">
+      <el-row class="m-t-10" style="height: 300px">
         <el-scrollbar class="page-component__scroll">
           <el-table
             :ref="multiple ? 'multipleTable' : 'singleTable'"

@@ -186,7 +186,7 @@
         <if test="count==0">
             insert into guest_history (id,user_id,name,gender,certificate_num,mobile,target_user_id,target_user_name)
             values
-            (#{guest.id},#{guest.userId},  #{guest.name}, #{guest.gender},#{guest.certificateNum},
+            (#{guest.id},#{guest.userId}, #{guest.name}, #{guest.gender},#{guest.certificateNum},
             #{guest.mobile},#{guest.targetUserId},#{guest.targetUserName})
         </if>
         <if test="count>0">
@@ -215,12 +215,67 @@
         gender gender,
         certificate_num certificateNum,
         mobile mobile,
-        create_time createTime,
         target_user_id targetUserId,
-        target_user_name targetUserName
+        target_user_name targetUserName,
+        start_time startTime,
+        end_time endTime,
+        status status,
+        DATE_FORMAT(create_time,'%Y-%m-%d %T') createTime
         FROM
         guest_history
         ORDER by create_time DESC
         LIMIT #{offSet},#{pageRow}
     </select>
+    <select id="getGuest" resultType="com.tellhow.industry.iot.account.model.Guest">
+        SELECT
+        id id,
+        user_id userId,
+        name name,
+        gender gender,
+        certificate_num certificateNum,
+        mobile mobile,
+        target_user_id targetUserId,
+        target_user_name targetUserName,
+        start_time startTime,
+        end_time endTime,
+        status status,
+        DATE_FORMAT(create_time,'%Y-%m-%d %T') createTime
+        FROM
+        guest_history
+        WHERE id=#{id}
+    </select>
+    <select id="getGuestVisitHistory" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        id id,
+        user_id userId,
+        name name,
+        gender gender,
+        certificate_num certificateNum,
+        mobile mobile,
+        target_user_id targetUserId,
+        target_user_name targetUserName,
+        start_time startTime,
+        end_time endTime,
+        status status,
+        DATE_FORMAT(create_time,'%Y-%m-%d %T') createTime
+        FROM
+        guest_history
+        WHERE user_id=#{userId} AND status=1
+        ORDER by create_time desc
+    </select>
+
+    <update id="approveGuest">
+        UPDATE guest_history
+        SET
+        start_time=#{startTime},
+        end_time=#{endTime},
+        status = 1
+        WHERE id = #{id}
+    </update>
+    <update id="rejectGuest">
+        UPDATE guest_history
+        SET
+        status = -1
+        WHERE id = #{id}
+    </update>
 </mapper>

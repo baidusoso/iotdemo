@@ -40,8 +40,19 @@
           <el-table-column label="手机号" prop="mobile"/>
           <el-table-column label="被访问人" prop="targetUserName"/>
           <el-table-column label="申请时间" prop="createTime"/>
-          <el-table-column label="通行时间" />
-          <el-table-column label="状态" prop="status"/>
+          <el-table-column label="通行时间" >
+            <template slot-scope="scope">
+                <span v-if="scope.row.status=='1'">{{scope.row.startTime}}-{{scope.row.endTime}}</span>
+                <span v-else></span>
+              </template>
+            </el-table-column>
+          <el-table-column label="状态" prop="status">
+            <template slot-scope="scope">
+              <span v-if="scope.row.status=='1'">已通过</span>
+              <span v-else-if="scope.row.status=='-1'">已拒绝</span>
+              <span v-else>申请中</span>
+            </template>
+          </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button

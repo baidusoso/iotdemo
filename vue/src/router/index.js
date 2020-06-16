@@ -171,6 +171,14 @@ export const asyncRouterMap = [
         hidden:true
       },
       {
+        path: 'visitor-apply-review',
+        name: 'visitor-apply-review',
+        component: _import('face/VisitorApplyReview'),
+        meta: {title: '访客信息', icon: 'user',showNavBar:true},
+        menu: 'face',
+        hidden:true
+      },
+      {
         path: 'vistorhistory',
         name: '访问记录',
         component: _import('system/user'),

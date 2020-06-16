@@ -36,4 +36,12 @@ public interface AccountDao {
     int getGuestCount(JSONObject jsonObject);
 
     List<JSONObject> getGuestList(JSONObject jsonObject);
+
+    Guest getGuest(@Param("id") String id);
+
+    List<JSONObject> getGuestVisitHistory(@Param("userId") String userId);
+
+    int rejectGuest(@Param("id") String id);
+
+    int approveGuest(@Param("id") String id, @Param("startTime") String startTime, @Param("endTime") String endTime);
 }

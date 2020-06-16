@@ -38,17 +38,11 @@ public class AccountController {
     @Autowired
     private GatewayPolicyService gatewayPolicyService;
 
+    @Autowired
+    private OAApi oaApi;
+
     @Value("${web.faceDir}")
     private String faceDir;
-
-    @Value("${oa.appId}")
-    private String appId;
-
-    @Value("${oa.tenantId}")
-    private String tenantId;
-
-    @Value("${oa.secret}")
-    private String secret;
 
     @PostMapping("/list")
     public JSONObject getAccountList(@RequestBody JSONObject requestJson) {
@@ -133,13 +127,44 @@ public class AccountController {
         if (!Constants.SUCCESS_CODE.equals(result.getString("code"))) {
             return result;
         }
-        notifyStaff(guest);
+        oaApi.sendNewGuestMessage(guest);
         return CommonUtil.successJson();
     }
 
     @PostMapping("/guest/list")
     public JSONObject getGuestList(@RequestBody JSONObject requestJson) {
         return accountService.getGuestList(requestJson);
+    }
+
+    @GetMapping("/guest/{id}")
+    public JSONObject getGuest(@PathVariable String id) {
+        Guest guest = accountService.getGuest(id);
+        return CommonUtil.successJson(guest);
+    }
+
+    @GetMapping("/guest/{userId}/history")
+    public JSONObject getGuestVisitHistory(@PathVariable String userId) {
+        return accountService.getGuestVisitHistory(userId);
+    }
+
+    @PostMapping("/guest/review/{id}")
+    public JSONObject reviewGuest(@PathVariable String id, boolean approve) {
+        logger.debug("reviewGuest id:" + id + " approve:" + approve);
+//        if (approve) {
+//            Guest guest = accountService.getGuest(id);
+//            if (guest == null) {
+//                return CommonUtil.errorJson(Constants.ERROR_400, "访客信息不存在");
+//            }
+//            ElasticsearchApi.Account account = new ElasticsearchApi.Account(guest);
+//            List<ElasticsearchApi.Account> accountList = new ArrayList<>();
+//            accountList.add(account);
+//            JSONObject jsonObject = accountService.saveOrUpdateUser(accountList);
+//            if (!Constants.SUCCESS_CODE.equals(jsonObject.getString("code"))) {
+//                return jsonObject;
+//            }
+//            gatewayPolicyService.addGatewayPolicyForVisitor(account);
+//        }
+        return accountService.reviewGuest(id, approve);
     }
 
     boolean uploadFaceImg(String userId, MultipartFile faceImg, boolean visitor) {
@@ -156,9 +181,5 @@ public class AccountController {
             logger.debug("头像未变更");
         }
         return true;
-    }
-
-    void notifyStaff(Guest guest) {
-        String token = OAApi.getToken(appId, tenantId, secret);
     }
 }

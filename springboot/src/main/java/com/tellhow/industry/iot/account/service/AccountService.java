@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.tellhow.industry.iot.account.model.Guest;
 import com.tellhow.industry.iot.account.model.IAMAccount;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -23,4 +25,10 @@ public interface AccountService {
     JSONObject saveOrUpdateGuest(Guest guest);
 
     JSONObject getGuestList(JSONObject jsonObject);
+
+    Guest getGuest(String id);
+
+    JSONObject getGuestVisitHistory(String userId);
+
+    JSONObject reviewGuest(String id, boolean result);
 }
