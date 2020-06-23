@@ -44,21 +44,10 @@ public class BaseApi {
         if (pathSegment == null || !pathSegment.startsWith("/")) {
             throw new IllegalArgumentException();
         }
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+
         this.path.put("https://", ARTEMIS_PATH + pathSegment);
         logger.debug(pathSegment + " body:" + body);
         String result = ArtemisHttpUtil.doPostStringArtemis(path, body, null, null, CONTENT_TYPE_JSON, null);
-
-//        if (pathSegment.equals(GatewayInterface.PATH_GET_GATEWAY_LIST)) {
-//            result = MOACK_GATEWAY;
-//        }
-//        if (pathSegment.equals(GatewayInterface.PATH_GET_DOOR_LIST)) {
-//            result = MOACK_DOOR;
-//        }
 
         logger.debug("result:" + result);
         //通过fastjson把【响应结果】转为对象
@@ -94,7 +83,7 @@ public class BaseApi {
     }
 
     protected interface GatewayInterface {
-        String PATH_GET_GATEWAY_LIST = "/api/resource/v1/acsDevice/acsDeviceList";
+//        String PATH_GET_GATEWAY_LIST = "/api/resource/v1/acsDevice/acsDeviceList";
         String PATH_GET_DOOR_LIST = "/api/resource/v1/acsDoor/advance/acsDoorList";
         String PATH_CREATE_AUTH_DOWNLOAD_TASK = "/api/acps/v1/authDownload/task/addition";
         String PATH_ADD_AUTH_DOWNLOAD_DATA = "/api/acps/v1/authDownload/data/addition";
@@ -105,6 +94,8 @@ public class BaseApi {
         String PATH_AUTH_ITEM_SINGLE_SEARCH = "/api/acps/v1/auth_item/single/search";
 
         String PATH_SEARCH_DOWNLOAD_RECORD_PERSON_DETAIL="/api/acps/v1/download_record/person/detail/search";
+
+        String PATH_EVENT_SUBSCRIPTION_BY_EVENT_TYPES="/api/eventService/v1/eventSubscriptionByEventTypes";
     }
 
 }

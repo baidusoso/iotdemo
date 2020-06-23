@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tellhow.industry.iot.gateway.dao.GatewayEventDao">
+
+    <insert id="saveAuditLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gateway_event
+            (srcname,userID,name,gender,no,mobile,certificate_num,usergroup,happentime,exinout,result)
+        VALUES (#{srcName},#{userID},#{name},#{gender},#{no},#{mobiles},#{certificateNum},#{userGroup},#{happenTime},#{ExtEventInOut},#{result})
+    </insert>
+
+    <select id="getEventCount" resultType="Integer">
+        SELECT
+        count(*)
+        FROM
+        gateway_event
+        WHERE 1=1
+        <if test="userGroup !='' and userGroup !=null">
+            AND usergroup = #{userGroup}
+        </if>
+        <if test="eventStatus !='' and eventStatus !=null">
+            AND result = #{eventStatus}
+        </if>
+        <if test="startAt !='' and startAt !=null">
+            AND happentime >= #{startAt}
+        </if>
+        <if test="endAt !='' and endAt !=null">
+            AND happentime &lt;= #{endAt}
+        </if>
+        <if test="query !='' and query !=null">
+            AND (name LIKE '%${query}%' OR no LIKE '%${query}%' OR mobiles LIKE '%${query}%' OR certificate_num LIKE '%${query}%')
+        </if>
+    </select>
+    <select id="getEventList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        srcname,name,gender,no,mobile,certificate_num certificateNum,usergroup,happentime,exinout,result
+        FROM
+        gateway_event
+        WHERE 1=1
+        <if test="userGroup !='' and userGroup !=null">
+            AND usergroup = #{userGroup}
+        </if>
+        <if test="eventStatus !='' and eventStatus !=null">
+            AND result = #{eventStatus}
+        </if>
+        <if test="startAt !='' and startAt !=null">
+            AND happentime >= #{startAt}
+        </if>
+        <if test="endAt !='' and endAt !=null">
+            AND happentime &lt;= #{endAt}
+        </if>
+        <if test="query !='' and query !=null">
+            AND (name LIKE '%${query}%' OR no LIKE '%${query}%' OR mobiles LIKE '%${query}%' OR certificate_num LIKE '%${query}%')
+        </if>
+        LIMIT #{offSet},#{pageRow}
+    </select>
+
+</mapper>

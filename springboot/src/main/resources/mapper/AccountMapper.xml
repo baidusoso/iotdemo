@@ -161,6 +161,27 @@
     AND certificate_num= #{certificateNum}
     </select>
 
+    <select id="getAccountByCertificateNumOrMobile"
+            resultType="com.tellhow.industry.iot.elasticsearch.ElasticsearchApi$Account">
+        SELECT
+        a.id id,
+        a.name name,
+        a.gender gender,
+        a.no no,
+        a.org_id orgId,
+        certificate_num certificateNum,
+        mobile mobile,
+        username username,
+        usergroup usergroup,
+        update_date updateDate,
+        face_id faceId,
+        face_pic facePic
+        FROM
+        account a
+        WHERE a.status=1
+        AND (certificate_num= #{certificateNumOrMobile} OR mobile=#{certificateNumOrMobile})
+    </select>
+
 
     <update id="updateFaceId">
         UPDATE account

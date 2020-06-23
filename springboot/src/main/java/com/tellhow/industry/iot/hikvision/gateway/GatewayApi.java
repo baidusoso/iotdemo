@@ -2,6 +2,7 @@ package com.tellhow.industry.iot.hikvision.gateway;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.hikvision.artemis.sdk.ArtemisHttpUtil;
 import com.tellhow.industry.iot.elasticsearch.ElasticsearchApi;
 import com.tellhow.industry.iot.hikvision.BaseApi;
 import com.tellhow.industry.iot.hikvision.BaseResponse;
@@ -100,6 +101,20 @@ public class GatewayApi extends BaseApi {
         BaseResponse<SearchDownloadRecordPersonDetailResponse> response = post(new TypeReference<BaseResponse<SearchDownloadRecordPersonDetailResponse>>() {
         }, GatewayInterface.PATH_SEARCH_DOWNLOAD_RECORD_PERSON_DETAIL, JSON.toJSONString(searchDownloadRecordPersonDetailRequest));
         return response.data;
+    }
+
+    public void subscripeGatewayEvents() {
+        //配置请求参数
+        EventSubscriptionByEventTypesRequest eventSubscriptionByEventTypesRequest = new EventSubscriptionByEventTypesRequest();
+        eventSubscriptionByEventTypesRequest.eventDest = "http://10.69.202.157:8080/gateway/log/face";
+        eventSubscriptionByEventTypesRequest.eventTypes.add(196893);
+        eventSubscriptionByEventTypesRequest.eventTypes.add(197151);
+        eventSubscriptionByEventTypesRequest.eventTypes.add(197160);
+        eventSubscriptionByEventTypesRequest.eventTypes.add(197162);
+        eventSubscriptionByEventTypesRequest.eventTypes.add(197163);
+
+        post(new TypeReference<BaseResponse<Object>>() {
+        }, GatewayInterface.PATH_EVENT_SUBSCRIPTION_BY_EVENT_TYPES, JSON.toJSONString(eventSubscriptionByEventTypesRequest));
     }
 
 }

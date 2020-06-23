@@ -28,6 +28,7 @@ public interface AccountDao {
     ElasticsearchApi.Account getAccountById(@Param("id") String id);
 
     ElasticsearchApi.Account getAccountByCertificateNum(@Param("certificateNum") String certificateNum);
+    ElasticsearchApi.Account getAccountByCertificateNumOrMobile(@Param("certificateNumOrMobile") String certificateNumOrMobile);
 
     int updateFaceId(@Param("id") String id, @Param("faceId") String faceId);
 

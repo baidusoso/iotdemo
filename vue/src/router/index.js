@@ -179,9 +179,9 @@ export const asyncRouterMap = [
         hidden:true
       },
       {
-        path: 'vistorhistory',
-        name: '访问记录',
-        component: _import('system/user'),
+        path: 'gateway-past-history',
+        name: 'gateway-past-history',
+        component: _import('face/GatewayPastHistory'),
         meta: {title: '访问记录', icon: 'password',showNavBar:true},
         menu: 'face'
       },
